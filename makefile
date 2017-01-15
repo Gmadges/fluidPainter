@@ -1,4 +1,4 @@
-CC=emcc
+EMCC=emcc
 CPPSOURCES:=$(wildcard src/*.cpp)
 EXPORTS_FILE=makefile_exports.txt
 LDFLAGS=-O2 --llvm-opts 2
@@ -11,7 +11,7 @@ TSFLAGS= --outDir app/
 all: $(CPPSOURCES) $(OUTPUT) TSBUILD
 
 $(OUTPUT): $(CPPSOURCES) 
-	$(CC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s EXPORTED_FUNCTIONS=@$(EXPORTS_FILE) -std=c++11 $(LDFLAGS) -o $(OUTPUT)
+	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s EXPORTED_FUNCTIONS=@$(EXPORTS_FILE) -std=c++11 $(LDFLAGS) -o $(OUTPUT)
 
 TSBUILD: $(TSSOURCES)
 	$(TSC) $(TSSOURCES) $(TSFLAGS) 
