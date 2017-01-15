@@ -1,6 +1,7 @@
-///<reference path="input.ts"/>
+//<reference path="input.ts"/>
+// uneeded anymore
 
-module TriangleExample {
+module PaintCanvas {
     //type declarations for emscripten module and wrappers
     declare var Module: {
         cwrap: (name: string, returnType: string, params: string[]) => any;
@@ -28,11 +29,9 @@ module TriangleExample {
     }
 
     //our program that draws a triangle
-    export class Program implements IPanZoomable {
+    export class Program {
         //current translation of the triangle
         private translation = { originX: 0, originY: 0, zoom: 1.0 };
-        //mouse event handler
-        private mouseController;
 
         constructor(private canvas: HTMLCanvasElement) {
             //initialise the GL context, call the compiled native function
@@ -41,26 +40,8 @@ module TriangleExample {
                 console.log("Could not initialise GL");
                 return;
             }
-            //get the mouse listen to canvas mouse events
-            //this.mouseController = new MouseController(canvas, this);
+            
             //request redraw
-            this.invalidate();
-        }
-
-        //translate the whole GL scene by offset
-        pan(offset: Point) {
-            var glOffset = {
-                x: offset.x / this.canvas.width * 2.0 / this.translation.zoom,
-                y: offset.y / this.canvas.height * 2.0 / this.translation.zoom
-            };
-            this.translation.originX += glOffset.x;
-            this.translation.originY -= glOffset.y;
-            this.invalidate();
-        }
-
-        //zoom by the given ratio
-        zoom(ratio: number, origin: Point) {
-            this.translation.zoom *= ratio;
             this.invalidate();
         }
 

@@ -2,12 +2,9 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>WebGLTriangle</title>
+        <title>PaintCanvas</title>
         <meta name="description" content="">
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-
-        <script src='http://code.jquery.com/jquery-2.0.2.min.js'></script>
-        <script src='app/jquery.mousewheel.js'></script>
         
         <style>
             html { 
@@ -34,7 +31,8 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            //show Emscripten environment where the canvas is
+            // tell emscripten about the canvas we're using
+            // also let it know that the .mem file is within the app/ dir.
             var Module = {};
             Module.canvas = canvas;
             Module.locateFile = function(url) {
@@ -43,11 +41,12 @@
         </script>
 
         <script src="app/glcore.js"></script>
-        <script src="app/triangle.js"></script>
+        <script src="app/paintCanvas.js"></script>
 
-        <script>
+        <script>       
+            // This is needed because we dont have a main in the CPP code.
             Module['_main'] = function() {
-                var program = new TriangleExample.Program(canvas); 
+                var program = new PaintCanvas.Program(canvas); 
             };
         </script>
 

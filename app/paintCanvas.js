@@ -1,6 +1,7 @@
-///<reference path="input.ts"/>
-var TriangleExample;
-(function (TriangleExample) {
+//<reference path="input.ts"/>
+// uneeded anymore
+var PaintCanvas;
+(function (PaintCanvas) {
     //bindings to C++ functions
     var Bindings = (function () {
         function Bindings() {
@@ -33,26 +34,9 @@ var TriangleExample;
                 console.log("Could not initialise GL");
                 return;
             }
-            //get the mouse listen to canvas mouse events
-            //this.mouseController = new MouseController(canvas, this);
             //request redraw
             this.invalidate();
         }
-        //translate the whole GL scene by offset
-        Program.prototype.pan = function (offset) {
-            var glOffset = {
-                x: offset.x / this.canvas.width * 2.0 / this.translation.zoom,
-                y: offset.y / this.canvas.height * 2.0 / this.translation.zoom
-            };
-            this.translation.originX += glOffset.x;
-            this.translation.originY -= glOffset.y;
-            this.invalidate();
-        };
-        //zoom by the given ratio
-        Program.prototype.zoom = function (ratio, origin) {
-            this.translation.zoom *= ratio;
-            this.invalidate();
-        };
         //render the scene
         Program.prototype.render = function () {
             //convert the JS translation object to an emscripten array of floats
@@ -67,5 +51,5 @@ var TriangleExample;
         };
         return Program;
     }());
-    TriangleExample.Program = Program;
-})(TriangleExample || (TriangleExample = {}));
+    PaintCanvas.Program = Program;
+})(PaintCanvas || (PaintCanvas = {}));
