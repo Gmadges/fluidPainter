@@ -1,6 +1,5 @@
 #include <iostream>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
 #include <SDL/SDL.h>
 
 #ifdef EMSCRIPTEN
@@ -45,7 +44,6 @@ extern "C" int initGL(int width, int height)
 	}
 
 	//SDL initialised successfully, now load shaders and geometry
-
 	const char vertexShaderSource[] =
 		"attribute vec4 vPosition;		                     \n"
 		"varying vec3 color;                                 \n"
