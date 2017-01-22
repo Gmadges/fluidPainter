@@ -23,8 +23,6 @@ GLfloat vVertices[] = {
 
 };
 
-GLint uniformOriginX, uniformOriginY, uniformZoom;
-
 extern "C" int initGL(int width, int height)
 {
 	//initialise SDL
