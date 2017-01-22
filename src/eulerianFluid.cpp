@@ -13,9 +13,9 @@ void EulerianFluid::reset()
     
 }
 
-void EulerianFluid::init()
-{
-
+bool EulerianFluid::init(int width, int height)
+{    
+    return true;
 }
 
 void EulerianFluid::update()

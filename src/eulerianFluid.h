@@ -10,11 +10,12 @@ class EulerianFluid
     EulerianFluid();
     ~EulerianFluid();
 
-    void init();
+    bool init(int width, int height);
     void update();
     void reset();
 
     private:
+
     void swapBuffers();
     void clearSurface();
     void advect();
@@ -25,6 +26,13 @@ class EulerianFluid
     void subtractGradient();
 
     private:
+
+    // buffer full of data
+    Slab Velocity;
+    Slab Density;
+    Slab Pressure;
+    Slab Temperature;
+    Slab Divergence;
 
     // setting values
     float AmbientTemperature = 0.0f;
