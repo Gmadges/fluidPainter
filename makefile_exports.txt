@@ -1,1 +1,1 @@
-["_initGL", "_draw"]
+["_initGL", "_draw", "_update"]

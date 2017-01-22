@@ -16,6 +16,8 @@ module PaintCanvas {
             = Module.cwrap('initGL', 'number', ['number', 'number']);
         public static draw: () => void
             = Module.cwrap('draw', '', []);
+        public static update: () => void
+            = Module.cwrap('update', '', []);
     }
 
     //a helper for some JS-to-Emscripten conversions
@@ -25,13 +27,10 @@ module PaintCanvas {
             for (var i = 0; i < arr.length; i++)
                 Module.setValue(arrayPointer + i * 4, arr[i], 'float');
             return arrayPointer;
-        }
+        }   
     }
 
-    //our program that draws a triangle
     export class Program {
-        //current translation of the triangle
-        private translation = { originX: 0, originY: 0, zoom: 1.0 };
 
         constructor(private canvas: HTMLCanvasElement) {
             //initialise the GL context, call the compiled native function
@@ -51,6 +50,10 @@ module PaintCanvas {
             //var translationPtr = HeapUtils.floatArrayToHeap(
             //    [this.translation.originX, this.translation.originY, this.translation.zoom]
             //);
+
+            // call update
+            Bindings.update();
+
             //call the native draw function
             Bindings.draw();
             //free the array memory

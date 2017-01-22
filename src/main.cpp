@@ -24,8 +24,6 @@ GLfloat vVertices[] = {
 
 };
 
-
-
 GLint uniformOriginX, uniformOriginY, uniformZoom;
 
 extern "C" int initGL(int width, int height)
@@ -74,6 +72,11 @@ extern "C" int initGL(int width, int height)
 	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
 	glViewport(0, 0, width, height);
 	return 1;
+}
+
+extern "C" void update()
+{
+
 }
 
 extern "C" void draw()

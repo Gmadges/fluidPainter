@@ -10,6 +10,7 @@ var PaintCanvas;
     }());
     Bindings.initGL = Module.cwrap('initGL', 'number', ['number', 'number']);
     Bindings.draw = Module.cwrap('draw', '', []);
+    Bindings.update = Module.cwrap('update', '', []);
     //a helper for some JS-to-Emscripten conversions
     var HeapUtils = (function () {
         function HeapUtils() {
@@ -22,12 +23,9 @@ var PaintCanvas;
         };
         return HeapUtils;
     }());
-    //our program that draws a triangle
     var Program = (function () {
         function Program(canvas) {
             this.canvas = canvas;
-            //current translation of the triangle
-            this.translation = { originX: 0, originY: 0, zoom: 1.0 };
             //initialise the GL context, call the compiled native function
             var initialised = Bindings.initGL(canvas.width, canvas.height);
             if (!initialised) {
@@ -43,6 +41,8 @@ var PaintCanvas;
             //var translationPtr = HeapUtils.floatArrayToHeap(
             //    [this.translation.originX, this.translation.originY, this.translation.zoom]
             //);
+            // call update
+            Bindings.update();
             //call the native draw function
             Bindings.draw();
             //free the array memory
