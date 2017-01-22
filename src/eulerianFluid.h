@@ -2,6 +2,7 @@
 #define EULERIANFLUID_H
 
 #include "types.h"
+#include "slab.h"
 
 class EulerianFluid
 {

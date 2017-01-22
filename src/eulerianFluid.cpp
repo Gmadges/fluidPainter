@@ -26,6 +26,18 @@ bool EulerianFluid::init(int width, int height)
     VelocityDissipation = 0.99f;
     DensityDissipation = 0.9999f;
     ImpulsePosition = { width / 4, - (int) width / 16};
+
+    // create slabs
+    int w = width / 2;
+    int h = height / 2;
+    Velocity.init(w, h, 2);
+    Density.init(w, h, 1);
+    Pressure.init(w, h, 1);
+    Temperature.init(w, h, 1);
+    Divergence.init(w, h, 3);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //ClearSurface(Temperature.Ping, AmbientTemperature);
     
     return true;
 }
