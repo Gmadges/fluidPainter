@@ -60,9 +60,7 @@ extern "C" int initGL(int width, int height)
 		"}                                            \n";
 
 	//load vertex and fragment shaders
-	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexShaderSource);
-	GLuint fragmentShader = loadShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
-	programObject = buildProgram(vertexShader, fragmentShader, "vPosition");
+	programObject = Shaders::buildProgram(vertexShaderSource, fragmentShaderSource);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);

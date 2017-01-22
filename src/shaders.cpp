@@ -1,7 +1,11 @@
 #include "shaders.h"
 #include <iostream>
 
-GLuint loadShader(GLenum type, const char *source)
+Shaders::Shaders()
+{
+}
+
+GLuint Shaders::loadShader(GLenum type, const char *source)
 {
 	//create a shader
 	GLuint shader = glCreateShader(type);
@@ -28,13 +32,15 @@ GLuint loadShader(GLenum type, const char *source)
 	return shader;
 }
 
-GLuint buildProgram(GLuint vertexShader, GLuint fragmentShader, const char * vertexPositionName)
+GLuint Shaders::buildProgram(const char * vertexShader, const char * fragmentShader)
 {
+	GLuint vertID = loadShader(GL_VERTEX_SHADER, vertexShader);
+	GLuint fragID = loadShader(GL_FRAGMENT_SHADER, fragmentShader);
+
 	//create a GL program and link it
 	GLuint programObject = glCreateProgram();
-	glAttachShader(programObject, vertexShader);
-	glAttachShader(programObject, fragmentShader);
-	glBindAttribLocation(programObject, 0, vertexPositionName);
+	glAttachShader(programObject, vertID);
+	glAttachShader(programObject, fragID);
 	glLinkProgram(programObject);
 
 	//check if the program linked successfully

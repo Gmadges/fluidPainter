@@ -17,6 +17,7 @@ class EulerianFluid
 
     private:
 
+    void resetState();
     void swapBuffers(Slab& slab);
     void clearSurface(Surface s, float value);
     void advect();

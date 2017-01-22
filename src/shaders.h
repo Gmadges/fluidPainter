@@ -3,7 +3,19 @@
 
 #include <GLES3/gl3.h>
 
-GLuint loadShader(GLenum type, const char *source);
-GLuint buildProgram(GLuint vertexShader, GLuint fragmentShader, const char * vertexPositionName);
+class Shaders
+{
+public:
+    Shaders();
+    ~Shaders(){};
+
+    static GLuint buildProgram(const char * vertexShader, const char * fragmentShader);
+
+private:
+
+    static GLuint loadShader(GLenum type, const char *source);
+
+
+};
 
 #endif
