@@ -1,1 +1,1 @@
-["_initGL", "_drawTriangle"]
+["_initGL", "_draw"]

@@ -14,8 +14,8 @@ module PaintCanvas {
     class Bindings {
         public static initGL: (width: number, height: number) => number
             = Module.cwrap('initGL', 'number', ['number', 'number']);
-        public static drawTriangle: (translationPtr: number) => void
-            = Module.cwrap('drawTriangle', '', ['number']);
+        public static draw: () => void
+            = Module.cwrap('draw', '', []);
     }
 
     //a helper for some JS-to-Emscripten conversions
@@ -47,14 +47,14 @@ module PaintCanvas {
 
         //render the scene
         private render() {
-            //convert the JS translation object to an emscripten array of floats
-            var translationPtr = HeapUtils.floatArrayToHeap(
-                [this.translation.originX, this.translation.originY, this.translation.zoom]
-            );
+            ////convert the JS translation object to an emscripten array of floats
+            //var translationPtr = HeapUtils.floatArrayToHeap(
+            //    [this.translation.originX, this.translation.originY, this.translation.zoom]
+            //);
             //call the native draw function
-            Bindings.drawTriangle(translationPtr);
+            Bindings.draw();
             //free the array memory
-            _free(translationPtr);
+            //_free(translationPtr);
         }
 
         public invalidate() {

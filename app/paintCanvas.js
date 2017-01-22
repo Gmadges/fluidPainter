@@ -9,7 +9,7 @@ var PaintCanvas;
         return Bindings;
     }());
     Bindings.initGL = Module.cwrap('initGL', 'number', ['number', 'number']);
-    Bindings.drawTriangle = Module.cwrap('drawTriangle', '', ['number']);
+    Bindings.draw = Module.cwrap('draw', '', []);
     //a helper for some JS-to-Emscripten conversions
     var HeapUtils = (function () {
         function HeapUtils() {
@@ -39,12 +39,14 @@ var PaintCanvas;
         }
         //render the scene
         Program.prototype.render = function () {
-            //convert the JS translation object to an emscripten array of floats
-            var translationPtr = HeapUtils.floatArrayToHeap([this.translation.originX, this.translation.originY, this.translation.zoom]);
+            ////convert the JS translation object to an emscripten array of floats
+            //var translationPtr = HeapUtils.floatArrayToHeap(
+            //    [this.translation.originX, this.translation.originY, this.translation.zoom]
+            //);
             //call the native draw function
-            Bindings.drawTriangle(translationPtr);
+            Bindings.draw();
             //free the array memory
-            _free(translationPtr);
+            //_free(translationPtr);
         };
         Program.prototype.invalidate = function () {
             window.requestAnimationFrame(this.render.bind(this));
