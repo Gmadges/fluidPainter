@@ -1,15 +1,13 @@
 #include "shaders.h"
 #include <iostream>
 
-using namespace std;
-
 GLuint loadShader(GLenum type, const char *source)
 {
 	//create a shader
 	GLuint shader = glCreateShader(type);
 	if (shader == 0)
 	{
-		cerr << "Error creating shader" << endl;
+		std::cerr << "Error creating shader" << std::endl;
 		return 0;
 	}
 
@@ -22,7 +20,7 @@ GLuint loadShader(GLenum type, const char *source)
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 	if (!compiled)
 	{
-		cerr << "Shader compilation error" << endl;
+		std::cerr << "Shader compilation error" << std::endl;
 		glDeleteShader(shader);
 		return 0;
 	}
@@ -44,7 +42,7 @@ GLuint buildProgram(GLuint vertexShader, GLuint fragmentShader, const char * ver
 	glGetProgramiv(programObject, GL_LINK_STATUS, &linked);
 	if (!linked)
 	{
-		cerr << "Program link error" << endl;
+		std::cerr << "Program link error" << std::endl;
 		glDeleteProgram(programObject);
 		return 0;
 	}

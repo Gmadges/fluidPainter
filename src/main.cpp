@@ -9,16 +9,23 @@
 
 #include "shaders.h"
 
-using namespace std;
-
 GLuint programObject;
 SDL_Surface* screen;
 
 GLfloat vVertices[] = {
-	0.0f, 0.5f, 0.0f,
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f
+
+    -1.0f,  1.0f, 0.0f, // Top-left
+     1.0f,  1.0f, 0.0f, // Top-right
+     1.0f, -1.0f, 0.0f, // Bottom-right
+
+     1.0f, -1.0f, 0.0f, // Bottom-right
+    -1.0f, -1.0f, 0.0f, // Bottom-left
+    -1.0f,  1.0f, 0.0f, // Top-left
+
 };
+
+
+
 GLint uniformOriginX, uniformOriginY, uniformZoom;
 
 extern "C" int initGL(int width, int height)
@@ -29,13 +36,13 @@ extern "C" int initGL(int width, int height)
 		screen = SDL_SetVideoMode(width, height, 0, SDL_OPENGL);
 		if (screen == NULL)
 		{
-			cerr << "Could not set video mode: " << SDL_GetError() << endl;
+			std::cerr << "Could not set video mode: " << SDL_GetError() << std::endl;
 			return 0;
 		}
 	}
 	else 
 	{
-		cerr << "Could not initialize SDL: " << SDL_GetError() << endl;
+		std::cerr << "Could not initialize SDL: " << SDL_GetError() << std::endl;
 		return 0;
 	}
 
@@ -93,7 +100,7 @@ extern "C" void drawTriangle(float *translation)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
 	glEnableVertexAttribArray(0);
 	//draw the triangle
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	//swap buffer to make whatever we've drawn to backbuffer appear on the screen
 	SDL_GL_SwapBuffers();
