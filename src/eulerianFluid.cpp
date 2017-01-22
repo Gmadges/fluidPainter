@@ -37,7 +37,7 @@ bool EulerianFluid::init(int width, int height)
     Divergence.init(w, h, 3);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //ClearSurface(Temperature.Ping, AmbientTemperature);
+    clearSurface(Temperature.src, AmbientTemperature);
     
     return true;
 }
@@ -61,14 +61,18 @@ void EulerianFluid::update()
     // subtract gradient
 }
 
-void EulerianFluid::swapBuffers()
+void EulerianFluid::swapBuffers(Slab& slab)
 {
-
+    Surface temp = slab.src;
+    slab.src = slab.dest;
+    slab.dest = temp;
 }
 
-void EulerianFluid::clearSurface()
+void EulerianFluid::clearSurface(Surface s, float value)
 {
-
+    glBindFramebuffer(GL_FRAMEBUFFER, s.fboHandle);
+    glClearColor(value, value, value, value);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void EulerianFluid::advect()

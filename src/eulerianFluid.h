@@ -17,8 +17,8 @@ class EulerianFluid
 
     private:
 
-    void swapBuffers();
-    void clearSurface();
+    void swapBuffers(Slab& slab);
+    void clearSurface(Surface s, float value);
     void advect();
     void applyBuoyency();
     void applyImpulse();
