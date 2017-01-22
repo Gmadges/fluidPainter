@@ -1,4 +1,6 @@
 #include "eulerianFluid.h"
+#include "shaders.h"
+#include "shaderSource.h"
 
 #define CellSize (1.25f)
 
@@ -38,6 +40,14 @@ bool EulerianFluid::init(int width, int height)
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     clearSurface(Temperature.src, AmbientTemperature);
+
+    // // init programs
+    // advectProgram = Shader::buildProgram();
+    // jacobiProgram = Shader::buildProgram();
+    // subtractGradientProgram = Shader::buildProgram();
+    // computeDivergenceProgram = Shader::buildProgram();
+    // applyImpulseProgram = Shader::buildProgram();
+    // applyBuoyancyProgram = Shader::buildProgram();
     
     return true;
 }

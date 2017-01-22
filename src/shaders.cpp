@@ -52,5 +52,6 @@ GLuint Shaders::buildProgram(const char * vertexShader, const char * fragmentSha
 		glDeleteProgram(programObject);
 		return 0;
 	}
+
 	return programObject;
 }

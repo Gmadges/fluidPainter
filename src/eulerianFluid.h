@@ -29,6 +29,13 @@ class EulerianFluid
 
     private:
 
+    GLuint advectProgram;
+    GLuint jacobiProgram;
+    GLuint subtractGradientProgram;
+    GLuint computeDivergenceProgram;
+    GLuint applyImpulseProgram;
+    GLuint applyBuoyancyProgram; 
+
     // buffer full of data
     Slab Velocity;
     Slab Density;

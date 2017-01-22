@@ -14,8 +14,6 @@ public:
 private:
 
     static GLuint loadShader(GLenum type, const char *source);
-
-
 };
 
 #endif

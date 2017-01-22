@@ -7,6 +7,7 @@
 #endif
 
 #include "shaders.h"
+#include "shaderSource.h"
 
 GLuint programObject;
 SDL_Surface* screen;
@@ -41,26 +42,8 @@ extern "C" int initGL(int width, int height)
 		return 0;
 	}
 
-	//SDL initialised successfully, now load shaders and geometry
-	const char vertexShaderSource[] =
-		"attribute vec4 vPosition;		                     \n"
-		"varying vec3 color;                                 \n"
-		"void main()                                         \n"
-		"{                                                   \n"
-		"   gl_Position = vPosition;                         \n"
-		"   color = gl_Position.xyz + vec3(0.5);             \n"
-		"}                                                   \n";
-
-	const char fragmentShaderSource[] =
-		"precision mediump float;                     \n"
-		"varying vec3 color;                          \n"
-		"void main()                                  \n"
-		"{                                            \n"
-		"  gl_FragColor = vec4 ( color, 1.0 );        \n"
-		"}                                            \n";
-
 	//load vertex and fragment shaders
-	programObject = Shaders::buildProgram(vertexShaderSource, fragmentShaderSource);
+	programObject = Shaders::buildProgram(simpleVertShaderSource, simpleFragShaderSource);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
