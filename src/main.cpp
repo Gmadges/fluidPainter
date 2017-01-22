@@ -8,9 +8,12 @@
 
 #include "shaders.h"
 #include "shaderSource.h"
+#include "eulerianFluid.h"
 
 GLuint programObject;
 SDL_Surface* screen;
+
+EulerianFluid fluid;
 
 GLfloat vVertices[] = {
 
@@ -48,12 +51,16 @@ extern "C" int initGL(int width, int height)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
 	glViewport(0, 0, width, height);
+
+	// init our fluid
+	fluid.init(width, height);
+
 	return 1;
 }
 
 extern "C" void update()
 {
-
+	fluid.update();
 }
 
 extern "C" void draw()

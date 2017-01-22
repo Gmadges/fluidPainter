@@ -1,5 +1,6 @@
 #include "shaders.h"
 #include <iostream>
+#include <vector>
 
 Shaders::Shaders()
 {
@@ -24,6 +25,18 @@ GLuint Shaders::loadShader(GLenum type, const char *source)
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 	if (!compiled)
 	{
+		GLint maxLength = 0;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+		// The maxLength includes the NULL character
+		std::vector<GLchar> errorLog(maxLength);
+		glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
+
+		for(auto val : errorLog)
+		{
+			std::cout << val;
+		}
+		
 		std::cerr << "Shader compilation error" << std::endl;
 		glDeleteShader(shader);
 		return 0;

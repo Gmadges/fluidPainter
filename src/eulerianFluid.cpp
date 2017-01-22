@@ -41,13 +41,13 @@ bool EulerianFluid::init(int width, int height)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     clearSurface(Temperature.src, AmbientTemperature);
 
-    // // init programs
-    // advectProgram = Shader::buildProgram();
-    // jacobiProgram = Shader::buildProgram();
-    // subtractGradientProgram = Shader::buildProgram();
-    // computeDivergenceProgram = Shader::buildProgram();
-    // applyImpulseProgram = Shader::buildProgram();
-    // applyBuoyancyProgram = Shader::buildProgram();
+    // init programs
+    advectProgram = Shaders::buildProgram(vertShaderSource, advectFragShaderSource);
+    //jacobiProgram = Shaders::buildProgram(vertShaderSource, jacobiFragShaderSource);
+    //subtractGradientProgram = Shaders::buildProgram(vertShaderSource, subGradientFragShaderSource);
+    //computeDivergenceProgram = Shaders::buildProgram(vertShaderSource, computeDivergenceFragShaderSource);
+    //applyImpulseProgram = Shaders::buildProgram(vertShaderSource, impulseFragShaderSource);
+    //applyBuoyancyProgram = Shaders::buildProgram(vertShaderSource, buoyancyFragShaderSource);
     
     return true;
 }
