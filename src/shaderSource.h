@@ -91,19 +91,20 @@ static const char jacobiFragShaderSource[] =
     "}                                                                          \n";
 
 static const char subGradientFragShaderSource[] =
-    "varying vec2 FragColor;                                                    \n"
+    "#version 300 es                                                        \n"
+    "out mediump vec2 FragColor;                                                    \n"
 
     "uniform sampler2D Velocity;                                            \n"
     "uniform sampler2D Pressure;                                            \n"
     "uniform sampler2D Obstacles;                                           \n"
-    "uniform float GradientScale;                                           \n"
+    "uniform mediump float GradientScale;                                           \n"
 
     "void main()                                                            \n"
     "{                                                                      \n"
     "    ivec2 T = ivec2(gl_FragCoord.xy);                                  \n"
 
     "    vec3 oC = texelFetch(Obstacles, T, 0).xyz;                         \n"
-    "    if (oC.x > 0) {                                                    \n"
+    "    if (oC.x > 0.0f) {                                                    \n"
     "        FragColor = oC.yz;                                             \n"
     "        return;                                                        \n"
     "    }                                                                  \n"
@@ -122,13 +123,13 @@ static const char subGradientFragShaderSource[] =
     "    vec3 oW = texelFetchOffset(Obstacles, T, 0, ivec2(-1, 0)).xyz;     \n"
 
         // Use center pressure for solid cells: 
-    "    vec2 obstV = vec2(0);                                              \n"
-    "    vec2 vMask = vec2(1);                                              \n"
+    "    vec2 obstV = vec2(0.0f);                                              \n"
+    "    vec2 vMask = vec2(1.0f);                                              \n"
 
-    "    if (oN.x > 0) { pN = pC; obstV.y = oN.z; vMask.y = 0; }            \n"
-    "    if (oS.x > 0) { pS = pC; obstV.y = oS.z; vMask.y = 0; }            \n"
-    "    if (oE.x > 0) { pE = pC; obstV.x = oE.y; vMask.x = 0; }            \n"
-    "    if (oW.x > 0) { pW = pC; obstV.x = oW.y; vMask.x = 0; }            \n"
+    "    if (oN.x > 0.0f) { pN = pC; obstV.y = oN.z; vMask.y = 0.0f; }            \n"
+    "    if (oS.x > 0.0f) { pS = pC; obstV.y = oS.z; vMask.y = 0.0f; }            \n"
+    "    if (oE.x > 0.0f) { pE = pC; obstV.x = oE.y; vMask.x = 0.0f; }            \n"
+    "    if (oW.x > 0.0f) { pW = pC; obstV.x = oW.y; vMask.x = 0.0f; }            \n"
 
         // Enforce the free-slip boundary condition:
     "    vec2 oldV = texelFetch(Velocity, T, 0).xy;                         \n"
@@ -138,11 +139,12 @@ static const char subGradientFragShaderSource[] =
     "}                                                                      \n"; 
 
 static const char computeDivergenceFragShaderSource[] =
-    "varying float FragColor;                                                   \n"
+    "#version 300 es                                                        \n"
+    "out mediump float FragColor;                                               \n"
 
     "uniform sampler2D Velocity;                                            \n"
     "uniform sampler2D Obstacles;                                           \n"
-    "uniform float HalfInverseCellSize;                                     \n"
+    "uniform mediump float HalfInverseCellSize;                                     \n"
 
     "void main()                                                            \n"
     "{                                                                      \n"
@@ -161,20 +163,21 @@ static const char computeDivergenceFragShaderSource[] =
     "    vec3 oW = texelFetchOffset(Obstacles, T, 0, ivec2(-1, 0)).xyz;     \n"
 
         // Use obstacle velocities for solid cells:
-    "    if (oN.x > 0) vN = oN.yz;                                          \n"
-    "    if (oS.x > 0) vS = oS.yz;                                          \n"
-    "    if (oE.x > 0) vE = oE.yz;                                          \n"
-    "    if (oW.x > 0) vW = oW.yz;                                          \n"
+    "    if (oN.x > 0.0f) vN = oN.yz;                                          \n"
+    "    if (oS.x > 0.0f) vS = oS.yz;                                          \n"
+    "    if (oE.x > 0.0f) vE = oE.yz;                                          \n"
+    "    if (oW.x > 0.0f) vW = oW.yz;                                          \n"
 
     "    FragColor = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);     \n"
     "}                                                                      \n";
 
 static const char impulseFragShaderSource[] =
-    "varying vec4 FragColor;                                    \n"
+    "#version 300 es                                                        \n"
+    "out mediump vec4 FragColor;                                    \n"
 
-    "uniform vec2 Point;                                    \n"
-    "uniform float Radius;                                  \n"
-    "uniform vec3 FillColor;                                \n"
+    "uniform mediump vec2 Point;                                    \n"
+    "uniform mediump float Radius;                                  \n"
+    "uniform mediump vec3 FillColor;                                \n"
 
     "void main()                                            \n"
     "{                                                      \n"
