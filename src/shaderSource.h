@@ -192,14 +192,15 @@ static const char impulseFragShaderSource[] =
     "}                                                      \n";
 
 static const char buoyancyFragShaderSource[] =
-    "varying vec2 FragColor;                                                                            \n"
+    "#version 300 es                                                        \n"
+    "out mediump vec2 FragColor;                                                                            \n"
     "uniform sampler2D Velocity;                                                                    \n"
     "uniform sampler2D Temperature;                                                                 \n"
     "uniform sampler2D Density;                                                                     \n"
-    "uniform float AmbientTemperature;                                                              \n"
-    "uniform float TimeStep;                                                                        \n"
-    "uniform float Sigma;                                                                           \n"
-    "uniform float Kappa;                                                                           \n"
+    "uniform mediump float AmbientTemperature;                                                              \n"
+    "uniform mediump float TimeStep;                                                                        \n"
+    "uniform mediump float Sigma;                                                                           \n"
+    "uniform mediump float Kappa;                                                                           \n"
 
     "void main()                                                                                    \n"
     "{                                                                                              \n"

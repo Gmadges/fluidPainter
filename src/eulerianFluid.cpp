@@ -32,22 +32,22 @@ bool EulerianFluid::init(int width, int height)
     // create slabs
     int w = width / 2;
     int h = height / 2;
-    // Velocity.init(w, h, 2);
-    // Density.init(w, h, 1);
-    // Pressure.init(w, h, 1);
-    // Temperature.init(w, h, 1);
-    // Divergence.init(w, h, 3);
+    Velocity.init(w, h, 2);
+    Density.init(w, h, 1);
+    Pressure.init(w, h, 1);
+    Temperature.init(w, h, 1);
+    Divergence.init(w, h, 3);
 
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // clearSurface(Temperature.src, AmbientTemperature);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //clearSurface(Temperature.src, AmbientTemperature);
 
     // init programs
-    //advectProgram = Shaders::buildProgram(vertShaderSource, advectFragShaderSource);
-    //jacobiProgram = Shaders::buildProgram(vertShaderSource, jacobiFragShaderSource);
-    //subtractGradientProgram = Shaders::buildProgram(vertShaderSource, subGradientFragShaderSource);
-    //computeDivergenceProgram = Shaders::buildProgram(vertShaderSource, computeDivergenceFragShaderSource);
-    //applyImpulseProgram = Shaders::buildProgram(vertShaderSource, impulseFragShaderSource);
-    //applyBuoyancyProgram = Shaders::buildProgram(vertShaderSource, buoyancyFragShaderSource);
+    advectProgram = Shaders::buildProgram(vertShaderSource, advectFragShaderSource);
+    jacobiProgram = Shaders::buildProgram(vertShaderSource, jacobiFragShaderSource);
+    subtractGradientProgram = Shaders::buildProgram(vertShaderSource, subGradientFragShaderSource);
+    computeDivergenceProgram = Shaders::buildProgram(vertShaderSource, computeDivergenceFragShaderSource);
+    applyImpulseProgram = Shaders::buildProgram(vertShaderSource, impulseFragShaderSource);
+    applyBuoyancyProgram = Shaders::buildProgram(vertShaderSource, buoyancyFragShaderSource);
     
     return true;
 }
