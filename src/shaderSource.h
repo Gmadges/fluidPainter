@@ -23,23 +23,16 @@ static const char simpleFragShaderSource[] =
 // shaders for calculating
 
 static const char vertShaderSource[] =
-    "attribute vec4 Position;              \n"
+    "#version 300 es                       \n"
+    "in vec4 Position;              \n"
     "void main()                           \n"
     "{                                     \n"
     "    gl_Position = Position;           \n"
     "}                                     \n";
 
-static const char fillFragShaderSource[] = 
-    "varying vec3 FragColor;            \n"
-    "void main()                    \n"
-    "{                              \n"
-    "    gl_FragColor = vec3(1, 0, 0); \n"
-    "}                              \n";
-
-
 static const char advectFragShaderSource[] = 
     "#version 300 es                                                        \n"
-    "out mediump vec4 FragColor;                                                \n"
+    "out mediump vec4 FragColor;                                            \n"
     "uniform sampler2D VelocityTexture;                                     \n"
     "uniform sampler2D SourceTexture;                                       \n"
     "uniform sampler2D Obstacles;                                           \n"
@@ -51,7 +44,7 @@ static const char advectFragShaderSource[] =
     "void main()                                                            \n"
     "{                                                                      \n"
     "    vec2 fragCoord = gl_FragCoord.xy;                                  \n"
-    "    float solid = texture2D(Obstacles, InverseSize * fragCoord).x;       \n"
+    "    float solid = texture(Obstacles, InverseSize * fragCoord).x;       \n"
     "    if (solid > 0.0f) {                                                   \n"
     "        FragColor = vec4(0);                                           \n"
     "        return;                                                        \n"
@@ -59,18 +52,19 @@ static const char advectFragShaderSource[] =
 
     "    vec2 u = texture(VelocityTexture, InverseSize * fragCoord).xy;     \n"
     "    vec2 coord = InverseSize * (fragCoord - TimeStep * u);             \n"
-    "    gl_FragColor = Dissipation * texture(SourceTexture, coord);           \n"
+    "    FragColor = Dissipation * texture(SourceTexture, coord);           \n"
     "}                                                                      \n";
 
 static const char jacobiFragShaderSource[] = 
-    "varying vec4 FragColor;                                                    \n"
+    "#version 300 es                                                        \n"
+    "out mediump vec4 FragColor;                                                    \n"
 
     "uniform sampler2D Pressure;                                                \n"
     "uniform sampler2D Divergence;                                              \n"
     "uniform sampler2D Obstacles;                                               \n"
 
-    "uniform float Alpha;                                                       \n"
-    "uniform float InverseBeta;                                                 \n"
+    "uniform mediump float Alpha;                                                       \n"
+    "uniform mediump float InverseBeta;                                                 \n"
 
     "void main()                                                                \n"
     "{                                                                          \n"
@@ -87,10 +81,10 @@ static const char jacobiFragShaderSource[] =
     "    vec3 oE = texelFetchOffset(Obstacles, T, 0, ivec2(1, 0)).xyz;          \n"
     "    vec3 oW = texelFetchOffset(Obstacles, T, 0, ivec2(-1, 0)).xyz;         \n"
         // Use center pressure for solid cells:
-    "    if (oN.x > 0) pN = pC;                                                 \n"
-    "    if (oS.x > 0) pS = pC;                                                 \n"
-    "    if (oE.x > 0) pE = pC;                                                 \n"
-    "    if (oW.x > 0) pW = pC;                                                 \n"
+    "    if (oN.x > 0.0f) pN = pC;                                                 \n"
+    "    if (oS.x > 0.0f) pS = pC;                                                 \n"
+    "    if (oE.x > 0.0f) pE = pC;                                                 \n"
+    "    if (oW.x > 0.0f) pW = pC;                                                 \n"
 
     "    vec4 bC = texelFetch(Divergence, T, 0);                                \n"
     "    FragColor = (pW + pE + pS + pN + Alpha * bC) * InverseBeta;            \n"
