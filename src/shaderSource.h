@@ -2,8 +2,9 @@
 #define SHADERSOURCE_H
 
 static const char simpleVertShaderSource[] =
-    "attribute vec4 vPosition;		                     \n"
-    "varying vec3 color;                                 \n"
+    "#version 300 es                                     \n"
+    "in mediump vec4 vPosition;		                             \n"
+    "out mediump vec3 color;                                     \n"
     "void main()                                         \n"
     "{                                                   \n"
     "   gl_Position = vPosition;                         \n"
@@ -11,12 +12,13 @@ static const char simpleVertShaderSource[] =
     "}                                                   \n";
 
 static const char simpleFragShaderSource[] =
-    "precision mediump float;                     \n"
-    "varying vec3 color;                          \n"
-    "void main()                                  \n"
-    "{                                            \n"
-    "  gl_FragColor = vec4 ( color, 1.0 );        \n"
-    "}                                            \n";
+    "#version 300 es                                \n"
+    "in mediump vec3 color;                         \n"
+    "out mediump vec4 FragColor;                    \n"
+    "void main()                                    \n"
+    "{                                              \n"
+    "  FragColor = vec4 ( color, 1.0 );             \n"
+    "}                                              \n";
 
 // shaders for calculating
 
@@ -31,12 +33,13 @@ static const char fillFragShaderSource[] =
     "varying vec3 FragColor;            \n"
     "void main()                    \n"
     "{                              \n"
-    "    FragColor = vec3(1, 0, 0); \n"
+    "    gl_FragColor = vec3(1, 0, 0); \n"
     "}                              \n";
 
 
 static const char advectFragShaderSource[] = 
-    "varying mediump vec4 FragColor;                                                \n"
+    "#version 300 es                                                        \n"
+    "out mediump vec4 FragColor;                                                \n"
     "uniform sampler2D VelocityTexture;                                     \n"
     "uniform sampler2D SourceTexture;                                       \n"
     "uniform sampler2D Obstacles;                                           \n"
@@ -49,14 +52,14 @@ static const char advectFragShaderSource[] =
     "{                                                                      \n"
     "    vec2 fragCoord = gl_FragCoord.xy;                                  \n"
     "    float solid = texture2D(Obstacles, InverseSize * fragCoord).x;       \n"
-    "    if (solid > 0) {                                                   \n"
+    "    if (solid > 0.0f) {                                                   \n"
     "        FragColor = vec4(0);                                           \n"
     "        return;                                                        \n"
     "    }                                                                  \n"
 
     "    vec2 u = texture(VelocityTexture, InverseSize * fragCoord).xy;     \n"
     "    vec2 coord = InverseSize * (fragCoord - TimeStep * u);             \n"
-    "    FragColor = Dissipation * texture(SourceTexture, coord);           \n"
+    "    gl_FragColor = Dissipation * texture(SourceTexture, coord);           \n"
     "}                                                                      \n";
 
 static const char jacobiFragShaderSource[] = 

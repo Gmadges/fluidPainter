@@ -6,11 +6,11 @@ var PaintCanvas;
     var Bindings = (function () {
         function Bindings() {
         }
+        Bindings.initGL = Module.cwrap('initGL', 'number', ['number', 'number']);
+        Bindings.draw = Module.cwrap('draw', '', []);
+        Bindings.update = Module.cwrap('update', '', []);
         return Bindings;
-    }());
-    Bindings.initGL = Module.cwrap('initGL', 'number', ['number', 'number']);
-    Bindings.draw = Module.cwrap('draw', '', []);
-    Bindings.update = Module.cwrap('update', '', []);
+    })();
     //a helper for some JS-to-Emscripten conversions
     var HeapUtils = (function () {
         function HeapUtils() {
@@ -22,7 +22,7 @@ var PaintCanvas;
             return arrayPointer;
         };
         return HeapUtils;
-    }());
+    })();
     var Program = (function () {
         function Program(canvas) {
             this.canvas = canvas;
@@ -52,6 +52,6 @@ var PaintCanvas;
             window.requestAnimationFrame(this.render.bind(this));
         };
         return Program;
-    }());
+    })();
     PaintCanvas.Program = Program;
 })(PaintCanvas || (PaintCanvas = {}));
