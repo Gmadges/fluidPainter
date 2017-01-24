@@ -48,6 +48,11 @@ var PaintCanvas;
             //free the array memory
             //_free(translationPtr);
         };
+        // for testing mainly
+        Program.prototype.renderLoop = function () {
+            var _this = this;
+            this.timer = setTimeout(function () { return _this.invalidate(); }, 500);
+        };
         Program.prototype.invalidate = function () {
             window.requestAnimationFrame(this.render.bind(this));
         };

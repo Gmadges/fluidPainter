@@ -28,8 +28,13 @@
         <script>
             var canvas = document.getElementById("canvas");
             //make the canvas fullscreen
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            // basically we overload if we do full screen at the moment
+            // canvas.width = window.innerWidth;
+            // canvas.height = window.innerHeight;
+            canvas.width = 300;
+            canvas.height = 300;
+
+            
 
             // tell emscripten about the canvas we're using
             // also let it know that the .mem file is within the app/ dir.

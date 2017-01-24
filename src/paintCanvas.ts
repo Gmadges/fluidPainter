@@ -31,6 +31,8 @@ module PaintCanvas {
     }
 
     export class Program {
+        
+        private timer;
 
         constructor(private canvas: HTMLCanvasElement) {
             //initialise the GL context, call the compiled native function
@@ -58,6 +60,11 @@ module PaintCanvas {
             Bindings.draw();
             //free the array memory
             //_free(translationPtr);
+        }
+
+        // for testing mainly
+        private renderLoop() {
+            this.timer = setTimeout(() => this.invalidate(), 500);
         }
 
         public invalidate() {

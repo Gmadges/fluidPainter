@@ -2,7 +2,7 @@
 #define EULERIANFLUID_H
 
 #include "types.h"
-#include "slab.h"
+#include "doubleBuffer.h"
 
 class EulerianFluid
 {
@@ -18,10 +18,7 @@ class EulerianFluid
     private:
 
     void resetState();
-    void swapBuffers(Slab& slab);
-    void clearSurface(Surface s, float value);
     void advect();
-    void applyBuoyency();
     void applyImpulse();
     void computeDivergence();
     void jacobi();
@@ -35,27 +32,6 @@ class EulerianFluid
     GLuint computeDivergenceProgram;
     GLuint applyImpulseProgram;
     GLuint applyBuoyancyProgram; 
-
-    // buffer full of data
-    Slab Velocity;
-    Slab Density;
-    Slab Pressure;
-    Slab Temperature;
-    Slab Divergence;
-
-    // setting values
-    float AmbientTemperature;
-    float ImpulseTemperature;
-    float ImpulseDensity;
-    int NumJacobiIterations;
-    float TimeStep;
-    float SmokeBuoyancy;
-    float SmokeWeight;
-    float GradientScale;
-    float TemperatureDissipation;
-    float VelocityDissipation;
-    float DensityDissipation;
-    Vec2 ImpulsePosition;
 };
 
 #endif
