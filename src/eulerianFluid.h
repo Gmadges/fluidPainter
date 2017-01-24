@@ -1,12 +1,13 @@
 #ifndef EULERIANFLUID_H
 #define EULERIANFLUID_H
 
+#include <memory>
 #include "types.h"
 #include "doubleBuffer.h"
 
 class EulerianFluid
 {
-    public:
+public:
 
     EulerianFluid();
     ~EulerianFluid(){};
@@ -15,23 +16,29 @@ class EulerianFluid
     void update();
     void reset();
 
-    private:
+private:
 
     void resetState();
     void advect();
-    void applyImpulse();
+    void applyForces();
     void computeDivergence();
     void jacobi();
     void subtractGradient();
 
-    private:
+private:
 
+    // buffers
+    std::shared_ptr<DoubleBuffer> pVelocityBuffers;
+	std::shared_ptr<DoubleBuffer> pPressureBuffers;
+	std::shared_ptr<Buffer> pDivergenceBuffer; 
+
+    // shader programs
     GLuint advectProgram;
     GLuint jacobiProgram;
     GLuint subtractGradientProgram;
     GLuint computeDivergenceProgram;
-    GLuint applyImpulseProgram;
-    GLuint applyBuoyancyProgram; 
+    GLuint applyForceProgram;
+
 };
 
 #endif

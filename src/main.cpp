@@ -7,7 +7,6 @@
 #endif
 
 #include "shaders.h"
-#include "shaderSource.h"
 #include "eulerianFluid.h"
 
 GLuint programObject;
@@ -44,6 +43,25 @@ extern "C" int initGL(int width, int height)
 		std::cerr << "Could not initialize SDL: " << SDL_GetError() << std::endl;
 		return 0;
 	}
+
+	const char simpleVertShaderSource[] =
+		"#version 300 es                                     \n"
+		"in mediump vec4 vPosition;		                             \n"
+		"out mediump vec3 color;                                     \n"
+		"void main()                                         \n"
+		"{                                                   \n"
+		"   gl_Position = vPosition;                         \n"
+		"   color = gl_Position.xyz + vec3(0.5);             \n"
+		"}                                                   \n";
+
+	const char simpleFragShaderSource[] =
+		"#version 300 es                                \n"
+		"in mediump vec3 color;                         \n"
+		"out mediump vec4 FragColor;                    \n"
+		"void main()                                    \n"
+		"{                                              \n"
+		"  FragColor = vec4 ( color, 1.0 );             \n"
+		"}                                              \n";
 
 	//load vertex and fragment shaders
 	programObject = Shaders::buildProgram(simpleVertShaderSource, simpleFragShaderSource);
