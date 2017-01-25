@@ -1,6 +1,26 @@
 #include "shaders.h"
 #include <iostream>
 #include <vector>
+#include <fstream>
+
+std::string readFile(const char * filePath) {
+    std::string content;
+    std::ifstream fileStream(filePath, std::ios::in);
+
+    if(!fileStream.is_open()) {
+        std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
+        return "";
+    }
+
+    std::string line = "";
+    while(!fileStream.eof()) {
+        std::getline(fileStream, line);
+        content.append(line + "\n");
+    }
+
+    fileStream.close();
+    return content;
+}
 
 Shaders::Shaders()
 {
@@ -67,4 +87,12 @@ GLuint Shaders::buildProgram(const char * vertexShader, const char * fragmentSha
 	}
 
 	return programObject;
+}
+
+GLuint Shaders::buildProgramFromFiles(const char * vertexSourcePath, const char * fragSourcePath)
+{
+	std::string vert = readFile(vertexSourcePath);
+	std::string frag = readFile(fragSourcePath);
+
+	return buildProgram(vert.c_str(), frag.c_str());
 }

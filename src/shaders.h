@@ -10,6 +10,8 @@ public:
     ~Shaders(){};
 
     static GLuint buildProgram(const char * vertexShader, const char * fragmentShader);
+    
+    static GLuint buildProgramFromFiles(const char * vertexSourcePath, const char * fragSourcePath);
 
 private:
 

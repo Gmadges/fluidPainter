@@ -19,6 +19,11 @@ bool EulerianFluid::init(int width, int height)
     pDivergenceBuffer.reset(new Buffer(height, width));
 
     // init programs 
+    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
+    //jacobiProgram;
+    //subtractGradientProgram;
+    //computeDivergenceProgram;
+    //applyForceProgram;
 
     return true;
 }
