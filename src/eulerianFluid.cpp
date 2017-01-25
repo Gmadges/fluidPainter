@@ -34,7 +34,7 @@ bool EulerianFluid::init(int width, int height)
 
     // init programs 
     advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
-    //jacobiProgram;
+    jacobiProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/jacobi.frag");
     //subtractGradientProgram;
     //computeDivergenceProgram;
     //applyForceProgram;
