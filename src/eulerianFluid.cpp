@@ -47,15 +47,17 @@ void EulerianFluid::update(float delta)
     //advect velocities
     advectVelocity(delta);
 
-    // advect velocity and temp
-
-    // apply impulse to temp and density
+    // apply force 
+    applyForces(delta);
 
     // compute divergence
+    computeDivergence();
 
     // do jacobi iterations for pressure solving
+    jacobi();
 
     // subtract gradient
+    subtractGradient();
 }
 
 void EulerianFluid::advectVelocity(float dt)
@@ -91,7 +93,7 @@ void EulerianFluid::advectVelocity(float dt)
     pVelocityBuffers->swap();
 }
 
-void EulerianFluid::applyForces()
+void EulerianFluid::applyForces(float dt)
 {
 
 }

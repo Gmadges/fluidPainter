@@ -20,7 +20,7 @@ private:
 
     void resetState();
     void advectVelocity(float dt);
-    void applyForces();
+    void applyForces(float dt);
     void computeDivergence();
     void jacobi();
     void subtractGradient();
