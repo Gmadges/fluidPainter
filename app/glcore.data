@@ -5,7 +5,7 @@ out mediump vec4 FragColor;
 uniform sampler2D velocity;                                    
 uniform sampler2D target;                                       
 
-uniform mediump vec2 InverseSize;                                      
+uniform mediump float InverseSize;                                      
 uniform mediump float dt;                             
 
 

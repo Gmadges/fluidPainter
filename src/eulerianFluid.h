@@ -13,13 +13,13 @@ public:
     ~EulerianFluid(){};
 
     bool init(int width, int height);
-    void update();
+    void update(float delta);
     void reset();
 
 private:
 
     void resetState();
-    void advect();
+    void advectVelocity(float dt);
     void applyForces();
     void computeDivergence();
     void jacobi();

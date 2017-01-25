@@ -78,7 +78,7 @@ extern "C" int initGL(int width, int height)
 
 extern "C" void update()
 {
-	fluid.update();
+	fluid.update(0.1f);
 }
 
 extern "C" void draw()

@@ -9,6 +9,8 @@ public:
 
     DoubleBuffer(int height, int width);
     ~DoubleBuffer(){};
+
+    void swap();
     
 public:
 
