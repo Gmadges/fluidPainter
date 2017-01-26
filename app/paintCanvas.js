@@ -34,6 +34,10 @@ var PaintCanvas;
             }
             //request redraw
             this.invalidate();
+            this.timer = setTimeout(function () {
+                Bindings.update();
+                console.log("update");
+            }, 500);
         }
         //render the scene
         Program.prototype.render = function () {
@@ -47,11 +51,6 @@ var PaintCanvas;
             Bindings.draw();
             //free the array memory
             //_free(translationPtr);
-        };
-        // for testing mainly
-        Program.prototype.renderLoop = function () {
-            var _this = this;
-            this.timer = setTimeout(function () { return _this.invalidate(); }, 500);
         };
         Program.prototype.invalidate = function () {
             window.requestAnimationFrame(this.render.bind(this));

@@ -44,6 +44,11 @@ module PaintCanvas {
             
             //request redraw
             this.invalidate();
+
+            this.timer = setTimeout(function() {
+                Bindings.update();
+                console.log("update");
+            }, 500);
         }
 
         //render the scene
@@ -60,11 +65,6 @@ module PaintCanvas {
             Bindings.draw();
             //free the array memory
             //_free(translationPtr);
-        }
-
-        // for testing mainly
-        private renderLoop() {
-            this.timer = setTimeout(() => this.invalidate(), 500);
         }
 
         public invalidate() {
