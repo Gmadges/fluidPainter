@@ -1,16 +1,16 @@
-#ifndef EULERIANFLUID_H
-#define EULERIANFLUID_H
+#ifndef GRIDFLUID_H
+#define GRIDFLUID_H
 
 #include <memory>
 #include "types.h"
 #include "doubleBuffer.h"
 
-class EulerianFluid
+class GridFluid
 {
 public:
 
-    EulerianFluid();
-    ~EulerianFluid(){};
+    GridFluid();
+    ~GridFluid(){};
 
     bool init(int width, int height);
     void update(float delta);

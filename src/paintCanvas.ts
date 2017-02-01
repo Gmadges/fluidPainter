@@ -7,15 +7,12 @@ module PaintCanvas {
     export class Program {
         
         constructor(private canvas: HTMLCanvasElement) {
-            // testing a new binding system;
-            var instance = new Module.MyClass(10, "hello");
-            instance.incrementX();
-            instance.x; // 12
-            instance.x = 20; // 20
+            
+            // we must must must do this first.
+            // this program uses opengl for speed
+            Module.initGL(canvas.width, canvas.height);
 
-            console.log(Module.MyClass.getStringFromInstance(instance));
-
-            instance.delete();
+            
         }
     }
 }

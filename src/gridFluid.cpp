@@ -1,4 +1,4 @@
-#include "eulerianFluid.h"
+#include "gridFluid.h"
 #include "shaders.h"
 
 #include <iostream>
@@ -18,16 +18,16 @@ GLfloat quadVerts[] = {
 
 };
 
-EulerianFluid::EulerianFluid()
+GridFluid::GridFluid()
 {
 }
 
-void EulerianFluid::reset()
+void GridFluid::reset()
 {
     
 }
 
-bool EulerianFluid::init(int width, int height)
+bool GridFluid::init(int width, int height)
 {   
 
     m_width = width;
@@ -50,7 +50,7 @@ bool EulerianFluid::init(int width, int height)
     return true;
 }
 
-void EulerianFluid::draw()
+void GridFluid::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(simpleDrawProgram);
@@ -68,7 +68,7 @@ void EulerianFluid::draw()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void EulerianFluid::update(float delta)
+void GridFluid::update(float delta)
 {
     glViewport(0, 0, m_width, m_height);
     
@@ -96,7 +96,7 @@ void EulerianFluid::update(float delta)
     // subtractGradient();
 }
 
-void EulerianFluid::advectVelocity(float dt)
+void GridFluid::advectVelocity(float dt)
 {
     // set shader
     glUseProgram(advectProgram);
@@ -125,7 +125,7 @@ void EulerianFluid::advectVelocity(float dt)
     //pVelocityBuffers->swap();
 }
 
-void EulerianFluid::applyForces()
+void GridFluid::applyForces()
 {
     glUseProgram(applyForceProgram);
 
@@ -146,7 +146,7 @@ void EulerianFluid::applyForces()
     pVelocityBuffers->swap();
 }
 
-void EulerianFluid::computeDivergence()
+void GridFluid::computeDivergence()
 {
     glUseProgram(computeDivergenceProgram);
 
@@ -161,7 +161,7 @@ void EulerianFluid::computeDivergence()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void EulerianFluid::jacobi()
+void GridFluid::jacobi()
 {
     glUseProgram(jacobiProgram);
 
@@ -185,7 +185,7 @@ void EulerianFluid::jacobi()
     pPressureBuffers->swap();
 }
 
-void EulerianFluid::subtractGradient()
+void GridFluid::subtractGradient()
 {
     glUseProgram(subtractGradientProgram);
 
@@ -208,7 +208,7 @@ void EulerianFluid::subtractGradient()
     pVelocityBuffers->swap();
 }
 
-void EulerianFluid::resetState()
+void GridFluid::resetState()
 {
 
 }
