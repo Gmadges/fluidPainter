@@ -1,14 +1,13 @@
 #ifndef BUFFERS_H
 #define BUFFERS_H
 
-#include "GLES3/gl3.h"
 #include "emscripten/bind.h"
-
+#include "GLES3/gl3.h"
 
 struct Buffer 
 {
     GLuint fboHandle;
-    GLuint texHandle;
+    Gluint texHandle;
 };
 
 struct DoubleBuffer 
@@ -17,9 +16,8 @@ struct DoubleBuffer
     Buffer readBuffer;
 };
 
-
-EMSCRIPTEN_BINDINGS(Buffers) {
-
+EMSCRIPTEN_BINDINGS(BufferTypes) 
+{
     emscripten::value_object<Buffer>("Buffer")
         .field("fboHandle", &Buffer::fboHandle)
         .field("texHandle", &Buffer::texHandle);

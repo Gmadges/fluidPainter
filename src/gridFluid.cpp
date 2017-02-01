@@ -22,21 +22,10 @@ GridFluid::GridFluid()
 {
 }
 
-void GridFluid::reset()
-{
-    
-}
-
 bool GridFluid::init(int width, int height)
-{   
-
-    m_width = width;
+{
     m_height = height;
-
-    // init buffers
-    pVelocityBuffers.reset(new DoubleBuffer(height, width));
-	pPressureBuffers.reset(new DoubleBuffer(height, width));
-    pDivergenceBuffer.reset(new Buffer(height, width));
+    m_width = width;
 
     // init programs 
     advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
@@ -45,55 +34,7 @@ bool GridFluid::init(int width, int height)
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
     applyForceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyForce.frag");
 
-    simpleDrawProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/texture.frag");
-
     return true;
-}
-
-void GridFluid::draw()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(simpleDrawProgram);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-    //glBindTexture(GL_TEXTURE_2D, pDivergenceBuffer->textureHandle);
-    //glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
-
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
-
-    // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
-
-void GridFluid::update(float delta)
-{
-    glViewport(0, 0, m_width, m_height);
-    
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
-
-    // advect velocities
-    advectVelocity(delta);
-
-    // apply force 
-    //applyForces();
-
-    // compute divergence
-    // computeDivergence();
-
-    // do jacobi iterations for pressure solving
-
-    // for(int i = 0; i < 10; ++i)
-    // {
-    //     jacobi();
-    // }    
-
-    // subtract gradient
-    // subtractGradient();
 }
 
 void GridFluid::advectVelocity(float dt)
@@ -112,11 +53,11 @@ void GridFluid::advectVelocity(float dt)
     glUniform1i(sourceTexture, 1);
 
     //bind
-    glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
+    //glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -137,13 +78,13 @@ void GridFluid::applyForces()
     glUniform1f(radiusLoc, 50);
     glUniform3f(fillColorLoc, 0.0f, 1.0f, 0.0f);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
+    //glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // swap buffers
-    pVelocityBuffers->swap();
+    //pVelocityBuffers->swap();
 }
 
 void GridFluid::computeDivergence()
@@ -153,9 +94,9 @@ void GridFluid::computeDivergence()
     GLint halfCell = glGetUniformLocation(computeDivergenceProgram, "HalfInverseCellSize");
     glUniform1f(halfCell, 0.5f / cellSize);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, pDivergenceBuffer->fboHandle);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
+    //glBindFramebuffer(GL_FRAMEBUFFER, pDivergenceBuffer->fboHandle);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -173,16 +114,16 @@ void GridFluid::jacobi()
     glUniform1f(inverseBeta, 0.25f);
     glUniform1i(dSampler, 1);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, pPressureBuffers->writeBuffer.fboHandle);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pDivergenceBuffer->textureHandle);
+    //glBindFramebuffer(GL_FRAMEBUFFER, pPressureBuffers->writeBuffer.fboHandle);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, pDivergenceBuffer->textureHandle);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    pPressureBuffers->swap();
+    //pPressureBuffers->swap();
 }
 
 void GridFluid::subtractGradient()
@@ -196,16 +137,16 @@ void GridFluid::subtractGradient()
     GLint sampler = glGetUniformLocation(subtractGradientProgram, "Pressure");
     glUniform1i(sampler, 1);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
+    //glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    pVelocityBuffers->swap();
+    //pVelocityBuffers->swap();
 }
 
 void GridFluid::resetState()

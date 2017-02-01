@@ -3,7 +3,6 @@
 
 #include <memory>
 #include "types.h"
-#include "doubleBuffer.h"
 
 class GridFluid
 {
@@ -13,13 +12,6 @@ public:
     ~GridFluid(){};
 
     bool init(int width, int height);
-    void update(float delta);
-    void reset();
-    void draw();
-
-private:
-
-    void resetState();
     void advectVelocity(float dt);
     void applyForces();
     void computeDivergence();
@@ -27,14 +19,12 @@ private:
     void subtractGradient();
 
 private:
+    void resetState();
 
-    int m_width;
+private:
+
     int m_height;
-
-    // buffers
-    std::shared_ptr<DoubleBuffer> pVelocityBuffers;
-	std::shared_ptr<DoubleBuffer> pPressureBuffers;
-	std::shared_ptr<Buffer> pDivergenceBuffer; 
+    int m_width;
 
     // shader programs
     GLuint advectProgram;
@@ -45,5 +35,7 @@ private:
     GLuint simpleDrawProgram;
 
 };
+
+
 
 #endif

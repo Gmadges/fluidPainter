@@ -8,6 +8,8 @@
 
 #include <emscripten/bind.h>
 
+#include "bufferUtils.h"
+
 // should store this somewhere?
 SDL_Surface* screen;
 
@@ -36,6 +38,7 @@ int initGL(int width, int height)
 	return 1;
 }
 
-EMSCRIPTEN_BINDINGS(my_module) {
+EMSCRIPTEN_BINDINGS(initialise) 
+{
     emscripten::function("initGL", &initGL);
 }
