@@ -1,20 +1,26 @@
-#include "buffer.h"
+#include "bufferUtils.h"
 
-Buffer::Buffer(int height, int width)
+BufferUtils::BufferUtils()
 {
-    init(height, width);
+    
+}
+    
+BufferUtils::~BufferUtils()
+{
+
 }
 
-void Buffer::init(int height, int width)
+Buffer createBuffer(int width, int height)
 {
+    Buffer buff;
+
     // create frame buffer
-    glGenFramebuffers(1, &fboHandle);
-    glBindFramebuffer(GL_FRAMEBUFFER, fboHandle);
+    glGenFramebuffers(1, &buff.fboHandle);
+    glBindFramebuffer(GL_FRAMEBUFFER, buff.fboHandle);
 
     // create the create the texture and allocate the memory
-    GLuint textureHandle;
-    glGenTextures(1, &textureHandle);
-    glBindTexture(GL_TEXTURE_2D, textureHandle);
+    glGenTextures(1, &buff.texHandle);
+    glBindTexture(GL_TEXTURE_2D, buff.texHandle);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -27,10 +33,23 @@ void Buffer::init(int height, int width)
     GLuint colorbuffer;
     glGenRenderbuffers(1, &colorbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, colorbuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureHandle, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buff.texHandle, 0);
 
     // clear the buffer
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return buff;
 }
+
+DoubleBuffer createDoubleBuffer(int width, int height)
+{
+    DoubleBuffer buff;
+
+    buff.readBuffer = createBuffer(width, height);
+    buff.writeBuffer = createBuffer(width, height);
+
+    return buff;
+}
+

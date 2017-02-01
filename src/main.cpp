@@ -6,12 +6,13 @@
 #include <emscripten.h>
 #endif
 
-SDL_Surface* screen;
-
 #include <emscripten/bind.h>
 
+// should store this somewhere?
+SDL_Surface* screen;
 
-extern "C" int initGL(int width, int height)
+
+int initGL(int width, int height)
 {
 	//initialise SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == 0) 
