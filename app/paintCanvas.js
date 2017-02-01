@@ -34,19 +34,21 @@ var PaintCanvas;
             }
             //request redraw
             this.invalidate();
-            this.timer = setTimeout(function () {
-                Bindings.update();
+            this.timer = setInterval(function () {
                 console.log("update");
-            }, 500);
+                Bindings.update();
+                Bindings.draw();
+            }, 1000);
         }
+        Program.prototype.update = function () {
+            Bindings.update();
+        };
         //render the scene
         Program.prototype.render = function () {
             ////convert the JS translation object to an emscripten array of floats
             //var translationPtr = HeapUtils.floatArrayToHeap(
             //    [this.translation.originX, this.translation.originY, this.translation.zoom]
             //);
-            // call update
-            Bindings.update();
             //call the native draw function
             Bindings.draw();
             //free the array memory

@@ -11,7 +11,7 @@ TSFLAGS= --outDir app/
 all: $(CPPSOURCES) $(OUTPUT) TSBUILD
 
 $(OUTPUT): $(CPPSOURCES) 
-	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_WEBGL2=1 --preload-file shaders/  -s EXPORTED_FUNCTIONS=@$(EXPORTS_FILE) -std=c++11 $(LDFLAGS) -o $(OUTPUT)
+	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_WEBGL2=1 --preload-file shaders/  -s EXPORTED_FUNCTIONS=@$(EXPORTS_FILE) -std=c++11 -s NO_EXIT_RUNTIME=1 	-o $(OUTPUT)
 
 WASM: $(CPPSOURCES) 
 	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_WEBGL2=1 -s WASM=1 -s EXPORTED_FUNCTIONS=@$(EXPORTS_FILE) -std=c++11 -O1 --llvm-opts 2 -o $(OUTPUT)

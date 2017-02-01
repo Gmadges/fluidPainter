@@ -29,6 +29,10 @@ void EulerianFluid::reset()
 
 bool EulerianFluid::init(int width, int height)
 {   
+
+    m_width = width;
+    m_height = height;
+
     // init buffers
     pVelocityBuffers.reset(new DoubleBuffer(height, width));
 	pPressureBuffers.reset(new DoubleBuffer(height, width));
@@ -41,31 +45,55 @@ bool EulerianFluid::init(int width, int height)
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
     applyForceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyForce.frag");
 
+    simpleDrawProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/texture.frag");
+
     return true;
+}
+
+void EulerianFluid::draw()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+    glUseProgram(simpleDrawProgram);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
+    //glBindTexture(GL_TEXTURE_2D, pDivergenceBuffer->textureHandle);
+    //glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
+
+    // bind vbo
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
+	glEnableVertexAttribArray(0);
+
+    // draw
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void EulerianFluid::update(float delta)
 {
-    //advect velocities
+    glViewport(0, 0, m_width, m_height);
+    
+    // bind vbo
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
+	glEnableVertexAttribArray(0);
+
+    // advect velocities
     advectVelocity(delta);
 
     // apply force 
-    applyForces(delta);
+    //applyForces();
 
     // compute divergence
-    computeDivergence();
+    // computeDivergence();
 
     // do jacobi iterations for pressure solving
 
-    for(int i = 0; i < 10; ++i)
-    {
-        jacobi();
-    }    
+    // for(int i = 0; i < 10; ++i)
+    // {
+    //     jacobi();
+    // }    
 
     // subtract gradient
-    subtractGradient();
-
-    std::cout << "update complete: " << delta << std::endl;
+    // subtractGradient();
 }
 
 void EulerianFluid::advectVelocity(float dt)
@@ -89,19 +117,15 @@ void EulerianFluid::advectVelocity(float dt)
     glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // swap buffers
-    pVelocityBuffers->swap();
+    //pVelocityBuffers->swap();
 }
 
-void EulerianFluid::applyForces(float dt)
+void EulerianFluid::applyForces()
 {
     glUseProgram(applyForceProgram);
 
@@ -109,16 +133,11 @@ void EulerianFluid::applyForces(float dt)
     GLint radiusLoc = glGetUniformLocation(applyForceProgram, "Radius");
     GLint fillColorLoc = glGetUniformLocation(applyForceProgram, "FillColor");
 
-    glUniform2f(pointLoc, (float) 50, (float) 50);
+    glUniform2f(pointLoc, (float)50, (float)50);
     glUniform1f(radiusLoc, 50);
-    glUniform3f(fillColorLoc, 1.0f, 1.0f, 1.0f);
+    glUniform3f(fillColorLoc, 0.0f, 1.0f, 0.0f);
 
     glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
-    glEnable(GL_BLEND);
-    
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -134,13 +153,9 @@ void EulerianFluid::computeDivergence()
     GLint halfCell = glGetUniformLocation(computeDivergenceProgram, "HalfInverseCellSize");
     glUniform1f(halfCell, 0.5f / cellSize);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
+    glBindFramebuffer(GL_FRAMEBUFFER, pDivergenceBuffer->fboHandle);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -163,10 +178,6 @@ void EulerianFluid::jacobi()
     glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pDivergenceBuffer->textureHandle);
-
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -190,10 +201,6 @@ void EulerianFluid::subtractGradient()
     glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pPressureBuffers->readBuffer.textureHandle);
-
-    // bind vbo
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts);
-	glEnableVertexAttribArray(0);
 	
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);

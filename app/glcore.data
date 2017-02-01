@@ -1,5 +1,4 @@
 #version 300 es
-
 out mediump vec4 FragColor;
 
 uniform sampler2D velocity;                                    
@@ -8,9 +7,14 @@ uniform sampler2D target;
 uniform mediump float InverseSize;                                      
 uniform mediump float dt;                             
 
+void main()                                                          
+{  
+    // get tex coords
+    vec2 fragCoord = gl_FragCoord.xy;                                                                                               
 
-vec4 f4texRECTbilerp(vec2 pos) 
-{
+    // find position
+    vec2 pos = InverseSize * (fragCoord - dt * texture(velocity, InverseSize * fragCoord).xy);
+
     vec4 st;
     st.xy = floor(pos - 0.5) + 0.5;
     st.zw = st.xy + 1.0;
@@ -23,21 +27,9 @@ vec4 f4texRECTbilerp(vec2 pos)
     vec4 tex22 = texture(target, st.zw);
 
     // bilinear interpolation
-    return mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
-}
-
-
-void main()                                                          
-{  
-    // get tex coords
-    vec2 fragCoord = gl_FragCoord.xy;                                                                                               
-
-    // find position
-    vec2 pos = InverseSize * (fragCoord - dt * texture(velocity, InverseSize * fragCoord).xy);
-
-    FragColor = f4texRECTbilerp(pos);       
+    FragColor = mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
 }#version 300 es                                                        
-out mediump float FragColor;                                           
+out mediump vec4 FragColor;                                           
 
 uniform sampler2D Velocity;                                                                                  
 uniform mediump float HalfInverseCellSize;                            
@@ -52,10 +44,11 @@ void main()
     vec2 vE = texelFetchOffset(Velocity, T, 0, ivec2(1, 0)).xy;       
     vec2 vW = texelFetchOffset(Velocity, T, 0, ivec2(-1, 0)).xy;        
 
-    FragColor = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);    
+    
+    FragColor = vec4(vec3(HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y)), 1.0);    
 }                                                                     
 #version 300 es                                                        
-out mediump vec2 FragColor;                                            
+out mediump vec4 FragColor;                                            
 
 uniform sampler2D Velocity;                                            
 uniform sampler2D Pressure;                                                                                     
@@ -81,7 +74,7 @@ void main()
     vec2 oldV = texelFetch(Velocity, T, 0).xy;                         
     vec2 grad = vec2(pE - pW, pN - pS) * GradientScale;                
     vec2 newV = oldV - grad;                                           
-    FragColor = (vMask * newV);                             
+    FragColor = vec4((vMask * newV), 0, 1);                             
 }                                                                       #version 300 es                                       
 out mediump vec4 FragColor;                           
 
@@ -91,19 +84,19 @@ uniform mediump vec3 FillColor;
 
 void main()                                           
 {                                                     
-    float d = distance(Point, gl_FragCoord.xy);       
-    
-    if (d < Radius) 
-    {                                 
-        float a = (Radius - d) * 0.5;                 
-        a = min(a, 1.0);                              
-        FragColor = vec4(FillColor, a);               
-    } 
-    else 
-    {                                          
-        FragColor = vec4(0);                          
-    }                                                 
-}                                                         #version 300 es                       
+    FragColor = vec4(1, 1, 1, 1);                                                                          
+}                                                     #version 300 es
+
+out mediump vec4 FragColor;
+
+uniform sampler2D image;                               
+
+void main()                                                          
+{ 
+    vec3 color = texture(image, gl_FragCoord.xy).xyz;
+    //vec3 color = vec3(1.0, 0.0, 1.0);
+    FragColor = vec4(color, 1.0f);       
+}    #version 300 es                       
     in vec4 Position;              
     
     void main()                           

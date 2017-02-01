@@ -1,5 +1,5 @@
 #version 300 es                                                        
-out mediump vec2 FragColor;                                            
+out mediump vec4 FragColor;                                            
 
 uniform sampler2D Velocity;                                            
 uniform sampler2D Pressure;                                                                                     
@@ -25,5 +25,5 @@ void main()
     vec2 oldV = texelFetch(Velocity, T, 0).xy;                         
     vec2 grad = vec2(pE - pW, pN - pS) * GradientScale;                
     vec2 newV = oldV - grad;                                           
-    FragColor = (vMask * newV);                             
+    FragColor = vec4((vMask * newV), 0, 1);                             
 }                                                                       

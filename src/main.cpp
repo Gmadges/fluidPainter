@@ -44,28 +44,6 @@ extern "C" int initGL(int width, int height)
 		return 0;
 	}
 
-	const char simpleVertShaderSource[] =
-		"#version 300 es                                     \n"
-		"in mediump vec4 vPosition;		                             \n"
-		"out mediump vec3 color;                                     \n"
-		"void main()                                         \n"
-		"{                                                   \n"
-		"   gl_Position = vPosition;                         \n"
-		"   color = gl_Position.xyz + vec3(0.5);             \n"
-		"}                                                   \n";
-
-	const char simpleFragShaderSource[] =
-		"#version 300 es                                \n"
-		"in mediump vec3 color;                         \n"
-		"out mediump vec4 FragColor;                    \n"
-		"void main()                                    \n"
-		"{                                              \n"
-		"  FragColor = vec4 ( color, 1.0 );             \n"
-		"}                                              \n";
-
-	//load vertex and fragment shaders
-	programObject = Shaders::buildProgram(simpleVertShaderSource, simpleFragShaderSource);
-
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
 	glViewport(0, 0, width, height);
@@ -83,18 +61,8 @@ extern "C" void update()
 
 extern "C" void draw()
 {
-	//fill the screen with the clear color
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	//enable our shader program
-	glUseProgram(programObject);
-
-	//set up the vertices array
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vVertices);
-	glEnableVertexAttribArray(0);
-	//draw the triangle
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	fluid.draw();
 
 	//swap buffer to make whatever we've drawn to backbuffer appear on the screen
-	SDL_GL_SwapBuffers();
+	//SDL_GL_SwapBuffers();
 }

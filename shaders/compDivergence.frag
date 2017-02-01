@@ -1,5 +1,5 @@
 #version 300 es                                                        
-out mediump float FragColor;                                           
+out mediump vec4 FragColor;                                           
 
 uniform sampler2D Velocity;                                                                                  
 uniform mediump float HalfInverseCellSize;                            
@@ -14,5 +14,6 @@ void main()
     vec2 vE = texelFetchOffset(Velocity, T, 0, ivec2(1, 0)).xy;       
     vec2 vW = texelFetchOffset(Velocity, T, 0, ivec2(-1, 0)).xy;        
 
-    FragColor = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);    
+    
+    FragColor = vec4(vec3(HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y)), 1.0);    
 }                                                                     

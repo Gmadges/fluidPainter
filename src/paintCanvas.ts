@@ -41,25 +41,27 @@ module PaintCanvas {
                 console.log("Could not initialise GL");
                 return;
             }
-            
+
             //request redraw
             this.invalidate();
 
-            this.timer = setTimeout(function() {
-                Bindings.update();
+            this.timer = setInterval(function(){
                 console.log("update");
-            }, 500);
+                Bindings.update();
+                Bindings.draw();
+            }, 1000);
+        }
+
+        public update() {
+            Bindings.update();
         }
 
         //render the scene
-        private render() {
+        public render() {
             ////convert the JS translation object to an emscripten array of floats
             //var translationPtr = HeapUtils.floatArrayToHeap(
             //    [this.translation.originX, this.translation.originY, this.translation.zoom]
             //);
-
-            // call update
-            Bindings.update();
 
             //call the native draw function
             Bindings.draw();
