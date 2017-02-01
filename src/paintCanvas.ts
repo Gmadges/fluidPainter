@@ -12,13 +12,9 @@ module PaintCanvas {
             // this program uses opengl for speed
             Module.initGL(canvas.width, canvas.height);
 
-            var utils = new Module.BufferUtils();
-
-            var test = utils.createBuffer(canvas.width, canvas.height);
+            var test = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
 
             console.log(test);
-
-            utils.delete();
         }
     }
 }

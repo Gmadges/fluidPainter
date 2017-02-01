@@ -8,7 +8,7 @@
 
 #include <emscripten/bind.h>
 
-#include "bufferUtils.h"
+#include "bufferUtils.hpp"
 
 // should store this somewhere?
 SDL_Surface* screen;

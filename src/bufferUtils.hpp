@@ -1,5 +1,5 @@
-#ifndef BUFFERUTILS_H
-#define BUFFERUTILS_H
+#ifndef BUFFERUTILS_HPP
+#define BUFFERUTILS_HPP
 
 #include "emscripten/bind.h"
 #include "GLES3/gl3.h"
@@ -11,7 +11,7 @@ public:
     BufferUtils(){};
     ~BufferUtils(){};
 
-    Buffer createBuffer(int width, int height)
+    static Buffer createBuffer(int width, int height)
     {
         Buffer buff;
 
@@ -44,7 +44,7 @@ public:
         return buff;    
     }
 
-    DoubleBuffer createDoubleBuffer(int width, int height)
+    static DoubleBuffer createDoubleBuffer(int width, int height)
     {
         DoubleBuffer buff;
 
@@ -55,7 +55,7 @@ public:
     }
 
 
-    void swapBuffers(DoubleBuffer& buffers)
+    static void swapBuffers(DoubleBuffer& buffers)
     {
         // swap textures
         GLuint tmptex = buffers.writeBuffer.texHandle;
@@ -73,9 +73,9 @@ EMSCRIPTEN_BINDINGS(BufferBindings)
 {   
     emscripten::class_<BufferUtils>("BufferUtils")
         .constructor<>()
-        .function("createBuffer", &BufferUtils::createBuffer)
-        .function("createDoubleBuffer", &BufferUtils::createDoubleBuffer)
-        .function("swapBuffers", &BufferUtils::swapBuffers);
+        .class_function("createBuffer", &BufferUtils::createBuffer)
+        .class_function("createDoubleBuffer", &BufferUtils::createDoubleBuffer)
+        .class_function("swapBuffers", &BufferUtils::swapBuffers);
 }
 
 #endif

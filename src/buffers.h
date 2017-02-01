@@ -7,7 +7,7 @@
 struct Buffer 
 {
     GLuint fboHandle;
-    Gluint texHandle;
+    GLuint texHandle;
 };
 
 struct DoubleBuffer 
