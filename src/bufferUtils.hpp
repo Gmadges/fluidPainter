@@ -44,6 +44,56 @@ public:
         return buff;    
     }
 
+
+    static Buffer createTestBuffer(int width, int height)
+    {
+        Buffer buff;
+
+        // create frame buffer
+        glGenFramebuffers(1, &buff.fboHandle);
+        glBindFramebuffer(GL_FRAMEBUFFER, buff.fboHandle);
+
+        // create the create the texture and allocate the memory
+        glGenTextures(1, &buff.texHandle);
+        glBindTexture(GL_TEXTURE_2D, buff.texHandle);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // we use this large texture because webgl doesnt like using smaller ones
+        
+        //create a red test image
+        std::vector<float> testImage;
+
+        for(int i = 0; i < height; i++)
+        {
+            for(int j = 0; j < width; j++)
+            {
+                testImage.push_back(1.0f); //R
+                testImage.push_back(0.0f); //G
+                testImage.push_back(0.0f); //B
+                testImage.push_back(1.0f); //A
+            }
+        }
+
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, testImage.data());
+
+        // turn into frame buffer
+        GLuint colorbuffer;
+        glGenRenderbuffers(1, &colorbuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, colorbuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buff.texHandle, 0);
+
+        // clear the buffer
+        //glClearColor(0, 0, 0, 0);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        return buff;    
+    }
+
     static DoubleBuffer createDoubleBuffer(int width, int height)
     {
         DoubleBuffer buff;
@@ -74,6 +124,7 @@ EMSCRIPTEN_BINDINGS(BufferBindings)
     emscripten::class_<BufferUtils>("BufferUtils")
         .constructor<>()
         .class_function("createBuffer", &BufferUtils::createBuffer)
+        .class_function("createTestBuffer", &BufferUtils::createTestBuffer)
         .class_function("createDoubleBuffer", &BufferUtils::createDoubleBuffer)
         .class_function("swapBuffers", &BufferUtils::swapBuffers);
 }

@@ -4,6 +4,7 @@
 var Module : any;
 
 module PaintCanvas {
+
     export class Program {
 
         constructor(private canvas: HTMLCanvasElement) {
@@ -12,9 +13,17 @@ module PaintCanvas {
             // this program uses opengl for speed
             Module.initGL(canvas.width, canvas.height);
 
-            var test = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
+            var testBuffer = Module.BufferUtils.createTestBuffer(canvas.width, canvas.height);
+            //var testDblBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
 
-            console.log(test);
+            var drawingProgram = new Module.Drawing();
+
+            drawingProgram.init();
+            drawingProgram.drawBuffer(testBuffer);
+
+            console.log(testBuffer);
+
+            drawingProgram.delete();
         }
     }
 }
