@@ -14,6 +14,7 @@ module PaintCanvas {
             Module.initGL(canvas.width, canvas.height);
 
             var velocityBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
+            var divergenceBuffer = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
 
             // add some stuff to read buffer
             //velocityBuffer.readBuffer = Module.BufferUtils.createTestBuffer(canvas.width, canvas.height, 0.8, 0, 0);
@@ -33,8 +34,12 @@ module PaintCanvas {
             fluidSolver.applyForce(velocityBuffer);
             velocityBuffer = Module.BufferUtils.swapBuffers(velocityBuffer);
 
+            // compute divergence
+            fluidSolver.computeDivergance(divergenceBuffer, velocityBuffer.readBuffer);
+
             // draw velocity
-            drawingProgram.drawBuffer(velocityBuffer.readBuffer);
+            //drawingProgram.drawBuffer(velocityBuffer.readBuffer);
+            drawingProgram.drawBuffer(divergenceBuffer);
 
             console.log("finished");
 

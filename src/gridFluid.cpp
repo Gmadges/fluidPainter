@@ -5,55 +5,9 @@
 
 // #define cellSize 8
 
-// void GridFluid::advectVelocity(float dt)
-// {
-//     // set shader
-//     glUseProgram(advectProgram);
 
-//     // set uniforms
-//     GLint inverseSize = glGetUniformLocation(advectProgram, "inverseSize");
-//     GLint timeStep = glGetUniformLocation(advectProgram, "dt");
-//     glUniform1f(inverseSize, 1.0f / (float)cellSize);
-//     glUniform1f(timeStep, dt);
 
-//     // set textures
-//     GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
-//     glUniform1i(sourceTexture, 1);
 
-//     //bind
-//     //glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
-//     //glActiveTexture(GL_TEXTURE0);
-//     //glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-//     //glActiveTexture(GL_TEXTURE1);
-//     //glBindTexture(GL_TEXTURE_2D, pVelocityBuffers->readBuffer.textureHandle);
-	
-//     // draw
-//     glDrawArrays(GL_TRIANGLES, 0, 6);
-
-//     // swap buffers
-//     //pVelocityBuffers->swap();
-// }
-
-// void GridFluid::applyForces()
-// {
-//     glUseProgram(applyForceProgram);
-
-//     GLint pointLoc = glGetUniformLocation(applyForceProgram, "Point");
-//     GLint radiusLoc = glGetUniformLocation(applyForceProgram, "Radius");
-//     GLint fillColorLoc = glGetUniformLocation(applyForceProgram, "FillColor");
-
-//     glUniform2f(pointLoc, (float)50, (float)50);
-//     glUniform1f(radiusLoc, 50);
-//     glUniform3f(fillColorLoc, 0.0f, 1.0f, 0.0f);
-
-//     //glBindFramebuffer(GL_FRAMEBUFFER, pVelocityBuffers->writeBuffer.fboHandle);
-	
-//     // draw
-//     glDrawArrays(GL_TRIANGLES, 0, 6);
-
-//     // swap buffers
-//     //pVelocityBuffers->swap();
-// }
 
 // void GridFluid::computeDivergence()
 // {
