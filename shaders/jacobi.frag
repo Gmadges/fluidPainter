@@ -1,24 +1,49 @@
-#version 300 es                                                     
+#version 300 es
+in mediump vec2 tex;
+
 out mediump vec4 FragColor;                                         
 
 uniform sampler2D Pressure;                                                
 uniform sampler2D Divergence;                                                                                           
 
+uniform mediump vec2 inverseRes;
 uniform mediump float Alpha;                                               
-uniform mediump float InverseBeta;                                         
+
+float samplePressure(sampler2D pressure, vec2 coord)
+{
+    vec2 cellOffset = vec2(0.0, 0.0);
+
+    // more bound checking
+    if(coord.x < 0.0)
+    {      
+        cellOffset.x = 1.0;
+    }
+    else if(coord.x > 1.0) 
+    {
+        cellOffset.x = -1.0;
+    }
+
+    if(coord.y < 0.0)
+    {
+        cellOffset.y = 1.0;
+    }
+    else if(coord.y > 1.0) 
+    {
+        cellOffset.y = -1.0;
+    }
+
+    return texture(pressure, coord + cellOffset * inverseRes).x;
+}                                       
 
 void main()                                                                
 {                                                                          
-    ivec2 T = ivec2(gl_FragCoord.xy);       
+    float L = samplePressure(Pressure, tex - vec2(inverseRes.x, 0));
+    float R = samplePressure(Pressure, tex + vec2(inverseRes.x, 0));
+    float B = samplePressure(Pressure, tex - vec2(0, inverseRes.y));
+    float T = samplePressure(Pressure, tex + vec2(0, inverseRes.y));
 
-    // Find neighboring pressure:                                          
-    vec4 pN = texelFetchOffset(Pressure, T, 0, ivec2(0, 1));
-    vec4 pS = texelFetchOffset(Pressure, T, 0, ivec2(0, -1));
-    vec4 pE = texelFetchOffset(Pressure, T, 0, ivec2(1, 0));
-    vec4 pW = texelFetchOffset(Pressure, T, 0, ivec2(-1, 0));
-    vec4 pC = texelFetch(Pressure, T, 0);
+    float bC = texture(Divergence, tex).x;
 
-    vec4 bC = texelFetch(Divergence, T, 0);
-    
-    FragColor = (pW + pE + pS + pN + Alpha * bC) * InverseBeta;            
+    // use 0.25 as rBeta
+    FragColor = vec4( (L + R + B + T + Alpha * bC) * 0.25, 0.0f, 0.0f, 1.0f );            
 }  

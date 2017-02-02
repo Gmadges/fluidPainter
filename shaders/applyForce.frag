@@ -1,22 +1,22 @@
-#version 300 es                                       
-out mediump vec4 FragColor;                           
+#version 300 es
+in mediump vec2 tex;
+
+out highp vec4 FragColor;                           
 
 uniform mediump vec2 Point;                           
 uniform mediump float Radius;                         
 uniform mediump vec3 FillColor;                       
 
 void main()                                           
-{                                                     
-    float d = distance(Point, gl_FragCoord.xy);       
+{   
+    vec4 force = vec4(0,0,0,1);                                                  
+    
+    float d = distance(Point, tex);
     
     if (d < Radius) 
-    {                                 
-        float a = (Radius - d) * 0.5;                 
-        a = min(a, 1.0);                              
-        FragColor = vec4(FillColor, a);               
-    } 
-    else 
-    {                                          
-        FragColor = vec4(0);                          
-    }                                                 
+    {
+        force = vec4(FillColor, 1.0);
+    }  
+
+    FragColor = force;                                                                   
 }                                                     

@@ -1,16 +1,32 @@
 #version 300 es
+in mediump vec2 tex;
 
-out mediump vec4 FragColor;
+out highp vec4 FragColor;
 
-uniform sampler2D velocity;                                    
+uniform sampler2D source;                                    
 uniform sampler2D target;                                       
 
 uniform mediump float InverseSize;                                      
 uniform mediump float dt;                             
 
+//void main()                                                          
+//{  
+//    vec2 fragCoord = gl_FragCoord.xy;
+//    vec2 u = texture(source, InverseSize * fragCoord).xy;
+//    vec2 coord = InverseSize * (fragCoord - dt * u);
 
-vec4 f4texRECTbilerp(vec2 pos) 
-{
+//    // just using a dissapation at the moment should probably blend
+//    FragColor = 0.8 * texture(target, coord);
+//}
+
+void main()                                                          
+{  
+    // get tex coords
+    vec2 fragCoord = tex;                                                                                               
+
+    // find position
+    vec2 pos = InverseSize * (fragCoord - dt * texture(source, InverseSize * fragCoord).xy);
+
     vec4 st;
     st.xy = floor(pos - 0.5) + 0.5;
     st.zw = st.xy + 1.0;
@@ -23,17 +39,5 @@ vec4 f4texRECTbilerp(vec2 pos)
     vec4 tex22 = texture(target, st.zw);
 
     // bilinear interpolation
-    return mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
-}
-
-
-void main()                                                          
-{  
-    // get tex coords
-    vec2 fragCoord = gl_FragCoord.xy;                                                                                               
-
-    // find position
-    vec2 pos = InverseSize * (fragCoord - dt * texture(velocity, InverseSize * fragCoord).xy);
-
-    FragColor = f4texRECTbilerp(pos);       
+    FragColor = mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
 }

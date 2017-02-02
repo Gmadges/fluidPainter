@@ -1,59 +1,59 @@
 //<reference path="input.ts"/>
 // uneeded anymore
+var Module;
 var PaintCanvas;
 (function (PaintCanvas) {
-    //bindings to C++ functions
-    var Bindings = (function () {
-        function Bindings() {
-        }
-        Bindings.initGL = Module.cwrap('initGL', 'number', ['number', 'number']);
-        Bindings.draw = Module.cwrap('draw', '', []);
-        Bindings.update = Module.cwrap('update', '', []);
-        return Bindings;
-    })();
-    //a helper for some JS-to-Emscripten conversions
-    var HeapUtils = (function () {
-        function HeapUtils() {
-        }
-        HeapUtils.floatArrayToHeap = function (arr) {
-            var arrayPointer = _malloc(arr.length * 4);
-            for (var i = 0; i < arr.length; i++)
-                Module.setValue(arrayPointer + i * 4, arr[i], 'float');
-            return arrayPointer;
-        };
-        return HeapUtils;
-    })();
     var Program = (function () {
         function Program(canvas) {
             this.canvas = canvas;
-            //initialise the GL context, call the compiled native function
-            var initialised = Bindings.initGL(canvas.width, canvas.height);
-            if (!initialised) {
-                console.log("Could not initialise GL");
-                return;
-            }
-            //request redraw
-            this.invalidate();
-            this.timer = setTimeout(function () {
-                Bindings.update();
-                console.log("update");
-            }, 500);
+            // we must must must do this first.
+            // this program uses opengl for speed
+            Module.initGL(canvas.width, canvas.height);
+            this.velocityBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
+            this.pressureBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
+            this.divergenceBuffer = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
+            this.drawingProgram = new Module.Drawing();
+            this.fluidSolver = new Module.GridFluidSolver();
+            // init
+            this.drawingProgram.init();
+            this.fluidSolver.init(canvas.width, canvas.height);
+            console.log("initialised");
+            this.update();
+            this.timer = setInterval(function () {
+                this.update();
+            }.bind(this), 100);
         }
-        //render the scene
-        Program.prototype.render = function () {
-            ////convert the JS translation object to an emscripten array of floats
-            //var translationPtr = HeapUtils.floatArrayToHeap(
-            //    [this.translation.originX, this.translation.originY, this.translation.zoom]
-            //);
-            // call update
-            Bindings.update();
-            //call the native draw function
-            Bindings.draw();
-            //free the array memory
-            //_free(translationPtr);
+        Program.prototype.cleanup = function () {
+            console.log("clean up");
+            this.drawingProgram.delete();
+            this.fluidSolver.delete();
         };
-        Program.prototype.invalidate = function () {
-            window.requestAnimationFrame(this.render.bind(this));
+        Program.prototype.update = function () {
+            // advect
+            this.fluidSolver.advect(this.velocityBuffer, this.velocityBuffer.readBuffer, 0.1);
+            this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            // apply force
+            this.fluidSolver.applyForce(this.velocityBuffer);
+            this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            // compute divergence
+            this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
+            //calc pressures
+            // maybe iterate in asm for speed int he future
+            //clear buffers
+            //Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            //Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+            for (var i = 0; i < 10; i++) {
+                this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
+                this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);
+            }
+            // subtractGradient
+            this.fluidSolver.subtractGradient(this.velocityBuffer, this.pressureBuffer);
+            this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            // draw velocity
+            this.drawingProgram.drawBuffer(this.velocityBuffer.readBuffer);
+            //drawingProgram.drawBuffer(divergenceBuffer);
+            //drawingProgram.drawBuffer(pressureBuffer.readBuffer);
+            console.log("update");
         };
         return Program;
     })();

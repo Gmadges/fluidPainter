@@ -1,18 +1,52 @@
-#version 300 es                                                        
-out mediump float FragColor;                                           
+#version 300 es
+
+in mediump vec2 tex;
+
+out mediump vec4 FragColor;                                           
 
 uniform sampler2D Velocity;                                                                                  
-uniform mediump float HalfInverseCellSize;                            
+uniform mediump float HalfInverseCellSize;
+uniform mediump vec2 inverseRes;
+
+vec2 sampleVelocity(sampler2D velocity, vec2 coord)
+{
+    
+    vec2 cellOffset = vec2(0.0, 0.0);
+    vec2 multiplier = vec2(1.0, 1.0);
+
+    // handle me bounds
+    if(coord.x < 0.0)
+    {
+        cellOffset.x = 1.0;
+        multiplier.x = -1.0;
+    }
+    else if(coord.x > 1.0)
+    {
+        cellOffset.x = -1.0;
+        multiplier.x = -1.0;
+    }
+
+    if(coord.y < 0.0)
+    {
+        cellOffset.y = 1.0;
+        multiplier.y = -1.0;
+    }
+    else if(coord.y > 1.0)
+    {
+        cellOffset.y = -1.0;
+        multiplier.y = -1.0;
+    }
+
+    return multiplier * texture(velocity, coord + cellOffset * inverseRes).xy;
+}                            
 
 void main()                                                           
-{                                                                     
-    ivec2 T = ivec2(gl_FragCoord.xy);                                 
+{                                                                                                     
+    // Find neighboring velocities, north, east , south, west
+    vec2 vT = sampleVelocity(Velocity, tex + vec2(0, inverseRes.y));
+    vec2 vB = sampleVelocity(Velocity, tex - vec2(0, inverseRes.y));      
+    vec2 vR = sampleVelocity(Velocity, tex + vec2(inverseRes.x, 0));       
+    vec2 vL = sampleVelocity(Velocity, tex - vec2(inverseRes.x, 0));              
 
-    // Find neighboring velocities:
-    vec2 vN = texelFetchOffset(Velocity, T, 0, ivec2(0, 1)).xy;       
-    vec2 vS = texelFetchOffset(Velocity, T, 0, ivec2(0, -1)).xy;      
-    vec2 vE = texelFetchOffset(Velocity, T, 0, ivec2(1, 0)).xy;       
-    vec2 vW = texelFetchOffset(Velocity, T, 0, ivec2(-1, 0)).xy;        
-
-    FragColor = HalfInverseCellSize * (vE.x - vW.x + vN.y - vS.y);    
+    FragColor = vec4( HalfInverseCellSize * (abs(vR.x - vL.x) + abs(vT.y - vB.y)), 0, 0, 1);   
 }                                                                     
