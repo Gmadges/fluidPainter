@@ -25,6 +25,16 @@ public:
             -1.0f,  1.0f, 0.0f, // Top-left
         };
 
+        quadTex = {
+            0.0f, 0.0f, // Top-left
+            1.0f, 0.0f, // Top-right
+            1.0f, 1.0f, // Bottom-right
+            
+            1.0f, 1.0f, // Bottom-right
+            0.0f, 1.0f,  // Bottom-left
+            0.0f, 0.0f, // Top-left
+        };
+
         simpleShaderProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/texture.frag");
     }
 
@@ -36,12 +46,15 @@ public:
         //enable our shader program
         glUseProgram(simpleShaderProgram);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, buffer.texHandle);
+
         //set up the vertices array
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
         glEnableVertexAttribArray(0);
-        
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, buffer.texHandle);
+
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
+        glEnableVertexAttribArray(1);
         
         //draw the triangle
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -54,6 +67,7 @@ public:
 
     GLuint simpleShaderProgram;
     std::vector<float> quadVerts;
+    std::vector<float> quadTex;
 };
 
 EMSCRIPTEN_BINDINGS(DrawingBindings) 

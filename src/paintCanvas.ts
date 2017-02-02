@@ -13,17 +13,33 @@ module PaintCanvas {
             // this program uses opengl for speed
             Module.initGL(canvas.width, canvas.height);
 
-            var testBuffer = Module.BufferUtils.createTestBuffer(canvas.width, canvas.height);
-            //var testDblBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
+            var velocityBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
 
+            // add some stuff to read buffer
+            //velocityBuffer.readBuffer = Module.BufferUtils.createTestBuffer(canvas.width, canvas.height, 0.8, 0, 0);
+ 
             var drawingProgram = new Module.Drawing();
+            var fluidSolver = new Module.GridFluidSolver();
 
+            // init
             drawingProgram.init();
-            drawingProgram.drawBuffer(testBuffer);
+            fluidSolver.init(canvas.width, canvas.height);
 
-            console.log(testBuffer);
+            // advect
+            fluidSolver.advect(velocityBuffer, velocityBuffer.readBuffer, 0.1);
+            velocityBuffer = Module.BufferUtils.swapBuffers(velocityBuffer);
+
+            // apply force
+            fluidSolver.applyForce(velocityBuffer);
+            velocityBuffer = Module.BufferUtils.swapBuffers(velocityBuffer);
+
+            // draw velocity
+            drawingProgram.drawBuffer(velocityBuffer.readBuffer);
+
+            console.log("finished");
 
             drawingProgram.delete();
+            fluidSolver.delete();
         }
     }
 }

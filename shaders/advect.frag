@@ -1,19 +1,31 @@
 #version 300 es
-out mediump vec4 FragColor;
+in mediump vec2 tex;
 
-uniform sampler2D velocity;                                    
+out highp vec4 FragColor;
+
+uniform sampler2D source;                                    
 uniform sampler2D target;                                       
 
 uniform mediump float InverseSize;                                      
 uniform mediump float dt;                             
 
+//void main()                                                          
+//{  
+//    vec2 fragCoord = gl_FragCoord.xy;
+//    vec2 u = texture(source, InverseSize * fragCoord).xy;
+//    vec2 coord = InverseSize * (fragCoord - dt * u);
+
+//    // just using a dissapation at the moment should probably blend
+//    FragColor = 0.8 * texture(target, coord);
+//}
+
 void main()                                                          
 {  
     // get tex coords
-    vec2 fragCoord = gl_FragCoord.xy;                                                                                               
+    vec2 fragCoord = tex;                                                                                               
 
     // find position
-    vec2 pos = InverseSize * (fragCoord - dt * texture(velocity, InverseSize * fragCoord).xy);
+    vec2 pos = InverseSize * (fragCoord - dt * texture(source, InverseSize * fragCoord).xy);
 
     vec4 st;
     st.xy = floor(pos - 0.5) + 0.5;

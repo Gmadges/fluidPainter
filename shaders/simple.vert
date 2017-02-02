@@ -1,7 +1,11 @@
-    #version 300 es                       
-    in vec4 Position;              
-    
-    void main()                           
-    {                                     
-        gl_Position = Position;           
-    }                                     
+#version 300 es                       
+in vec4 Position;   
+in vec2 Texcoord;              
+
+out mediump vec2 tex;
+
+void main()                           
+{  
+    tex = Texcoord;                                         
+    gl_Position = Position;     
+}                                     

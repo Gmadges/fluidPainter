@@ -10,6 +10,7 @@
 
 #include "bufferUtils.hpp"
 #include "drawing.hpp"
+#include "gridFluidSolver.hpp"
 
 // should store this somewhere?
 SDL_Surface* screen;

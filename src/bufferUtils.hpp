@@ -45,7 +45,7 @@ public:
     }
 
 
-    static Buffer createTestBuffer(int width, int height)
+    static Buffer createTestBuffer(int width, int height, float R, float G, float B)
     {
         Buffer buff;
 
@@ -63,20 +63,18 @@ public:
 
         // we use this large texture because webgl doesnt like using smaller ones
         
-        //create a red test image
+        //create a image
         std::vector<float> testImage;
-
         for(int i = 0; i < height; i++)
         {
             for(int j = 0; j < width; j++)
-            {
-                testImage.push_back(1.0f); //R
-                testImage.push_back(0.0f); //G
-                testImage.push_back(0.0f); //B
-                testImage.push_back(1.0f); //A
+            {   
+                    testImage.push_back(R); //R
+                    testImage.push_back(G); //G
+                    testImage.push_back(B); //B
+                    testImage.push_back(1.0f); //A
             }
         }
-
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, testImage.data());
 
@@ -86,9 +84,7 @@ public:
         glBindRenderbuffer(GL_RENDERBUFFER, colorbuffer);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buff.texHandle, 0);
 
-        // clear the buffer
-        //glClearColor(0, 0, 0, 0);
-        //glClear(GL_COLOR_BUFFER_BIT);
+        // unbind buffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         return buff;    
@@ -105,17 +101,19 @@ public:
     }
 
 
-    static void swapBuffers(DoubleBuffer& buffers)
+    static DoubleBuffer swapBuffers(DoubleBuffer& buffers)
     {
+        DoubleBuffer buff;
+
         // swap textures
-        GLuint tmptex = buffers.writeBuffer.texHandle;
-        buffers.writeBuffer.texHandle = buffers.readBuffer.texHandle;
-        buffers.readBuffer.texHandle = tmptex;
+        buff.writeBuffer.texHandle = buffers.readBuffer.texHandle;
+        buff.readBuffer.texHandle = buffers.writeBuffer.texHandle;
 
         // swap fbos
-        GLuint tmpfbo = buffers.writeBuffer.fboHandle;
-        buffers.writeBuffer.fboHandle = buffers.readBuffer.fboHandle;
-        buffers.readBuffer.fboHandle = tmpfbo;
+        buff.writeBuffer.fboHandle = buffers.readBuffer.fboHandle;
+        buff.readBuffer.fboHandle = buffers.writeBuffer.fboHandle;
+
+        return buff;
     }
 };
 
