@@ -48,5 +48,5 @@ void main()
     vec2 vR = sampleVelocity(Velocity, tex + vec2(inverseRes.x, 0));       
     vec2 vL = sampleVelocity(Velocity, tex - vec2(inverseRes.x, 0));              
 
-    FragColor = vec4( HalfInverseCellSize * ((vR.x - vL.x) + (vT.y - vB.y)), 0, 0, 1);   
+    FragColor = vec4( HalfInverseCellSize * (abs(vR.x - vL.x) + abs(vT.y - vB.y)), 0, 0, 1);   
 }                                                                     
