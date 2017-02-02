@@ -32,7 +32,7 @@ float samplePressure(sampler2D pressure, vec2 coord)
         cellOffset.y = -1.0;
     }
 
-    return texture(Pressure, coord + cellOffset * inverseRes).x;
+    return texture(pressure, coord + cellOffset * inverseRes).x;
 }                                       
 
 void main()                                                                

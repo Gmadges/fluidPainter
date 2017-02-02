@@ -1,29 +1,48 @@
-#version 300 es                                                        
+#version 300 es 
+in mediump vec2 tex;
+
 out mediump vec4 FragColor;                                            
 
 uniform sampler2D Velocity;                                            
-uniform sampler2D Pressure;                                                                                     
-uniform mediump float GradientScale;                                   
+uniform sampler2D Pressure;
+
+uniform mediump float HalfInverseCellSize;
+uniform mediump vec2 inverseRes;    
+
+float samplePressure(sampler2D pressure, vec2 coord)
+{
+    vec2 cellOffset = vec2(0.0, 0.0);
+
+    // more bound checking
+    if(coord.x < 0.0)
+    {      
+        cellOffset.x = 1.0;
+    }
+    else if(coord.x > 1.0) 
+    {
+        cellOffset.x = -1.0;
+    }
+
+    if(coord.y < 0.0)
+    {
+        cellOffset.y = 1.0;
+    }
+    else if(coord.y > 1.0) 
+    {
+        cellOffset.y = -1.0;
+    }
+
+    return texture(pressure, coord + cellOffset * inverseRes).x;
+}                                  
 
 void main()                                                            
 {                                                                      
-    ivec2 T = ivec2(gl_FragCoord.xy);                                                                                                
+    float L = samplePressure(Pressure, tex - vec2(inverseRes.x, 0));
+    float R = samplePressure(Pressure, tex + vec2(inverseRes.x, 0));
+    float B = samplePressure(Pressure, tex - vec2(0, inverseRes.y));
+    float T = samplePressure(Pressure, tex + vec2(0, inverseRes.y));
 
-    // Find neighboring pressure:
-    float pN = texelFetchOffset(Pressure, T, 0, ivec2(0, 1)).r;        
-    float pS = texelFetchOffset(Pressure, T, 0, ivec2(0, -1)).r;       
-    float pE = texelFetchOffset(Pressure, T, 0, ivec2(1, 0)).r;        
-    float pW = texelFetchOffset(Pressure, T, 0, ivec2(-1, 0)).r;       
-    float pC = texelFetch(Pressure, T, 0).r;                              
+    vec2 v = texture(Velocity, tex).xy;
 
-    // Use center pressure for solid cells:                                        
-    
-    vec2 vMask = vec2(1.0f);                                             
-
-    // Enforce the free-slip boundary condition
-
-    vec2 oldV = texelFetch(Velocity, T, 0).xy;                         
-    vec2 grad = vec2(pE - pW, pN - pS) * GradientScale;                
-    vec2 newV = oldV - grad;                                           
-    FragColor = vec4((vMask * newV), 0, 1);                             
+    FragColor = vec4(v - HalfInverseCellSize * vec2(abs(R-L), abs(T-B)), 0, 1);                        
 }                                                                       

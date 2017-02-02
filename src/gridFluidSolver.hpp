@@ -178,7 +178,38 @@ public:
     }
     
     
-    // void subtractGradient();
+    void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure)
+    {
+        glUseProgram(subtractGradientProgram);
+
+        GLint invRes = glGetUniformLocation(subtractGradientProgram, "inverseRes");
+        glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
+
+        GLint halfCell = glGetUniformLocation(subtractGradientProgram, "HalfInverseCellSize");
+        glUniform1f(halfCell, 0.5f / cellSize);
+
+        GLint sampler = glGetUniformLocation(subtractGradientProgram, "Pressure");
+        glUniform1i(sampler, 1);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, pressure.readBuffer.texHandle);
+        
+        //set up the vertices array
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
+        glEnableVertexAttribArray(1);
+
+        // draw
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // unbind the framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
 private:
     //void resetState();
@@ -210,7 +241,8 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("advect", &GridFluidSolver::advect)
         .function("applyForce", &GridFluidSolver::applyForces)
         .function("computeDivergance", &GridFluidSolver::computeDivergence)
-        .function("pressureSolve", &GridFluidSolver::pressureSolve);
+        .function("pressureSolve", &GridFluidSolver::pressureSolve)
+        .function("subtractGradient", &GridFluidSolver::subtractGradient);
 }
 
 

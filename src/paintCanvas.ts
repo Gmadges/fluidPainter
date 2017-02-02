@@ -45,10 +45,14 @@ module PaintCanvas {
                 pressureBuffer = Module.BufferUtils.swapBuffers(pressureBuffer);
             }
 
+            // subtractGradient
+            fluidSolver.subtractGradient(velocityBuffer, pressureBuffer);
+            velocityBuffer = Module.BufferUtils.swapBuffers(velocityBuffer);
+
             // draw velocity
-            //drawingProgram.drawBuffer(velocityBuffer.readBuffer);
+            drawingProgram.drawBuffer(velocityBuffer.readBuffer);
             //drawingProgram.drawBuffer(divergenceBuffer);
-            drawingProgram.drawBuffer(pressureBuffer.readBuffer);
+            //drawingProgram.drawBuffer(pressureBuffer.readBuffer);
 
             console.log("finished");
 
