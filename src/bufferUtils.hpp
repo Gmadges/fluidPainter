@@ -115,6 +115,18 @@ public:
 
         return buff;
     }
+
+    static void clearBuffer(Buffer& buff)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, buff.fboHandle);
+
+        // clear the buffer
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // unbind
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 };
 
 EMSCRIPTEN_BINDINGS(BufferBindings) 
@@ -124,7 +136,8 @@ EMSCRIPTEN_BINDINGS(BufferBindings)
         .class_function("createBuffer", &BufferUtils::createBuffer)
         .class_function("createTestBuffer", &BufferUtils::createTestBuffer)
         .class_function("createDoubleBuffer", &BufferUtils::createDoubleBuffer)
-        .class_function("swapBuffers", &BufferUtils::swapBuffers);
+        .class_function("swapBuffers", &BufferUtils::swapBuffers)
+        .class_function("clearBuffer", &BufferUtils::clearBuffer);
 }
 
 #endif

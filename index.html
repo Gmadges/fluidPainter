@@ -52,6 +52,16 @@
             // This is needed because we dont have a main in the CPP code.
             Module['_main'] = function() {
                 var program = new PaintCanvas.Program(canvas); 
+                
+                // these methods should clean up some memory stuff on refresh and close
+                window.onbeforeunload = function(){
+                    try{
+                        program.cleanup();
+                    }
+                    catch(ex){
+                        console.log(ex);
+                    }
+                };
             };
         </script>
 

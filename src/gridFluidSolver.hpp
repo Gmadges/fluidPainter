@@ -99,7 +99,7 @@ public:
 
         glUniform2f(pointLoc, 0.5, 0.5);
         glUniform1f(radiusLoc, 0.25);
-        glUniform3f(fillColorLoc, 0.5f, 0.5f, 1.0f);
+        glUniform3f(fillColorLoc, 0.99f, 0.99f, 10.0f);
 
         glBindFramebuffer(GL_FRAMEBUFFER, buffers.writeBuffer.fboHandle);
         
