@@ -14,6 +14,7 @@ module PaintCanvas {
             Module.initGL(canvas.width, canvas.height);
 
             var velocityBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
+            var pressureBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
             var divergenceBuffer = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
 
             // add some stuff to read buffer
@@ -37,9 +38,17 @@ module PaintCanvas {
             // compute divergence
             fluidSolver.computeDivergance(divergenceBuffer, velocityBuffer.readBuffer);
 
+            //calc pressures
+            // maybe iterate in asm for speed int he future
+            for(let i = 0; i < 10; i++) {
+                fluidSolver.pressureSolve(pressureBuffer, divergenceBuffer);
+                pressureBuffer = Module.BufferUtils.swapBuffers(pressureBuffer);
+            }
+
             // draw velocity
             //drawingProgram.drawBuffer(velocityBuffer.readBuffer);
-            drawingProgram.drawBuffer(divergenceBuffer);
+            //drawingProgram.drawBuffer(divergenceBuffer);
+            drawingProgram.drawBuffer(pressureBuffer.readBuffer);
 
             console.log("finished");
 

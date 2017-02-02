@@ -145,11 +145,43 @@ public:
     }
 
 
-    // void jacobi();
+    void pressureSolve(DoubleBuffer& pressure, Buffer& divergence)
+    {
+        glUseProgram(jacobiProgram);
+
+        GLint alpha = glGetUniformLocation(jacobiProgram, "Alpha");
+        GLint dSampler = glGetUniformLocation(jacobiProgram, "Divergence");
+        GLint invRes = glGetUniformLocation(jacobiProgram, "inverseRes");
+
+        glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
+        glUniform1f(alpha, -cellSize * cellSize);
+        glUniform1i(dSampler, 1);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, pressure.writeBuffer.fboHandle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, pressure.readBuffer.texHandle);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, divergence.texHandle);
+
+        //set up the vertices array
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
+        glEnableVertexAttribArray(1);
+        
+        // draw
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // unbind the framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    
+    
     // void subtractGradient();
 
 private:
-    void resetState();
+    //void resetState();
 
 private:
 
@@ -177,7 +209,8 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("init", &GridFluidSolver::init)
         .function("advect", &GridFluidSolver::advect)
         .function("applyForce", &GridFluidSolver::applyForces)
-        .function("computeDivergance", &GridFluidSolver::computeDivergence);
+        .function("computeDivergance", &GridFluidSolver::computeDivergence)
+        .function("pressureSolve", &GridFluidSolver::pressureSolve);
 }
 
 
