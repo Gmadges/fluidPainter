@@ -44,5 +44,5 @@ void main()
 
     vec2 v = texture(Velocity, tex).xy;
 
-    FragColor = vec4(v - HalfInverseCellSize * vec2(abs(R-L), abs(T-B)), 0, 1);                        
+    FragColor = vec4(v - HalfInverseCellSize * vec2((R-L), (T-B)), 0, 1);                        
 }                                                                       
