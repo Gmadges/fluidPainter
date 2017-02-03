@@ -35,8 +35,6 @@ module PaintCanvas {
 
             console.log("initialised");
 
-            this.update();
-
             this.timer = setInterval(function() { 
                 this.update(); 
             }.bind(this), 100);
@@ -54,17 +52,17 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
-            this.fluidSolver.applyForce(this.velocityBuffer);
+            this.fluidSolver.applyForce(this.velocityBuffer, 0.0, 0.0, 0.5, 0.5);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
-
-            // compute divergence
+            
+             // compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
 
             //calc pressures
             // maybe iterate in asm for speed int he future
             //clear buffers
-            //Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            //Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+            Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
 
             for(let i = 0; i < 10; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);

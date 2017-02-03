@@ -34,7 +34,7 @@ public:
             0.0f, 0.0f, // Top-left
         };
 
-        cellSize = 8;
+        cellSize = 32;
 
         m_height = height;
         m_width = width;
@@ -87,7 +87,7 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void applyForces(DoubleBuffer& buffers)
+    void applyForces(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY)
     {
         glViewport(0, 0, m_width, m_height);
 
@@ -97,11 +97,13 @@ public:
         GLint radiusLoc = glGetUniformLocation(applyForceProgram, "Radius");
         GLint fillColorLoc = glGetUniformLocation(applyForceProgram, "FillColor");
 
-        glUniform2f(pointLoc, 0.5, 0.5);
-        glUniform1f(radiusLoc, 0.25);
-        glUniform3f(fillColorLoc, 0.99f, 0.99f, 10.0f);
+        glUniform2f(pointLoc, pointX, pointY);
+        glUniform1f(radiusLoc, 0.10);
+        glUniform3f(fillColorLoc, forceX, forceY, 0.0f);
 
         glBindFramebuffer(GL_FRAMEBUFFER, buffers.writeBuffer.fboHandle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, buffers.readBuffer.texHandle);
         
         //set up the vertices array
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
