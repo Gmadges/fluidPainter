@@ -1,7 +1,6 @@
-#version 300 es
-in mediump vec2 tex;
+precision mediump float;
 
-out highp vec4 FragColor;    
+varying mediump vec2 tex;
 
 uniform sampler2D Velocity;                          
 
@@ -15,9 +14,9 @@ void main()
     
     if (d < Radius) 
     {
-        FragColor = vec4(FillColor, 1.0);
+        gl_FragColor = vec4(FillColor, 1.0);
         return;
     } 
 
-    FragColor = texture(Velocity, tex);                                                                    
+    gl_FragColor = texture2D(Velocity, tex);                                                                    
 }                                                     
