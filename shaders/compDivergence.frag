@@ -1,8 +1,6 @@
-#version 300 es
+precision mediump float;
 
-in mediump vec2 tex;
-
-out mediump vec4 FragColor;                                           
+varying mediump vec2 tex;                                         
 
 uniform sampler2D Velocity;                                                                                  
 uniform mediump float HalfInverseCellSize;
@@ -37,7 +35,7 @@ vec2 sampleVelocity(sampler2D velocity, vec2 coord)
         multiplier.y = -1.0;
     }
 
-    return multiplier * texture(velocity, coord + cellOffset * inverseRes).xy;
+    return multiplier * texture2D(velocity, coord + cellOffset * inverseRes).xy;
 }                            
 
 void main()                                                           
@@ -48,5 +46,5 @@ void main()
     vec2 vR = sampleVelocity(Velocity, tex + vec2(inverseRes.x, 0));       
     vec2 vL = sampleVelocity(Velocity, tex - vec2(inverseRes.x, 0));              
 
-    FragColor = vec4( HalfInverseCellSize * (abs(vR.x - vL.x) + abs(vT.y - vB.y)), 0, 0, 1);   
+    gl_FragColor = vec4( HalfInverseCellSize * (abs(vR.x - vL.x) + abs(vT.y - vB.y)), 0, 0, 1);   
 }                                                                     

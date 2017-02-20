@@ -2,7 +2,7 @@
 #define DRAWING_HPP
 
 #include "emscripten/bind.h"
-#include "GLES3/gl3.h"
+#include "GLES2/gl2.h"
 
 #include "buffers.h"
 #include "shaders.h"

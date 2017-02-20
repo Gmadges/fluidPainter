@@ -1,7 +1,6 @@
-#version 300 es
-in mediump vec2 tex;
+precision mediump float;
 
-out mediump vec4 FragColor;                                         
+varying mediump vec2 tex;                                       
 
 uniform sampler2D Pressure;                                                
 uniform sampler2D Divergence;                                                                                           
@@ -32,7 +31,7 @@ float samplePressure(sampler2D pressure, vec2 coord)
         cellOffset.y = -1.0;
     }
 
-    return texture(pressure, coord + cellOffset * inverseRes).x;
+    return texture2D(pressure, coord + cellOffset * inverseRes).x;
 }                                       
 
 void main()                                                                
@@ -42,8 +41,8 @@ void main()
     float B = samplePressure(Pressure, tex - vec2(0, inverseRes.y));
     float T = samplePressure(Pressure, tex + vec2(0, inverseRes.y));
 
-    float bC = texture(Divergence, tex).x;
+    float bC = texture2D(Divergence, tex).x;
 
     // use 0.25 as rBeta
-    FragColor = vec4( (L + R + B + T + Alpha * bC) * 0.25, 0.0f, 0.0f, 1.0f );            
+    gl_FragColor = vec4( (L + R + B + T + Alpha * bC) * 0.25, 0.0, 0.0, 1.0 );            
 }  

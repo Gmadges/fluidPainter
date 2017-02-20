@@ -1,5 +1,5 @@
 #include <iostream>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <SDL/SDL.h>
 
 #ifdef EMSCRIPTEN

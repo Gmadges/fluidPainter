@@ -1,12 +1,10 @@
-#version 300 es
-in mediump vec2 tex;
+precision mediump float;
 
-out mediump vec4 FragColor;
-
+varying mediump vec2 tex;                                           
 uniform sampler2D image;                               
 
 void main()                                                          
 { 
-    vec3 color = texture(image, tex).xyz;
-    FragColor = vec4(color, 1.0f);       
+    vec3 color = texture2D(image, tex).rgb;
+    gl_FragColor = vec4(color, 1.0);       
 }
