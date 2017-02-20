@@ -2,7 +2,7 @@
 #define BUFFERUTILS_HPP
 
 #include "emscripten/bind.h"
-#include "GLES3/gl3.h"
+#include "GLES2/gl2.h"
 #include "buffers.h"
 
 class BufferUtils
@@ -28,7 +28,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // we use this large texture because webgl doesnt like using smaller ones
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, 0);
 
         // turn into frame buffer
         GLuint colorbuffer;
@@ -76,7 +76,7 @@ public:
             }
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, testImage.data());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, testImage.data());
 
         // turn into frame buffer
         GLuint colorbuffer;
