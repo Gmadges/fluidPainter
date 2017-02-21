@@ -7,7 +7,7 @@ TSC=tsc
 TSSOURCES:=$(wildcard src/*.ts)
 TSFLAGS= --outDir app/
 
-all: $(CPPSOURCES) $(OUTPUT) TSBUILD
+all: $(CPPSOURCES) $(OUTPUT)
 
 $(OUTPUT): $(CPPSOURCES) 
 	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 --preload-file shaders/  -std=c++11 $(LDFLAGS) -o $(OUTPUT)
@@ -19,5 +19,4 @@ TSBUILD: $(TSSOURCES)
 	$(TSC) $(TSSOURCES) $(TSFLAGS) 
 
 clean:
-	rm -f $(OUTPUT)
-	rm -f $(OUTPUT).mem
+	del app\glcore.*
