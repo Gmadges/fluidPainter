@@ -83,7 +83,7 @@ bool GridFluidSolver::init(int width, int height)
     m_width = width;
 
     // init programs 
-    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
+    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advectRK2.frag");
     jacobiProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/jacobi.frag");
     subtractGradientProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/subGradient.frag");
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
@@ -100,10 +100,12 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glUseProgram(advectProgram);
 
     // set uniforms
-    GLint inverseSize = glGetUniformLocation(advectProgram, "inverseSize");
+    GLint dissapate = glGetUniformLocation(advectProgram, "dissapation");
+    GLint inverseSize = glGetUniformLocation(advectProgram, "resolution");
     GLint timeStep = glGetUniformLocation(advectProgram, "dt");
-    glUniform1f(inverseSize, 1.0f / (float)cellSize);
+    glUniform2f(inverseSize, (float)m_width, (float)m_height);
     glUniform1f(timeStep, dt);
+    glUniform1f(dissapate, 0.5f);
 
     // set textures
     GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
