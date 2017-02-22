@@ -1,3 +1,4 @@
 *.js
 *.data
-*js.mem
+*.js.mem
+*.js.map
