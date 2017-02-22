@@ -1,11 +1,12 @@
-//<reference path="input.ts"/>
-// uneeded anymore
+/// <reference path="input.ts" />
 
 var Module : any;
 
 module PaintCanvas {
 
     export class Program {
+
+        private inputControl : InputController;
 
         private velocityBuffer : any;
         private divergenceBuffer : any;
@@ -15,9 +16,6 @@ module PaintCanvas {
         private fluidSolver : any;
 
         private timer : any;
-
-        private forceApplied : boolean = false;
-        private bMouseDown : boolean = false;
 
         constructor(private canvas: HTMLCanvasElement) {
             
@@ -38,20 +36,7 @@ module PaintCanvas {
 
             console.log("initialised");
 
-            canvas.onmousedown = function(e){
-                this.bMouseDown = true;
-            }.bind(this);
-
-            canvas.onmouseup = function(e){
-                this.bMouseDown = false;
-            }.bind(this);
-
-            canvas.onmousemove = function(e){
-                if(!this.bMouseDown) return;
-                
-                this.getCursorPosition(canvas, e);
-                return false;
-            }.bind(this);
+            this.inputControl = new InputController(canvas);
 
             // this.timer = setInterval(function() { 
             //     this.update(); 
@@ -70,7 +55,7 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
-            if(this.forceApplied) {
+            if(this.inputControl.isForceApplied()) {
                 this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
             }
@@ -98,13 +83,6 @@ module PaintCanvas {
             //this.drawingProgram.drawBuffer(this.divergenceBuffer);
             //this.drawingProgram.drawBuffer(this.pressureBuffer.readBuffer);
             console.log("update");
-        }
-
-        private getCursorPosition(canvas, event) {
-            var rect = canvas.getBoundingClientRect();
-            var x = event.clientX - rect.left;
-            var y = event.clientY - rect.top;
-            console.log("x: " + x + " y: " + y);
         }
     }
 }
