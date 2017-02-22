@@ -17,6 +17,7 @@ module PaintCanvas {
         private timer : any;
 
         private forceApplied : boolean = false;
+        private bMouseDown : boolean = false;
 
         constructor(private canvas: HTMLCanvasElement) {
             
@@ -37,13 +38,24 @@ module PaintCanvas {
 
             console.log("initialised");
 
-            canvas.addEventListener('mousemove', function(evt) {
-                this.getCursorPosition(canvas, evt);
-            }.bind(this));
+            canvas.onmousedown = function(e){
+                this.bMouseDown = true;
+            }.bind(this);
 
-            this.timer = setInterval(function() { 
-                this.update(); 
-            }.bind(this), 100);
+            canvas.onmouseup = function(e){
+                this.bMouseDown = false;
+            }.bind(this);
+
+            canvas.onmousemove = function(e){
+                if(!this.bMouseDown) return;
+                
+                this.getCursorPosition(canvas, e);
+                return false;
+            }.bind(this);
+
+            // this.timer = setInterval(function() { 
+            //     this.update(); 
+            // }.bind(this), 100);
         }
 
         public cleanup() {
