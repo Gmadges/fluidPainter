@@ -168,10 +168,8 @@ void GridFluidSolver::computeDivergence(Buffer& divBuffer, Buffer& velocity)
 {
     glUseProgram(computeDivergenceProgram);
 
-    GLint halfCell = glGetUniformLocation(computeDivergenceProgram, "HalfInverseCellSize");
-    glUniform1f(halfCell, 0.5f / (float)cellSize);
-    GLint invRes = glGetUniformLocation(computeDivergenceProgram, "inverseRes");
-    glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
+    GLint res = glGetUniformLocation(computeDivergenceProgram, "resolution");
+    glUniform2f(res, (float)m_width, (float)m_height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, divBuffer.fboHandle);
     glActiveTexture(GL_TEXTURE0);
