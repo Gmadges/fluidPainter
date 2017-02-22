@@ -52,7 +52,7 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
-            this.fluidSolver.applyForce(this.velocityBuffer, 0.0, 0.0, 0.5, 0.5);
+            this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
             
              // compute divergence
@@ -75,8 +75,8 @@ module PaintCanvas {
 
             // draw velocity
             this.drawingProgram.drawBuffer(this.velocityBuffer.readBuffer);
-            //drawingProgram.drawBuffer(divergenceBuffer);
-            //drawingProgram.drawBuffer(pressureBuffer.readBuffer);
+            //this.drawingProgram.drawBuffer(this.divergenceBuffer);
+            //this.drawingProgram.drawBuffer(this.pressureBuffer.readBuffer);
             console.log("update");
         }
     }
