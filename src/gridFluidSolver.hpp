@@ -83,7 +83,7 @@ bool GridFluidSolver::init(int width, int height)
     m_width = width;
 
     // init programs 
-    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
+    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advectRK2.frag");
     jacobiProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/jacobi.frag");
     subtractGradientProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/subGradient.frag");
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
@@ -100,10 +100,12 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glUseProgram(advectProgram);
 
     // set uniforms
-    GLint inverseSize = glGetUniformLocation(advectProgram, "inverseSize");
+    GLint dissapate = glGetUniformLocation(advectProgram, "dissapation");
+    GLint res = glGetUniformLocation(advectProgram, "resolution");
     GLint timeStep = glGetUniformLocation(advectProgram, "dt");
-    glUniform1f(inverseSize, 1.0f / (float)cellSize);
+    glUniform2f(res, (float)m_width, (float)m_height);
     glUniform1f(timeStep, dt);
+    glUniform1f(dissapate, 0.25f);
 
     // set textures
     GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
@@ -139,10 +141,12 @@ void GridFluidSolver::applyForces(DoubleBuffer& buffers, float pointX, float poi
     GLint pointLoc = glGetUniformLocation(applyForceProgram, "Point");
     GLint radiusLoc = glGetUniformLocation(applyForceProgram, "Radius");
     GLint fillColorLoc = glGetUniformLocation(applyForceProgram, "FillColor");
+    GLint res = glGetUniformLocation(applyForceProgram, "resolution");
 
     glUniform2f(pointLoc, pointX, pointY);
     glUniform1f(radiusLoc, 0.10);
     glUniform3f(fillColorLoc, forceX, forceY, 0.0f);
+    glUniform2f(res, (float)m_width, (float)m_height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, buffers.writeBuffer.fboHandle);
     glActiveTexture(GL_TEXTURE0);
@@ -166,10 +170,8 @@ void GridFluidSolver::computeDivergence(Buffer& divBuffer, Buffer& velocity)
 {
     glUseProgram(computeDivergenceProgram);
 
-    GLint halfCell = glGetUniformLocation(computeDivergenceProgram, "HalfInverseCellSize");
-    glUniform1f(halfCell, 0.5f / (float)cellSize);
-    GLint invRes = glGetUniformLocation(computeDivergenceProgram, "inverseRes");
-    glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
+    GLint res = glGetUniformLocation(computeDivergenceProgram, "resolution");
+    glUniform2f(res, (float)m_width, (float)m_height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, divBuffer.fboHandle);
     glActiveTexture(GL_TEXTURE0);
@@ -195,10 +197,10 @@ void GridFluidSolver::pressureSolve(DoubleBuffer& pressure, Buffer& divergence)
 
     GLint alpha = glGetUniformLocation(jacobiProgram, "Alpha");
     GLint dSampler = glGetUniformLocation(jacobiProgram, "Divergence");
-    GLint invRes = glGetUniformLocation(jacobiProgram, "inverseRes");
+    GLint res = glGetUniformLocation(jacobiProgram, "resolution");
 
-    glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
-    glUniform1f(alpha, -cellSize * cellSize);
+    glUniform2f(res, (float)m_width, (float)m_height) ;
+    glUniform1f(alpha, -((float)m_width * (float)m_height));
     glUniform1i(dSampler, 1);
 
     glBindFramebuffer(GL_FRAMEBUFFER, pressure.writeBuffer.fboHandle);
@@ -225,11 +227,8 @@ void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pre
 {
     glUseProgram(subtractGradientProgram);
 
-    GLint invRes = glGetUniformLocation(subtractGradientProgram, "inverseRes");
-    glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
-
-    GLint halfCell = glGetUniformLocation(subtractGradientProgram, "HalfInverseCellSize");
-    glUniform1f(halfCell, 0.5f / cellSize);
+    GLint res = glGetUniformLocation(subtractGradientProgram, "resolution");
+    glUniform2f(res, (float)m_width, (float)m_height) ;
 
     GLint sampler = glGetUniformLocation(subtractGradientProgram, "Pressure");
     glUniform1i(sampler, 1);
