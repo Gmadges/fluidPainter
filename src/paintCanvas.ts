@@ -16,6 +16,8 @@ module PaintCanvas {
 
         private timer : any;
 
+        private forceApplied : boolean = false;
+
         constructor(private canvas: HTMLCanvasElement) {
             
             // we must must must do this first.
@@ -35,6 +37,10 @@ module PaintCanvas {
 
             console.log("initialised");
 
+            canvas.addEventListener('mousemove', function(evt) {
+                this.getCursorPosition(canvas, evt);
+            }.bind(this));
+
             this.timer = setInterval(function() { 
                 this.update(); 
             }.bind(this), 100);
@@ -52,8 +58,10 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
-            this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
-            this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            if(this.forceApplied) {
+                this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
+                this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            }
             
              // compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
@@ -78,6 +86,13 @@ module PaintCanvas {
             //this.drawingProgram.drawBuffer(this.divergenceBuffer);
             //this.drawingProgram.drawBuffer(this.pressureBuffer.readBuffer);
             console.log("update");
+        }
+
+        private getCursorPosition(canvas, event) {
+            var rect = canvas.getBoundingClientRect();
+            var x = event.clientX - rect.left;
+            var y = event.clientY - rect.top;
+            console.log("x: " + x + " y: " + y);
         }
     }
 }
