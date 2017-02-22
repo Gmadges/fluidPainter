@@ -27,6 +27,7 @@ class InputController {
         canvas.onmousedown = this.mouseDown.bind(this);
         canvas.onmouseup = this.mouseUp.bind(this);
         canvas.onmousemove = this.mouseMove.bind(this);
+        canvas.onmouseleave = this.mouseUp.bind(this); 
     }
 
     public isForceApplied() : boolean {
