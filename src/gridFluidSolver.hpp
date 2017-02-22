@@ -195,10 +195,10 @@ void GridFluidSolver::pressureSolve(DoubleBuffer& pressure, Buffer& divergence)
 
     GLint alpha = glGetUniformLocation(jacobiProgram, "Alpha");
     GLint dSampler = glGetUniformLocation(jacobiProgram, "Divergence");
-    GLint invRes = glGetUniformLocation(jacobiProgram, "inverseRes");
+    GLint res = glGetUniformLocation(jacobiProgram, "resolution");
 
-    glUniform2f(invRes, 1.0f / (float)m_width, 1.0f / (float)m_height) ;
-    glUniform1f(alpha, -cellSize * cellSize);
+    glUniform2f(res, (float)m_width, (float)m_height) ;
+    glUniform1f(alpha, -((float)m_width * (float)m_height));
     glUniform1i(dSampler, 1);
 
     glBindFramebuffer(GL_FRAMEBUFFER, pressure.writeBuffer.fboHandle);
