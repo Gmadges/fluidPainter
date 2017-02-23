@@ -4,7 +4,7 @@
 #include "buffers.h"
 #include "shaders.h"
 #include "bufferUtils.hpp"
-#include "forceType.h"
+#include "forceHandler.hpp"
 
 class GridFluidSolver
 {
@@ -27,8 +27,6 @@ private:
 
     std::vector<float> quadVerts;
     std::vector<float> quadTex;
-
-    int cellSize;
 
     int m_height;
     int m_width;
@@ -77,8 +75,6 @@ bool GridFluidSolver::init(int width, int height)
         0.0f, 1.0f,  // Bottom-left
         0.0f, 0.0f, // Top-left
     };
-
-    cellSize = 32;
 
     m_height = height;
     m_width = width;
