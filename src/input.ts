@@ -44,8 +44,8 @@ class InputController {
         canvas.onmouseleave = this.mouseUp.bind(this);
     }
 
-    public isForceApplied() : boolean {
-        return false;
+    public isForceAvailable() : boolean {
+        return this.forceList.length > 0;
     }
 
     public resetForceList() {
