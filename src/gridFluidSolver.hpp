@@ -4,6 +4,7 @@
 #include "buffers.h"
 #include "shaders.h"
 #include "bufferUtils.hpp"
+#include "forceType.h"
 
 class GridFluidSolver
 {
@@ -20,7 +21,7 @@ public:
     void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure);
 
 private:
-    //void resetState();
+    void drawQuad();
 
 private:
 
@@ -92,6 +93,19 @@ bool GridFluidSolver::init(int width, int height)
     return true;
 }
 
+void GridFluidSolver::drawQuad()
+{
+    //set up the vertices array
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
+    glEnableVertexAttribArray(1);
+
+    // draw
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
 void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
 {
     glViewport(0, 0, m_width, m_height);
@@ -118,15 +132,7 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, target.readBuffer.texHandle);
     
-    //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
-    glEnableVertexAttribArray(1);
-
-    // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    drawQuad();
 
     // unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -152,15 +158,7 @@ void GridFluidSolver::applyForces(DoubleBuffer& buffers, float pointX, float poi
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, buffers.readBuffer.texHandle);
     
-    //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
-    glEnableVertexAttribArray(1);
-
-    // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    drawQuad();
 
     // unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -177,15 +175,7 @@ void GridFluidSolver::computeDivergence(Buffer& divBuffer, Buffer& velocity)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, velocity.texHandle);
     
-    //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
-    glEnableVertexAttribArray(1);
-
-    // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    drawQuad();
 
     // unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -209,15 +199,7 @@ void GridFluidSolver::pressureSolve(DoubleBuffer& pressure, Buffer& divergence)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, divergence.texHandle);
 
-    //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
-    glEnableVertexAttribArray(1);
-    
-    // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    drawQuad();
 
     // unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -239,15 +221,7 @@ void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pre
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, pressure.readBuffer.texHandle);
     
-    //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
-    glEnableVertexAttribArray(1);
-
-    // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    drawQuad();
 
     // unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
