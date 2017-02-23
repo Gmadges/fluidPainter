@@ -1,11 +1,12 @@
-//<reference path="input.ts"/>
-// uneeded anymore
+/// <reference path="input.ts" />
 
 var Module : any;
 
 module PaintCanvas {
 
     export class Program {
+
+        private inputControl : InputController;
 
         private velocityBuffer : any;
         private divergenceBuffer : any;
@@ -35,6 +36,8 @@ module PaintCanvas {
 
             console.log("initialised");
 
+            this.inputControl = new InputController(canvas);
+
             this.timer = setInterval(function() { 
                 this.update(); 
             }.bind(this), 100);
@@ -52,8 +55,14 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
-            this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
-            this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            if(this.inputControl.isForceAvailable()) {
+
+                this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
+                this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+
+                //reset forces
+                this.inputControl.resetForceList();
+            }
             
              // compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
