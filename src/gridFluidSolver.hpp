@@ -15,10 +15,11 @@ public:
 
     bool init(int width, int height);
     void advect(DoubleBuffer& target, Buffer& source, float dt);
-    void applyForces(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY);
+    void testForceSphere(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure);
+    void applyForces(DoubleBuffer& target, std::vector<ForcePacket>& forces);
 
 private:
     void drawQuad();
@@ -46,7 +47,8 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .constructor<>()
         .function("init", &GridFluidSolver::init)
         .function("advect", &GridFluidSolver::advect)
-        .function("applyForce", &GridFluidSolver::applyForces)
+        .function("testForceSphere", &GridFluidSolver::testForceSphere)
+        .function("applyForces", &GridFluidSolver::applyForces)
         .function("computeDivergance", &GridFluidSolver::computeDivergence)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
         .function("subtractGradient", &GridFluidSolver::subtractGradient);
@@ -115,7 +117,7 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     GLint timeStep = glGetUniformLocation(advectProgram, "dt");
     glUniform2f(res, (float)m_width, (float)m_height);
     glUniform1f(timeStep, dt);
-    glUniform1f(dissapate, 0.25f);
+    glUniform1f(dissapate, 1.0f);
 
     // set textures
     GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
@@ -134,7 +136,38 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::applyForces(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY)
+void GridFluidSolver::applyForces(DoubleBuffer& target, std::vector<ForcePacket>& forces)
+{
+    // gonna try and do this without the draw call first
+    // maybe benchmark the diff between uploading uniforms and doing a draw call
+    // and making multiple calls to the subBuffer thing
+
+    // lets loop this for now
+    for(ForcePacket pkt : forces)
+    {
+        // create pixel value
+        float data[] = {pkt.xForce, pkt.yForce, 0.0f, 0.0f};
+
+        // bind tex
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, target.writeBuffer.texHandle);
+        
+        glTexSubImage2D(GL_TEXTURE_2D,
+ 	                    0,
+ 	                    pkt.xPix,
+ 	                    pkt.yPix,
+ 	                    1,
+ 	                    1,
+ 	                    GL_RGBA,
+ 	                    GL_FLOAT,
+ 	                    data);
+
+        // unbind
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+}
+
+void GridFluidSolver::testForceSphere(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY)
 {
     glViewport(0, 0, m_width, m_height);
 

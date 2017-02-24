@@ -60,7 +60,7 @@ module PaintCanvas {
             // apply force
             if(this.forceHandler.isForceAvailable()) {
 
-                this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
+                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
                 //reset forces
