@@ -19,4 +19,8 @@ TSBUILD: $(TSSOURCES)
 	$(TSC) $(TSSOURCES) $(TSFLAGS) 
 
 clean:
+ifeq ($(OS),Windows_NT)
 	del app\glcore.*
+else
+	rm -f app/glcore.*
+endif
