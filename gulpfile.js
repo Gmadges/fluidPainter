@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var tsc = require('gulp-typescript');
 var browserSync = require('browser-sync');
-//var exec = require('gulp-exec');
 var execSync = require('child_process').execSync;
 
 var tsProject = tsc.createProject('tsconfig.json');
