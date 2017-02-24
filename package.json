@@ -1,0 +1,16 @@
+{
+  "name": "fluidPainter",
+  "version": "0.0.0",
+  "description": "fluid painting",
+  "scripts": {
+    "build": "gulp",
+    "build-ts": "gulp typescript",
+    "build-emcc": "gulp emscripten"
+  },
+  "dependencies": {
+    "browser-sync": "^2.18.8",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.5",
+    "typescript": "^2.2.1"
+  }
+}
