@@ -7,6 +7,7 @@ module PaintCanvas {
     export class Program {
 
         private inputControl : InputController;
+        private forceHandler : any;
 
         private velocityBuffer : any;
         private divergenceBuffer : any;
@@ -29,6 +30,7 @@ module PaintCanvas {
  
             this.drawingProgram = new Module.Drawing();
             this.fluidSolver = new Module.GridFluidSolver();
+            this.forceHandler = new Module.ForceHandler();
 
             // init
             this.drawingProgram.init();
@@ -36,7 +38,7 @@ module PaintCanvas {
 
             console.log("initialised");
 
-            this.inputControl = new InputController(canvas);
+            this.inputControl = new InputController(canvas, this.forceHandler);
 
             this.timer = setInterval(function() { 
                 this.update(); 
@@ -47,6 +49,7 @@ module PaintCanvas {
             console.log("clean up");
             this.drawingProgram.delete();
             this.fluidSolver.delete();
+            this.forceHandler.delete();
         }
 
         private update() {
@@ -55,13 +58,13 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
-            if(this.inputControl.isForceAvailable()) {
+            if(this.forceHandler.isForceAvailable()) {
 
-                this.fluidSolver.applyForce(this.velocityBuffer, 0, 0, 0.5, 0.5);
+                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
                 //reset forces
-                this.inputControl.resetForceList();
+                this.forceHandler.reset();
             }
             
              // compute divergence
