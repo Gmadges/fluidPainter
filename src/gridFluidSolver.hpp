@@ -15,7 +15,6 @@ public:
 
     bool init(int width, int height);
     void advect(DoubleBuffer& target, Buffer& source, float dt);
-    void testForceSphere(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure);
@@ -47,7 +46,6 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .constructor<>()
         .function("init", &GridFluidSolver::init)
         .function("advect", &GridFluidSolver::advect)
-        .function("testForceSphere", &GridFluidSolver::testForceSphere)
         .function("applyForces", &GridFluidSolver::applyForces)
         .function("computeDivergance", &GridFluidSolver::computeDivergence)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
@@ -165,32 +163,6 @@ void GridFluidSolver::applyForces(DoubleBuffer& target, std::vector<ForcePacket>
         // unbind
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
-}
-
-void GridFluidSolver::testForceSphere(DoubleBuffer& buffers, float pointX, float pointY, float forceX, float forceY)
-{
-    glViewport(0, 0, m_width, m_height);
-
-    glUseProgram(applyForceProgram);
-
-    GLint pointLoc = glGetUniformLocation(applyForceProgram, "Point");
-    GLint radiusLoc = glGetUniformLocation(applyForceProgram, "Radius");
-    GLint fillColorLoc = glGetUniformLocation(applyForceProgram, "FillColor");
-    GLint res = glGetUniformLocation(applyForceProgram, "resolution");
-
-    glUniform2f(pointLoc, pointX, pointY);
-    glUniform1f(radiusLoc, 0.10);
-    glUniform3f(fillColorLoc, forceX, forceY, 0.0f);
-    glUniform2f(res, (float)m_width, (float)m_height);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, buffers.writeBuffer.fboHandle);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, buffers.readBuffer.texHandle);
-    
-    drawQuad();
-
-    // unbind the framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GridFluidSolver::computeDivergence(Buffer& divBuffer, Buffer& velocity)
