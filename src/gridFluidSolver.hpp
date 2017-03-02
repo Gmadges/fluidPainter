@@ -14,7 +14,7 @@ public:
     ~GridFluidSolver(){};
 
     bool init(int width, int height);
-    void advect(DoubleBuffer& target, Buffer& source, float dt);
+    void advect(DoubleBuffer& target, Buffer& source, float dissapate, float dt);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure);
@@ -102,7 +102,7 @@ void GridFluidSolver::drawQuad()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
+void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dissapate, float dt)
 {
     glViewport(0, 0, m_width, m_height);
 
@@ -110,12 +110,12 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glUseProgram(advectProgram);
 
     // set uniforms
-    GLint dissapate = glGetUniformLocation(advectProgram, "dissapation");
-    GLint res = glGetUniformLocation(advectProgram, "resolution");
-    GLint timeStep = glGetUniformLocation(advectProgram, "dt");
-    glUniform2f(res, (float)m_width, (float)m_height);
-    glUniform1f(timeStep, dt);
-    glUniform1f(dissapate, 1.0f);
+    GLint dissapateLoc = glGetUniformLocation(advectProgram, "dissapation");
+    GLint resLoc = glGetUniformLocation(advectProgram, "resolution");
+    GLint timeStepLoc = glGetUniformLocation(advectProgram, "dt");
+    glUniform2f(resLoc, (float)m_width, (float)m_height);
+    glUniform1f(timeStepLoc, dt);
+    glUniform1f(dissapateLoc, dissapate);
 
     // set textures
     GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
