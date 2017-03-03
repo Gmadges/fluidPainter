@@ -18,10 +18,12 @@ void main()
     vec2 vel = texture2D(source, coord / resolution).rg * 100.0;
 
     // get half coords of source
-    vec2 halfCoord = (coord - vel) * 0.5 * dt;
-    vec2 halfVel = texture2D(source, halfCoord).rg * 100.0;
+    // this clamp can help with boundaries
+    vec2 halfCoord = clamp( coord - ((vel * 0.5) * dt), vec2(0.0, 0.0), resolution) ;
+    vec2 halfVel = texture2D(source, (halfCoord / resolution)).rg * 100.0;
 
-    vec2 endCoord = (coord - halfVel) * dt;
+    // this clamp can help with boundaries
+    vec2 endCoord = clamp(coord - (halfVel * dt), vec2(0.0, 0.0), resolution) ;
 
     // now grab the value from the input tex based on the positions and values we've found
     gl_FragColor = texture2D(target, (endCoord / resolution)) * dissapation;
