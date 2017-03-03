@@ -21,7 +21,7 @@ void main()
 
     // calc divergence 
     // we have our sections in nice chunks so we can get away with dividing over two.
-    float divergence = ((vR.x - vL.x) + (vT.y - vB.y)) / 2.0;
+    float divergence = ((vR.x - vL.x) + (vT.y - vB.y)) * 0.5;
 
-    gl_FragColor = vec4(divergence, 0.0, 0.0, 0.0);
+    gl_FragColor = vec4(divergence);
 }                                                                     
