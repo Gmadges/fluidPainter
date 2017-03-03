@@ -17,8 +17,8 @@ public:
     void advect(DoubleBuffer& target, Buffer& source, float dissapate, float dt);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
-    void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure);
-    void applyForces(DoubleBuffer& target, std::vector<ForcePacket>& forces);
+    void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
+    void applyForces(Buffer& target, std::vector<ForcePacket>& forces);
 
 private:
     void drawQuad();
@@ -134,7 +134,7 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dissapa
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::applyForces(DoubleBuffer& target, std::vector<ForcePacket>& forces)
+void GridFluidSolver::applyForces(Buffer& target, std::vector<ForcePacket>& forces)
 {
     // gonna try and do this without the draw call first
     // maybe benchmark the diff between uploading uniforms and doing a draw call
@@ -148,7 +148,7 @@ void GridFluidSolver::applyForces(DoubleBuffer& target, std::vector<ForcePacket>
 
         // bind tex
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, target.writeBuffer.texHandle);
+        glBindTexture(GL_TEXTURE_2D, target.texHandle);
         
         glTexSubImage2D(GL_TEXTURE_2D,
  	                    0,
@@ -206,7 +206,7 @@ void GridFluidSolver::pressureSolve(DoubleBuffer& pressure, Buffer& divergence)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure)
+void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, Buffer& pressure)
 {
     glUseProgram(subtractGradientProgram);
 
@@ -220,7 +220,7 @@ void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pre
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pressure.readBuffer.texHandle);
+    glBindTexture(GL_TEXTURE_2D, pressure.texHandle);
     
     drawQuad();
 
