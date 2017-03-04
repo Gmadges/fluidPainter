@@ -40,6 +40,7 @@ class InputController {
     }
 
     private mouseDown(e : Event) {
+        this.lastPos = this.getCursorPosition(this.canvas, e);
         this.bMouseDown = true;
     }
 

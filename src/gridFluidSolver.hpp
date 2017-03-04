@@ -80,7 +80,7 @@ bool GridFluidSolver::init(int width, int height)
     m_width = width;
 
     // init programs 
-    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advectRK2.frag");
+    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
     jacobiProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/jacobi.frag");
     subtractGradientProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/subGradient.frag");
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
@@ -102,7 +102,7 @@ void GridFluidSolver::drawQuad()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dissapate, float dt)
+void GridFluidSolver::advect(DoubleBuffer& velocity, Buffer& input, float dissapate, float dt)
 {
     glViewport(0, 0, m_width, m_height);
 
@@ -118,15 +118,15 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dissapa
     glUniform1f(dissapateLoc, dissapate);
 
     // set textures
-    GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
+    GLint sourceTexture = glGetUniformLocation(advectProgram, "inputSampler");
     glUniform1i(sourceTexture, 1);
 
     //bind
-    glBindFramebuffer(GL_FRAMEBUFFER, target.writeBuffer.fboHandle);
+    glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, source.texHandle);
+    glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, target.readBuffer.texHandle);
+    glBindTexture(GL_TEXTURE_2D, input.texHandle);
     
     drawQuad();
 
