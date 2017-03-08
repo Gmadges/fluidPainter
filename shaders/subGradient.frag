@@ -33,7 +33,7 @@ float getPressure(sampler2D _pressure, vec2 _coord)
 void main()                                                            
 {   
     vec2 coord = gl_FragCoord.xy / resolution;
-    vec2 delta = 1.0 / resolution;
+    vec2 delta = 2.0 / resolution;
 
     // just a texture look up without boundary checks
     // this is more like the divergance code
@@ -43,7 +43,7 @@ void main()
     float L = getPressure(Pressure, coord - vec2(delta.x, 0)); 
     vec2 v = texture2D(Velocity, coord).rg;
 
-    vec2 val = v - (vec2((R-L), (T-B)) * 0.5);
+    vec2 val = v - (vec2((R-L), (T-B)) * (0.5 / resolution));
 
-    gl_FragColor = vec4( val , 0, 0);                          
+    gl_FragColor = vec4( val , 0.0, 0.0);                         
 }    
