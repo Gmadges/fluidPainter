@@ -75,10 +75,10 @@ module PaintCanvas {
 
             //calc pressures
             //clear buffers
-            //Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            //Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+            Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
 
-            for(let i = 0; i < 30; i++) {
+            for(let i = 0; i < 20; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
                 this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);
             }

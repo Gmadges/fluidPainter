@@ -39,7 +39,7 @@ void main(void)
     vec2 tracedPos = pos - dt * texture2D(velocity, pos / resolution).xy * 100.0;
     
     vec2 tracedCoord = tracedPos / resolution;    
-    vec2 delta = 1.0 / resolution;
+    vec2 delta = 2.0 / resolution;
 
     vec4 vT = getVelocity(velocity, tracedCoord + vec2(0.0, delta.y));
     vec4 vB = getVelocity(velocity, tracedCoord - vec2(0.0, delta.y));      
