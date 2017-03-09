@@ -22,7 +22,7 @@ class InputController {
     private lastPos : vec2 = new vec2(0,0);
     private currentPos : vec2 = new vec2(0,0);
 
-    private debugDrawState : string = "velocity";
+    private debugDrawState : string = "visualise";
 
     constructor(private canvas: HTMLCanvasElement, private forceHandler : any) {
 
@@ -77,15 +77,20 @@ class InputController {
         switch(code) {
             case 49: {
                 // key 1
-                this.debugDrawState = "velocity";
+                this.debugDrawState = "visualise";
                 break;
             }
             case 50: {
+                // key 1
+                this.debugDrawState = "velocity";
+                break;
+            }
+            case 51: {
                 // key 2
                 this.debugDrawState = "divergence";
                 break;
             }
-            case 51: {
+            case 52: {
                 // key 3
                 this.debugDrawState = "pressure";
                 break;

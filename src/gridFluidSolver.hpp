@@ -14,7 +14,7 @@ public:
     ~GridFluidSolver(){};
 
     bool init(int width, int height);
-    void advect(DoubleBuffer& target, Buffer& source, float dissapate, float dt);
+    void advect(Buffer& output, Buffer& velocity, Buffer& input, float dissapate, float dt);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
@@ -122,7 +122,7 @@ void GridFluidSolver::createVisBuffer(Buffer& buffer)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::advect(DoubleBuffer& velocity, Buffer& input, float dissapate, float dt)
+void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, float dissapate, float dt)
 {
     glViewport(0, 0, m_width, m_height);
 
@@ -142,9 +142,9 @@ void GridFluidSolver::advect(DoubleBuffer& velocity, Buffer& input, float dissap
     glUniform1i(sourceTexture, 1);
 
     //bind
-    glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+    glBindFramebuffer(GL_FRAMEBUFFER, output.fboHandle);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+    glBindTexture(GL_TEXTURE_2D, velocity.texHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, input.texHandle);
     
