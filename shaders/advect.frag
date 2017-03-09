@@ -1,32 +1,28 @@
-precision mediump float;
+precision highp float;
 
-varying mediump vec2 tex;
+varying vec2 tex;
 
-uniform sampler2D source;                                    
-uniform sampler2D target;                                       
+uniform sampler2D velocity;                                    
+uniform sampler2D inputSampler;                                       
 
-uniform mediump float InverseSize;                                      
-uniform mediump float dt;                             
+uniform float dissapation;
+uniform vec2 resolution; 
+uniform float dt;
 
-void main()                                                          
-{  
-    // get tex coords
-    vec2 fragCoord = tex;                                                                                               
+void main(void) 
+{
+    vec2 pos =  gl_FragCoord.xy;
 
-    // find position
-    vec2 pos = InverseSize * (fragCoord - dt * texture2D(source, InverseSize * fragCoord).rg);
+    vec2 tracedPos = pos - dt * texture2D(velocity, pos / resolution).xy * 100.0;
+    
+    vec2 tracedCoord = tracedPos / resolution;    
+    vec2 delta = 2.0 / resolution;
 
-    vec4 st;
-    st.xy = floor(pos - 0.5) + 0.5;
-    st.zw = st.xy + 1.0;
+    vec2 vT = texture2D(velocity, tracedCoord + vec2(0.0, delta.y)).xy;
+    vec2 vB = texture2D(velocity, tracedCoord - vec2(0.0, delta.y)).xy;      
+    vec2 vR = texture2D(velocity, tracedCoord + vec2(delta.x, 0.0)).xy;       
+    vec2 vL = texture2D(velocity, tracedCoord - vec2(delta.x, 0.0)).xy; 
 
-    vec2 t = pos - st.xy; //interpolating factors
-
-    vec4 tex11 = texture2D(target, st.xy);
-    vec4 tex21 = texture2D(target, st.zy);
-    vec4 tex12 = texture2D(target, st.xw);
-    vec4 tex22 = texture2D(target, st.zw);
-
-    // bilinear interpolation
-    gl_FragColor = mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
+    //need to bilerp this result
+    gl_FragColor = vec4(mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5), 0, 0);
 }

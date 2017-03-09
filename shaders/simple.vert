@@ -1,7 +1,7 @@
 attribute vec4 Position;   
 attribute vec2 Texcoord;              
 
-varying mediump vec2 tex;
+varying highp vec2 tex;
 
 void main()                           
 {  

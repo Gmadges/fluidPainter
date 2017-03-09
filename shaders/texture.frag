@@ -1,6 +1,6 @@
-precision mediump float;
+precision highp float;
 
-varying mediump vec2 tex;                                           
+varying vec2 tex;                                           
 uniform sampler2D image;                               
 
 void main()                                                          

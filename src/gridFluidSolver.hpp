@@ -14,11 +14,11 @@ public:
     ~GridFluidSolver(){};
 
     bool init(int width, int height);
-    void advect(DoubleBuffer& target, Buffer& source, float dt);
+    void advect(DoubleBuffer& target, Buffer& source, float dissapate, float dt);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
-    void subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure);
-    void applyForces(DoubleBuffer& target, std::vector<ForcePacket>& forces);
+    void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
+    void applyForces(Buffer& target, std::vector<ForcePacket>& forces);
 
 private:
     void drawQuad();
@@ -80,7 +80,7 @@ bool GridFluidSolver::init(int width, int height)
     m_width = width;
 
     // init programs 
-    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advectRK2.frag");
+    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
     jacobiProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/jacobi.frag");
     subtractGradientProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/subGradient.frag");
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
@@ -102,7 +102,7 @@ void GridFluidSolver::drawQuad()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
+void GridFluidSolver::advect(DoubleBuffer& velocity, Buffer& input, float dissapate, float dt)
 {
     glViewport(0, 0, m_width, m_height);
 
@@ -110,23 +110,23 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glUseProgram(advectProgram);
 
     // set uniforms
-    GLint dissapate = glGetUniformLocation(advectProgram, "dissapation");
-    GLint res = glGetUniformLocation(advectProgram, "resolution");
-    GLint timeStep = glGetUniformLocation(advectProgram, "dt");
-    glUniform2f(res, (float)m_width, (float)m_height);
-    glUniform1f(timeStep, dt);
-    glUniform1f(dissapate, 1.0f);
+    GLint dissapateLoc = glGetUniformLocation(advectProgram, "dissapation");
+    GLint resLoc = glGetUniformLocation(advectProgram, "resolution");
+    GLint timeStepLoc = glGetUniformLocation(advectProgram, "dt");
+    glUniform2f(resLoc, (float)m_width, (float)m_height);
+    glUniform1f(timeStepLoc, dt);
+    glUniform1f(dissapateLoc, dissapate);
 
     // set textures
-    GLint sourceTexture = glGetUniformLocation(advectProgram, "target");
+    GLint sourceTexture = glGetUniformLocation(advectProgram, "inputSampler");
     glUniform1i(sourceTexture, 1);
 
     //bind
-    glBindFramebuffer(GL_FRAMEBUFFER, target.writeBuffer.fboHandle);
+    glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, source.texHandle);
+    glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, target.readBuffer.texHandle);
+    glBindTexture(GL_TEXTURE_2D, input.texHandle);
     
     drawQuad();
 
@@ -134,7 +134,7 @@ void GridFluidSolver::advect(DoubleBuffer& target, Buffer& source, float dt)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::applyForces(DoubleBuffer& target, std::vector<ForcePacket>& forces)
+void GridFluidSolver::applyForces(Buffer& target, std::vector<ForcePacket>& forces)
 {
     // gonna try and do this without the draw call first
     // maybe benchmark the diff between uploading uniforms and doing a draw call
@@ -148,7 +148,7 @@ void GridFluidSolver::applyForces(DoubleBuffer& target, std::vector<ForcePacket>
 
         // bind tex
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, target.writeBuffer.texHandle);
+        glBindTexture(GL_TEXTURE_2D, target.texHandle);
         
         glTexSubImage2D(GL_TEXTURE_2D,
  	                    0,
@@ -206,7 +206,7 @@ void GridFluidSolver::pressureSolve(DoubleBuffer& pressure, Buffer& divergence)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pressure)
+void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, Buffer& pressure)
 {
     glUseProgram(subtractGradientProgram);
 
@@ -220,7 +220,7 @@ void GridFluidSolver::subtractGradient(DoubleBuffer& velocity, DoubleBuffer& pre
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, pressure.readBuffer.texHandle);
+    glBindTexture(GL_TEXTURE_2D, pressure.texHandle);
     
     drawQuad();
 
