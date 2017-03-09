@@ -41,11 +41,11 @@ void main(void)
     vec2 tracedCoord = tracedPos / resolution;    
     vec2 delta = 2.0 / resolution;
 
-    vec4 vT = getVelocity(velocity, tracedCoord + vec2(0.0, delta.y));
-    vec4 vB = getVelocity(velocity, tracedCoord - vec2(0.0, delta.y));      
-    vec4 vR = getVelocity(velocity, tracedCoord + vec2(delta.x, 0.0));       
-    vec4 vL = getVelocity(velocity, tracedCoord - vec2(delta.x, 0.0)); 
+    vec2 vT = getVelocity(velocity, tracedCoord + vec2(0.0, delta.y)).xy;
+    vec2 vB = getVelocity(velocity, tracedCoord - vec2(0.0, delta.y)).xy;      
+    vec2 vR = getVelocity(velocity, tracedCoord + vec2(delta.x, 0.0)).xy;       
+    vec2 vL = getVelocity(velocity, tracedCoord - vec2(delta.x, 0.0)).xy; 
 
     //need to bilerp this result
-    gl_FragColor = mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5);
+    gl_FragColor = vec4(mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5), 0, 0);
 }

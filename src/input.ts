@@ -54,8 +54,8 @@ class InputController {
         var dist : vec2 = this.currentPos.distance(this.lastPos);
 
         // normalize
-        let xforce : number = dist.x / this.canvas.width;
-        let yforce : number = dist.y / this.canvas.height;
+        let xforce : number = dist.x;// / this.canvas.width;
+        let yforce : number = dist.y;// / this.canvas.height;
 
         this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce);
     }
