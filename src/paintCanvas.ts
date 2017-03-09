@@ -13,6 +13,9 @@ module PaintCanvas {
         private divergenceBuffer : any;
         private pressureBuffer : any;
 
+        //test
+        private visBuffer : any;
+
         private drawingProgram : any;
         private fluidSolver : any;
 
@@ -30,7 +33,8 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
             this.pressureBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
- 
+            this.visBuffer = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
+
             this.drawingProgram = new Module.Drawing();
             this.fluidSolver = new Module.GridFluidSolver();
             this.forceHandler = new Module.ForceHandler();
@@ -43,9 +47,13 @@ module PaintCanvas {
 
             this.inputControl = new InputController(canvas, this.forceHandler);
 
-            this.timer = setInterval(function() { 
-                this.update(); 
-            }.bind(this), 100);
+            // testing creating a test buffer
+            this.fluidSolver.createVisBuffer(this.visBuffer);
+            this.drawingProgram.drawBuffer(this.visBuffer);
+            
+            // this.timer = setInterval(function() { 
+            //     this.update(); 
+            // }.bind(this), 100);
         }
 
         public cleanup() {

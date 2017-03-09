@@ -19,6 +19,7 @@ public:
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
     void applyForces(Buffer& target, std::vector<ForcePacket>& forces);
+    void createVisBuffer(Buffer& buffer);
 
 private:
     void drawQuad();
@@ -38,6 +39,7 @@ private:
     GLuint computeDivergenceProgram;
     GLuint applyForceProgram;
     GLuint simpleDrawProgram;
+    GLuint visBufferProgram;
 };
 
 EMSCRIPTEN_BINDINGS(GridFluidSolver) 
@@ -49,7 +51,8 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("applyForces", &GridFluidSolver::applyForces)
         .function("computeDivergance", &GridFluidSolver::computeDivergence)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
-        .function("subtractGradient", &GridFluidSolver::subtractGradient);
+        .function("subtractGradient", &GridFluidSolver::subtractGradient)
+        .function("createVisBuffer", &GridFluidSolver::createVisBuffer);
 }
 
 //////////////////////////////////////////// SOURCE
@@ -86,6 +89,8 @@ bool GridFluidSolver::init(int width, int height)
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
     applyForceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyForce.frag");
 
+    visBufferProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/visBuffer.frag");
+
     return true;
 }
 
@@ -100,6 +105,21 @@ void GridFluidSolver::drawQuad()
 
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+void GridFluidSolver::createVisBuffer(Buffer& buffer)
+{
+    glUseProgram(visBufferProgram);
+
+    GLint res = glGetUniformLocation(visBufferProgram, "resolution");
+    glUniform2f(res, (float)m_width, (float)m_height);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, buffer.fboHandle);
+    
+    drawQuad();
+
+    // unbind the framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GridFluidSolver::advect(DoubleBuffer& velocity, Buffer& input, float dissapate, float dt)
