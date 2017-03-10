@@ -9,6 +9,7 @@ struct ForcePacket
     int yPix;
     float xForce;
     float yForce;
+    float size;
 };
 
 class ForceHandler
@@ -17,7 +18,7 @@ public:
     ForceHandler(){};
     ~ForceHandler(){};
 
-    void addForcetoList(int xPixel,int yPixel,float xForce, float yForce);
+    void addForcetoList(int xPixel,int yPixel,float xForce, float yForce, float size);
     std::vector<ForcePacket>& getForceList();
     void reset();
     bool isForceAvailable();
@@ -32,7 +33,8 @@ EMSCRIPTEN_BINDINGS(ForceBindings)
         .field("xPix", &ForcePacket::xPix)
         .field("yPix", &ForcePacket::yPix)
         .field("xForce", &ForcePacket::xForce)
-        .field("yForce", &ForcePacket::yForce);
+        .field("yForce", &ForcePacket::yForce)
+        .field("size", &ForcePacket::size);
 
     emscripten::register_vector<ForcePacket>("ForceList");
 
@@ -44,7 +46,7 @@ EMSCRIPTEN_BINDINGS(ForceBindings)
         .function("isForceAvailable", &ForceHandler::isForceAvailable);
 }
 
-void ForceHandler::addForcetoList(int xPixel,int yPixel,float xForce, float yForce)
+void ForceHandler::addForcetoList(int xPixel,int yPixel,float xForce, float yForce, float size)
 {
     ForcePacket pkt;
 
@@ -52,6 +54,7 @@ void ForceHandler::addForcetoList(int xPixel,int yPixel,float xForce, float yFor
     pkt.yPix = yPixel;
     pkt.xForce = xForce;
     pkt.yForce = yForce;
+    pkt.size = size;
 
     forceList.push_back(pkt);
 }

@@ -3,25 +3,21 @@ precision highp float;
 varying vec2 tex;
 
 uniform sampler2D Velocity;
-
-uniform vec2 Point;
-uniform float Radius;
-uniform vec3 FillColor;
-
 uniform vec2 resolution;
-
+uniform vec2 forceVal;
+uniform vec2 forcePos;
+uniform float radius;
 
 void main()
 {
-    vec2 coord = gl_FragCoord.xy / resolution;
+    vec4 vel = texture2D(Velocity, gl_FragCoord.xy / resolution);
 
-    float d = distance(Point, coord);
+    float d = distance(forcePos, gl_FragCoord.xy);
 
-    if (d < Radius) 
+    if (d < radius) 
     {
-        gl_FragColor = vec4(FillColor, 1.0);
-        return;
+        vel.xy += forceVal;
     }
 
-    gl_FragColor = texture2D(Velocity, coord);
+    gl_FragColor = vel;
 }
