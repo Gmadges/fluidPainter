@@ -234,7 +234,7 @@ void GridFluidSolver::applyCircleForces(DoubleBuffer& velocity, std::vector<Forc
         glUniform2f(pos, pkt.xPix, pkt.yPix);
 
         GLint radius = glGetUniformLocation(applyForceProgram, "radius");
-        glUniform1f(radius, 25.0f);
+        glUniform1f(radius, pkt.size);
 
         glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
 
