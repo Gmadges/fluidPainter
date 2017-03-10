@@ -1,7 +1,5 @@
 precision highp float;
 
-varying vec2 tex;
-
 uniform sampler2D velocity;                                    
 uniform sampler2D inputSampler;                                       
 
@@ -25,8 +23,6 @@ void main(void)
     //need to bilerp this result
     gl_FragColor = vec4(mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5), 0, 0);
 }precision highp float;
-
-varying vec2 tex;
 
 uniform sampler2D velocity;                                    
 uniform sampler2D inputSampler;                                       
@@ -55,8 +51,6 @@ void main()
     gl_FragColor = texture2D(inputSampler, (endCoord / resolution)) * dissapation;
 }precision highp float;
 
-varying vec2 tex;
-
 uniform sampler2D Velocity;
 uniform vec2 resolution;
 uniform vec2 forceVal;
@@ -76,8 +70,6 @@ void main()
 
     gl_FragColor = vel;
 }precision highp float;
-
-varying vec2 tex;                                         
 
 uniform sampler2D Velocity;                                                                                  
 uniform vec2 resolution;
@@ -101,9 +93,7 @@ void main()
     float divergence = ((vR.x - vL.x) * (0.5 / resolution.x)) + ((vT.y - vB.y) * (0.5 / resolution.y));
 
     gl_FragColor = vec4(divergence);
-}                                                                     precision highp float;
-
-varying vec2 tex;                                       
+}                                                                     precision highp float;                         
 
 uniform sampler2D Pressure;                                                
 uniform sampler2D Divergence;                                                                                           
@@ -142,8 +132,6 @@ void main()
     gl_Position = Position;
 }                                     precision highp float;
 
-varying vec2 tex;                                           
-
 uniform sampler2D Velocity;                                            
 uniform sampler2D Pressure;
 
@@ -173,8 +161,7 @@ void main()
     vec3 color = texture2D(image, tex).rgb;
     gl_FragColor = vec4(color, 1.0);       
 }precision highp float;
-
-varying vec2 tex;                                               
+                                            
 uniform vec2 resolution;
 
 void main()                                                           
