@@ -40,7 +40,7 @@ module PaintCanvas {
             this.forceHandler = new Module.ForceHandler();
 
             // init
-            this.drawingProgram.init();
+            this.drawingProgram.init(canvas.width, canvas.height);
             //this.fluidSolver.init(canvas.width, canvas.height);
 
             console.log("initialised");

@@ -17,7 +17,7 @@ var PaintCanvas;
             this.drawingProgram = new Module.Drawing();
             this.fluidSolver = new Module.GridFluidSolver();
             this.forceHandler = new Module.ForceHandler();
-            this.drawingProgram.init();
+            this.drawingProgram.init(canvas.width, canvas.height);
             console.log("initialised");
             this.inputControl = new InputController(canvas, this.forceHandler);
             this.draw();

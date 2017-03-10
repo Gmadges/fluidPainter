@@ -81,16 +81,6 @@ bool GridFluidSolver::init(int width, int height)
         -1.0f,  1.0f, 0.0f, // Top-left
     };
 
-    quadTex = {
-        0.0f, 0.0f, // Top-left
-        1.0f, 0.0f, // Top-right
-        1.0f, 1.0f, // Bottom-right
-        
-        1.0f, 1.0f, // Bottom-right
-        0.0f, 1.0f,  // Bottom-left
-        0.0f, 0.0f, // Top-left
-    };
-
     m_height = height;
     m_width = width;
 
@@ -111,9 +101,6 @@ void GridFluidSolver::drawQuad()
     //set up the vertices array
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
     glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
-    glEnableVertexAttribArray(1);
 
     // draw
     glDrawArrays(GL_TRIANGLES, 0, 6);
