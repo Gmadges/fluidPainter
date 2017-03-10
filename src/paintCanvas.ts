@@ -52,7 +52,7 @@ module PaintCanvas {
             
             this.timer = setInterval(function() { 
                 this.update(); 
-            }.bind(this), 100);
+            }.bind(this), 33);
         }
 
         public cleanup() {
@@ -64,7 +64,7 @@ module PaintCanvas {
 
         private update() {
             // advect
-            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 1.0, 0.1);
+            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 0.33);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
@@ -72,7 +72,8 @@ module PaintCanvas {
 
                 console.log("force");
 
-                this.fluidSolver.applyForces(this.velocityBuffer.readBuffer, this.forceHandler.getForces());
+                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
+                this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
                 //reset forces
                 this.forceHandler.reset();
             }
@@ -102,7 +103,7 @@ module PaintCanvas {
             // draw 
             let debugDraw = this.inputControl.getDebugDrawState();
             if(debugDraw === "visualise") {
-                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer,1.0, 0.1);
+                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 0.33);
                 this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
                 this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
             }

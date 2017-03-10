@@ -6,6 +6,12 @@
 #include "bufferUtils.hpp"
 #include "forceHandler.hpp"
 
+enum class ForceType {
+    PIXEL,
+    CIRCLE
+};
+
+
 class GridFluidSolver
 {
 public:
@@ -14,15 +20,17 @@ public:
     ~GridFluidSolver(){};
 
     bool init(int width, int height);
-    void advect(Buffer& output, Buffer& velocity, Buffer& input, float dissapate, float dt);
+    void advect(Buffer& output, Buffer& velocity, Buffer& input, float dt);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
-    void applyForces(Buffer& target, std::vector<ForcePacket>& forces);
+    void applyForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, ForceType type);
     void createVisBuffer(Buffer& buffer);
 
 private:
     void drawQuad();
+    void applyPixelForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces);
+    void applyCircleForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces);
 
 private:
 
@@ -53,6 +61,10 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
         .function("subtractGradient", &GridFluidSolver::subtractGradient)
         .function("createVisBuffer", &GridFluidSolver::createVisBuffer);
+
+    emscripten::enum_<ForceType>("ForceType")
+        .value("pixel", ForceType::PIXEL)
+        .value("circle", ForceType::CIRCLE);
 }
 
 //////////////////////////////////////////// SOURCE
@@ -122,7 +134,7 @@ void GridFluidSolver::createVisBuffer(Buffer& buffer)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, float dissapate, float dt)
+void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, float dt)
 {
     glViewport(0, 0, m_width, m_height);
 
@@ -130,12 +142,10 @@ void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, fl
     glUseProgram(advectProgram);
 
     // set uniforms
-    GLint dissapateLoc = glGetUniformLocation(advectProgram, "dissapation");
     GLint resLoc = glGetUniformLocation(advectProgram, "resolution");
     GLint timeStepLoc = glGetUniformLocation(advectProgram, "dt");
     glUniform2f(resLoc, (float)m_width, (float)m_height);
     glUniform1f(timeStepLoc, dt);
-    glUniform1f(dissapateLoc, dissapate);
 
     // set textures
     GLint sourceTexture = glGetUniformLocation(advectProgram, "inputSampler");
@@ -154,7 +164,29 @@ void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, fl
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::applyForces(Buffer& target, std::vector<ForcePacket>& forces)
+void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, ForceType type)
+{
+    switch(type)
+    {
+        case ForceType::PIXEL:
+        {
+            applyPixelForces(velocity, forces);
+            break;
+        }
+        case ForceType::CIRCLE:
+        {
+            applyCircleForces(velocity, forces);
+            break;
+        }
+        default:
+        {
+            // do nothing
+            return;
+        }
+    }
+}
+
+void GridFluidSolver::applyPixelForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces)
 {
     // gonna try and do this without the draw call first
     // maybe benchmark the diff between uploading uniforms and doing a draw call
@@ -168,7 +200,7 @@ void GridFluidSolver::applyForces(Buffer& target, std::vector<ForcePacket>& forc
 
         // bind tex
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, target.texHandle);
+        glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
         
         glTexSubImage2D(GL_TEXTURE_2D,
  	                    0,
@@ -181,6 +213,37 @@ void GridFluidSolver::applyForces(Buffer& target, std::vector<ForcePacket>& forc
  	                    data);
 
         // unbind
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+}
+
+void GridFluidSolver::applyCircleForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces)
+{
+    // lets loop this for now
+    for(ForcePacket pkt : forces)
+    {
+        glUseProgram(applyForceProgram);
+
+        GLint res = glGetUniformLocation(applyForceProgram, "resolution");
+        glUniform2f(res, (float)m_width, (float)m_height);
+
+        GLint force = glGetUniformLocation(applyForceProgram, "forceVal");
+        glUniform2f(force, pkt.xForce, pkt.yForce);
+
+        GLint pos = glGetUniformLocation(applyForceProgram, "forcePos");
+        glUniform2f(pos, pkt.xPix, pkt.yPix);
+
+        GLint radius = glGetUniformLocation(applyForceProgram, "radius");
+        glUniform1f(radius, 25.0f);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+
+        drawQuad();
+
+        // unbind the framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
