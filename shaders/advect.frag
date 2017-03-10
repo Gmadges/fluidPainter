@@ -5,7 +5,6 @@ varying vec2 tex;
 uniform sampler2D velocity;                                    
 uniform sampler2D inputSampler;                                       
 
-uniform float dissapation;
 uniform vec2 resolution; 
 uniform float dt;
 
