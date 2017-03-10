@@ -1,10 +1,10 @@
 precision highp float;
-                                      
-uniform sampler2D image;
-uniform vec2 resolution;                            
+
+varying vec2 tex;                                           
+uniform sampler2D image;                               
 
 void main()                                                          
 {
-    vec3 color = texture2D(image, gl_FragCoord.xy / resolution).rgb;
+    vec3 color = texture2D(image, tex).rgb;
     gl_FragColor = vec4(color, 1.0);       
 }
