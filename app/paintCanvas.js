@@ -18,13 +18,9 @@ var PaintCanvas;
             this.fluidSolver = new Module.GridFluidSolver();
             this.forceHandler = new Module.ForceHandler();
             this.drawingProgram.init();
-            this.fluidSolver.init(canvas.width, canvas.height);
             console.log("initialised");
             this.inputControl = new InputController(canvas, this.forceHandler);
-            this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
-            this.timer = setInterval(function () {
-                this.update();
-            }.bind(this), 33);
+            this.draw();
         }
         Program.prototype.cleanup = function () {
             console.log("clean up");
@@ -55,8 +51,6 @@ var PaintCanvas;
         Program.prototype.draw = function () {
             var debugDraw = this.inputControl.getDebugDrawState();
             if (debugDraw === "visualise") {
-                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 0.33);
-                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
                 this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
             }
             else if (debugDraw === "velocity") {
