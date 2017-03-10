@@ -1,0 +1,185 @@
+precision highp float;
+
+varying vec2 tex;
+
+uniform sampler2D velocity;                                    
+uniform sampler2D inputSampler;                                       
+
+uniform vec2 resolution; 
+uniform float dt;
+
+void main(void) 
+{
+    vec2 pos =  gl_FragCoord.xy;
+
+    vec2 tracedPos = pos - dt * texture2D(velocity, pos / resolution).xy * 100.0;
+    
+    vec2 tracedCoord = tracedPos / resolution;    
+    vec2 delta = 2.0 / resolution;
+
+    vec2 vT = texture2D(inputSampler, tracedCoord + vec2(0.0, delta.y)).xy;
+    vec2 vB = texture2D(inputSampler, tracedCoord - vec2(0.0, delta.y)).xy;      
+    vec2 vR = texture2D(inputSampler, tracedCoord + vec2(delta.x, 0.0)).xy;       
+    vec2 vL = texture2D(inputSampler, tracedCoord - vec2(delta.x, 0.0)).xy; 
+
+    //need to bilerp this result
+    gl_FragColor = vec4(mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5), 0, 0);
+}precision highp float;
+
+varying vec2 tex;
+
+uniform sampler2D velocity;                                    
+uniform sampler2D inputSampler;                                       
+
+uniform float dissapation;
+uniform vec2 resolution; 
+uniform float dt;                             
+
+void main()                                                          
+{  
+    // we dont use tex
+    vec2 coord = gl_FragCoord.xy;                                                                                               
+
+    //grab source, usually velocity
+    vec2 vel = texture2D(velocity, coord / resolution).rg * 100.0;
+
+    // get half coords of source
+    // this clamp can help with boundaries
+    vec2 halfCoord = clamp( coord - ((vel * 0.5) * dt), vec2(0.0, 0.0), resolution) ;
+    vec2 halfVel = texture2D(velocity, (halfCoord / resolution)).rg * 100.0;
+
+    // this clamp can help with boundaries
+    vec2 endCoord = clamp(coord - (halfVel * dt), vec2(0.0, 0.0), resolution) ;
+
+    // now grab the value from the input tex based on the positions and values we've found
+    gl_FragColor = texture2D(inputSampler, (endCoord / resolution)) * dissapation;
+}precision highp float;
+
+varying vec2 tex;
+
+uniform sampler2D Velocity;
+uniform vec2 resolution;
+uniform vec2 forceVal;
+uniform vec2 forcePos;
+uniform float radius;
+
+void main()
+{
+    vec4 vel = texture2D(Velocity, gl_FragCoord.xy / resolution);
+
+    float d = distance(forcePos, gl_FragCoord.xy);
+
+    if (d < radius) 
+    {
+        vel.xy += forceVal;
+    }
+
+    gl_FragColor = vel;
+}precision highp float;
+
+varying vec2 tex;                                         
+
+uniform sampler2D Velocity;                                                                                  
+uniform vec2 resolution;
+
+void main()                                                           
+{                             
+    vec2 coord = gl_FragCoord.xy / resolution;
+
+    // could do this calc before and have as uniform for speed
+    // i like how it reads here
+    vec2 delta = 2.0 / resolution;
+
+    // Find neighboring velocities, top, bottom , right, left
+    vec2 vT = texture2D(Velocity, coord + vec2(0.0, delta.y)).xy;
+    vec2 vB = texture2D(Velocity, coord - vec2(0.0, delta.y)).xy;      
+    vec2 vR = texture2D(Velocity, coord + vec2(delta.x, 0.0)).xy;       
+    vec2 vL = texture2D(Velocity, coord - vec2(delta.x, 0.0)).xy;              
+
+    // calc divergence 
+    // we have our sections in nice chunks so we can get away with dividing over two.
+    float divergence = ((vR.x - vL.x) * (0.5 / resolution.x)) + ((vT.y - vB.y) * (0.5 / resolution.y));
+
+    gl_FragColor = vec4(divergence);
+}                                                                     precision highp float;
+
+varying vec2 tex;                                       
+
+uniform sampler2D Pressure;                                                
+uniform sampler2D Divergence;                                                                                           
+
+uniform vec2 resolution;
+uniform float Alpha;                                                                                                              
+
+void main()                                                                
+{                                                                          
+    vec2 coord = gl_FragCoord.xy / resolution;
+
+    // could do this calc before and have as uniform for speed
+    // i like how it reads here
+    vec2 delta = 1.0 / resolution;
+
+    // just a texture look up without boundary checks
+    // this is more like the divergance code
+    float T = texture2D(Pressure, coord + vec2(0, delta.y)).x;
+    float B = texture2D(Pressure, coord - vec2(0, delta.y)).x;      
+    float R = texture2D(Pressure, coord + vec2(delta.x, 0)).x;       
+    float L = texture2D(Pressure, coord - vec2(delta.x, 0)).x;
+
+    // divergance in the middle of our area
+    float bC = texture2D(Divergence, coord).r;
+
+    // use 0.25 as rBeta
+    gl_FragColor = vec4( (L + R + B + T + Alpha * bC) * 0.25);
+}  attribute vec4 Position;   
+attribute vec2 Texcoord;              
+
+varying highp vec2 tex;
+
+void main()                           
+{  
+    tex = Texcoord;
+    gl_Position = Position;
+}                                     precision highp float;
+
+varying vec2 tex;                                           
+
+uniform sampler2D Velocity;                                            
+uniform sampler2D Pressure;
+
+uniform vec2 resolution;                            
+
+void main()                                                            
+{   
+    vec2 coord = gl_FragCoord.xy / resolution;
+    vec2 delta = 2.0 / resolution;
+
+    float T = texture2D(Pressure, coord + vec2(0, delta.y)).x;
+    float B = texture2D(Pressure, coord - vec2(0, delta.y)).x;      
+    float R = texture2D(Pressure, coord + vec2(delta.x, 0)).x;       
+    float L = texture2D(Pressure, coord - vec2(delta.x, 0)).x; 
+    vec2 v = texture2D(Velocity, coord).xy;
+
+    vec2 val = v - vec2((R-L), (T-B)) * (0.5 / resolution);
+
+    gl_FragColor = vec4( val, 0.0, 0.0);                         
+}    precision highp float;
+
+varying vec2 tex;                                           
+uniform sampler2D image;                               
+
+void main()                                                          
+{
+    vec3 color = texture2D(image, tex).rgb;
+    gl_FragColor = vec4(color, 1.0);       
+}precision highp float;
+
+varying vec2 tex;                                               
+uniform vec2 resolution;
+
+void main()                                                           
+{                             
+    vec2 coord = gl_FragCoord.xy / resolution;
+
+    gl_FragColor = vec4(coord, 0.0, 0.0);
+}                                                                     
