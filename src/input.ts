@@ -31,6 +31,11 @@ class InputController {
         canvas.onmousemove = this.mouseMove.bind(this);
         canvas.onmouseleave = this.mouseUp.bind(this);
 
+        // using listeners because the other way didnt work for touch
+        canvas.addEventListener("touchstart", this.touchDown.bind(this), false);
+        canvas.addEventListener("touchend", this.mouseUp.bind(this), false);
+        canvas.addEventListener("touchmove", this.touchMove.bind(this), false);
+
         // for debugging
         window.onkeyup = this.debugDrawing.bind(this);
     }
@@ -44,12 +49,30 @@ class InputController {
         this.bMouseDown = true;
     }
 
+    private touchDown(e: Event) {
+        this.currentPos = this.getTouchPosition(this.canvas, e);
+        this.bMouseDown = true;
+    }
+
+    private touchMove(e : Event) {
+        if(!this.bMouseDown) return;
+        
+        this.lastPos = this.currentPos;
+        this.currentPos = this.getTouchPosition(this.canvas, e);
+        
+        this.addForce();
+    }
+
     private mouseMove(e : Event) {
         if(!this.bMouseDown) return;
         
         this.lastPos = this.currentPos;
         this.currentPos = this.getCursorPosition(this.canvas, e);
+        
+        this.addForce();
+    }
 
+    private addForce() {
         // calc the distance
         var dist : vec2 = this.currentPos.distance(this.lastPos);
 
@@ -63,6 +86,11 @@ class InputController {
     private getCursorPosition(canvas, event) : any {
         var rect = canvas.getBoundingClientRect();
         return new vec2(event.clientX - rect.left, event.clientY - rect.top);
+    }
+
+    private getTouchPosition(canvas, event) : any {
+        var rect = canvas.getBoundingClientRect();
+        return new vec2(event.touches[0].clientX - rect.left, event.touches[0].clientY - rect.top);
     }
 
     // for testing debugDrawing
