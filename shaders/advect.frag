@@ -8,10 +8,18 @@ uniform float dt;
 
 void main(void) 
 {
-    vec2 pos =  gl_FragCoord.xy;
+    vec2 pos = gl_FragCoord.xy;
 
     vec2 tracedPos = pos - dt * texture2D(velocity, pos / resolution).xy * 100.0;
     
+    // things get blurrier over time because of the sampling
+    // if theres no velocity lets just leave it.
+    if(tracedPos == pos) 
+    {
+        gl_FragColor = texture2D(inputSampler, pos / resolution);
+        return;
+    }
+
     vec2 tracedCoord = tracedPos / resolution;    
     vec2 delta = 2.0 / resolution;
 
