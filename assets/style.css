@@ -1,0 +1,20 @@
+html { 
+    min-height:100%;
+    position:relative
+}
+body { 
+    height:100%
+}
+
+#easel {
+    padding: 0;
+    margin: auto;
+    display: block;
+    width: 800px;
+    height: 600px;
+    position: absolute;
+    top: 5%;
+    left: 0;
+    right: 0;
+    box-shadow: 10px 10px 5px #888888;
+}

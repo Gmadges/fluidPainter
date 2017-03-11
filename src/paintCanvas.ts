@@ -1,4 +1,4 @@
-/// <reference path="input.ts" />
+/// <reference path="inputController.ts" />
 
 var Module : any;
 
@@ -12,6 +12,9 @@ module PaintCanvas {
         private velocityBuffer : any;
         private divergenceBuffer : any;
         private pressureBuffer : any;
+
+        //test
+        private visBuffer : any;
 
         private drawingProgram : any;
         private fluidSolver : any;
@@ -30,7 +33,8 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
             this.pressureBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(canvas.width, canvas.height);
- 
+            this.visBuffer = Module.BufferUtils.createDoubleBuffer(canvas.width, canvas.height);
+
             this.drawingProgram = new Module.Drawing();
             this.fluidSolver = new Module.GridFluidSolver();
             this.forceHandler = new Module.ForceHandler();
@@ -43,6 +47,9 @@ module PaintCanvas {
 
             this.inputControl = new InputController(canvas, this.forceHandler);
 
+            // testing creating a test buffer
+            this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
+            
             this.timer = setInterval(function() { 
                 this.update(); 
             }.bind(this), 100);
@@ -57,7 +64,7 @@ module PaintCanvas {
 
         private update() {
             // advect
-            this.fluidSolver.advect(this.velocityBuffer, this.velocityBuffer.readBuffer, 1.0, 0.1);
+            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 1);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
@@ -65,7 +72,10 @@ module PaintCanvas {
 
                 console.log("force");
 
-                this.fluidSolver.applyForces(this.velocityBuffer.readBuffer, this.forceHandler.getForces());
+                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
+
+                // only need to swap buffers if we use circles to draw;
+                this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
                 //reset forces
                 this.forceHandler.reset();
             }
@@ -75,10 +85,10 @@ module PaintCanvas {
 
             //calc pressures
             //clear buffers
-            Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+            //Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            //Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
 
-            for(let i = 0; i < 10; i++) {
+            for(let i = 0; i < 5; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
                 this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);
             }
@@ -88,9 +98,18 @@ module PaintCanvas {
             //this.fluidSolver.subtractGradient(this.velocityBuffer, this.divergenceBuffer);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
+            this.draw();
+        }
+
+        private draw() {
             // draw 
             let debugDraw = this.inputControl.getDebugDrawState();
-            if(debugDraw === "velocity") {
+            if(debugDraw === "visualise") {
+                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
+                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
+                this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
+            }
+            else if(debugDraw === "velocity") {
                 this.drawingProgram.drawBuffer(this.velocityBuffer.readBuffer);
             }
             else if(debugDraw === "divergence") {
@@ -99,7 +118,6 @@ module PaintCanvas {
             else if(debugDraw === "pressure") {
                 this.drawingProgram.drawBuffer(this.pressureBuffer.readBuffer);
             }
-
         }
     }
 }
