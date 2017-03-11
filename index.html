@@ -5,17 +5,39 @@
         <title>PaintCanvas</title>
         <meta name="description" content="">
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="assets/css/bootstrap.css">
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
         <link rel="stylesheet" href="assets/style.css">
     </head>
     <body>
         
-        <div id="mySidenav" class="sidenav">
-            <h1> Settings </h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-3">
+                    <div class="row">
+                        <div class="col">
+                            <h1>
+                                Input Settings
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Brush
+                        </div>
+                        <div class="col">
+                            size
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div id="easel">
+                        <canvas id="canvas"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div id="easel">
-            <canvas id="canvas"></canvas>
-        </div>
         <script>
             var canvas = document.getElementById("canvas");
             var easel = document.getElementById("easel");

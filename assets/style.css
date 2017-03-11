@@ -13,45 +13,8 @@ body {
     width: 800px;
     height: 600px;
     position: absolute;
-    top: 5%;
+    top: 15%;
     left: 0;
     right: 0;
     box-shadow: 10px 10px 5px #888888;
-}
-
-/* This is from https://www.w3schools.com/howto/howto_js_sidenav.asp*/
-
-/* The side navigation menu */
-.sidenav {
-    height: 100%; /* 100% Full-height */
-    width: 10px; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Stay on top */
-    top: 0;
-    left: 0;
-    background-color: #d6d6d6; 
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 20px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-}
-
-/* The navigation menu links */
-.sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    display: block;
-    transition: 0.3s
-}
-
-/* Position and style the close button (top right corner) */
-.sidenav {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-}
-
-.sidenav:hover{
-    width: 250px;
 }
