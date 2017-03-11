@@ -1,18 +1,19 @@
 /// <reference path="inputController.ts" />
 
+var $ : JQueryStatic;
+
 class InputSettings {
 
-    constructor() {
+    constructor(private inputControl : InputController) {
+        $('#sizeRange').on("change",  this.sizeChange.bind(this));
+    }
 
-        
+    private brushChange() {
 
     }
 
-    private openSettings() {
-
-    }
-
-    private closeSettings() {
-
+    private sizeChange() {
+        this.inputControl.brushSize = parseInt($('#sizeRange').val());
+        $('#brushSizeText').text('Size: ' + this.inputControl.brushSize + 'px');
     }
 }

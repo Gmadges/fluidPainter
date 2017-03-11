@@ -23,6 +23,7 @@ class InputController {
     private currentPos : vec2 = new vec2(0,0);
 
     private debugDrawState : string = "visualise";
+    public brushSize : number = 10;
 
     constructor(private canvas: HTMLCanvasElement, private forceHandler : any) {
 
@@ -81,7 +82,7 @@ class InputController {
         let yforce : number = dist.y;// / this.canvas.height;
 
         // hardcode size for now
-        this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, 10);
+        this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, this.brushSize);
     }
 
     private getCursorPosition(canvas, event) : any {

@@ -8,6 +8,7 @@ module PaintCanvas {
     export class Program {
 
         private inputControl : InputController;
+        private inputSettings : InputSettings;
         private forceHandler : any;
 
         private velocityBuffer : any;
@@ -47,6 +48,7 @@ module PaintCanvas {
             console.log("initialised");
 
             this.inputControl = new InputController(canvas, this.forceHandler);
+            this.inputSettings = new InputSettings(this.inputControl);
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
