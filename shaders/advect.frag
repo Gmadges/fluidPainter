@@ -14,20 +14,21 @@ void main(void)
     
     // things get blurrier over time because of the sampling
     // if theres no velocity lets just leave it.
-    if(tracedPos == pos) 
-    {
-        gl_FragColor = texture2D(inputSampler, pos / resolution);
-        return;
-    }
+    // if(tracedPos == pos) 
+    // {
+    //     gl_FragColor = texture2D(inputSampler, pos / resolution);
+    //     return;
+    // }
 
-    vec2 tracedCoord = tracedPos / resolution;    
-    vec2 delta = 2.0 / resolution;
+    vec4 corners;
+    corners.xy = floor(tracedPos - 0.5) + 0.5; 
+    corners.zw = corners.xy + 1.0;               
+    vec2 t = tracedPos - corners.xy;
 
-    vec3 vT = texture2D(inputSampler, tracedCoord + vec2(0.0, delta.y)).xyz;
-    vec3 vB = texture2D(inputSampler, tracedCoord - vec2(0.0, delta.y)).xyz;      
-    vec3 vR = texture2D(inputSampler, tracedCoord + vec2(delta.x, 0.0)).xyz;       
-    vec3 vL = texture2D(inputSampler, tracedCoord - vec2(delta.x, 0.0)).xyz; 
+    vec4 tex11 = texture2D(inputSampler, corners.xy / resolution);
+    vec4 tex21 = texture2D(inputSampler, corners.zy / resolution);
+    vec4 tex12 = texture2D(inputSampler, corners.xw / resolution);
+    vec4 tex22 = texture2D(inputSampler, corners.zw / resolution);
 
-    //need to bilerp this result
-    gl_FragColor = vec4(mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5), 0);
+    gl_FragColor = mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
 }
