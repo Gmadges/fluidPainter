@@ -54,7 +54,7 @@ module PaintCanvas {
             
             this.timer = setInterval(function() { 
                 this.update(); 
-            }.bind(this), 33);
+            }.bind(this), 100);
         }
 
         public cleanup() {
@@ -66,7 +66,7 @@ module PaintCanvas {
 
         private update() {
             // advect
-            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 0.33);
+            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 1);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // apply force
@@ -87,10 +87,10 @@ module PaintCanvas {
 
             //calc pressures
             //clear buffers
-            Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+            //Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            //Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
 
-            for(let i = 0; i < 10; i++) {
+            for(let i = 0; i < 5; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
                 this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);
             }
@@ -107,7 +107,7 @@ module PaintCanvas {
             // draw 
             let debugDraw = this.inputControl.getDebugDrawState();
             if(debugDraw === "visualise") {
-                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 0.33);
+                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
                 this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
                 this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
             }
