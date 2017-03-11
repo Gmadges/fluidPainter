@@ -14,7 +14,8 @@
             body { 
                 height:100%
             }
-            canvas {
+
+            #easel {
                 padding: 0;
                 margin: auto;
                 display: block;
@@ -30,10 +31,12 @@
 
     </head>
     <body>
-        <canvas id="canvas"></canvas>
-
+        <div id="easel">
+            <canvas id="canvas"></canvas>
+        </div>
         <script>
             var canvas = document.getElementById("canvas");
+            var easel = document.getElementById("easel");
             //make the canvas fullscreen
             // basically we overload if we do full screen at the moment
             // canvas.width = window.innerWidth * 0.8;
@@ -42,8 +45,8 @@
             canvas.height = 600;
 
             // set style vals
-            canvas.style.width = canvas.width + 'px';
-            canvas.style.height = canvas.height + 'px';
+            easel.style.width = canvas.width + 'px';
+            easel.style.height = canvas.height + 'px';
 
             // tell emscripten about the canvas we're using
             // also let it know that the .mem file is within the app/ dir.
