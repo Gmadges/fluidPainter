@@ -1,4 +1,5 @@
 /// <reference path="inputController.ts" />
+/// <reference path="inputSettings.ts" />
 
 var Module : any;
 
