@@ -1,28 +1,34 @@
 precision highp float;
 
-varying vec2 tex;
-
 uniform sampler2D velocity;                                    
 uniform sampler2D inputSampler;                                       
 
-uniform float dissapation;
 uniform vec2 resolution; 
 uniform float dt;
 
 void main(void) 
 {
-    vec2 pos =  gl_FragCoord.xy;
+    vec2 pos = gl_FragCoord.xy;
 
     vec2 tracedPos = pos - dt * texture2D(velocity, pos / resolution).xy * 100.0;
     
-    vec2 tracedCoord = tracedPos / resolution;    
-    vec2 delta = 2.0 / resolution;
+    // things get blurrier over time because of the sampling
+    // if theres no velocity lets just leave it.
+    // if(tracedPos == pos) 
+    // {
+    //     gl_FragColor = texture2D(inputSampler, pos / resolution);
+    //     return;
+    // }
 
-    vec2 vT = texture2D(velocity, tracedCoord + vec2(0.0, delta.y)).xy;
-    vec2 vB = texture2D(velocity, tracedCoord - vec2(0.0, delta.y)).xy;      
-    vec2 vR = texture2D(velocity, tracedCoord + vec2(delta.x, 0.0)).xy;       
-    vec2 vL = texture2D(velocity, tracedCoord - vec2(delta.x, 0.0)).xy; 
+    vec4 corners;
+    corners.xy = floor(tracedPos - 0.5) + 0.5; 
+    corners.zw = corners.xy + 1.0;               
+    vec2 t = tracedPos - corners.xy;
 
-    //need to bilerp this result
-    gl_FragColor = vec4(mix(mix(vL, vR, 0.5), mix(vT, vB, 0.5), 0.5), 0, 0);
+    vec4 tex11 = texture2D(inputSampler, corners.xy / resolution);
+    vec4 tex21 = texture2D(inputSampler, corners.zy / resolution);
+    vec4 tex12 = texture2D(inputSampler, corners.xw / resolution);
+    vec4 tex22 = texture2D(inputSampler, corners.zw / resolution);
+
+    gl_FragColor = mix(mix(tex11, tex21, t.x), mix(tex12, tex22, t.x), t.y);
 }

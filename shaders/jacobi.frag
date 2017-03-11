@@ -1,6 +1,4 @@
-precision highp float;
-
-varying vec2 tex;                                       
+precision highp float;                         
 
 uniform sampler2D Pressure;                                                
 uniform sampler2D Divergence;                                                                                           

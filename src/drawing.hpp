@@ -54,7 +54,7 @@ void Drawing::init()
         0.0f, 0.0f, // Top-left
     };
 
-    simpleShaderProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/texture.frag");
+    simpleShaderProgram = Shaders::buildProgramFromFiles("shaders/simpleTex.vert", "shaders/texture.frag");
 }
 
 void Drawing::drawBuffer(Buffer& buffer)
