@@ -72,13 +72,10 @@ module PaintCanvas {
 
             // apply force
             if(this.forceHandler.isForceAvailable()) {
-
-                console.log("force");
-
+                
                 this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
-
-                // only need to swap buffers if we use circles to draw;
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+
                 //reset forces
                 this.forceHandler.reset();
             }
