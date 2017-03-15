@@ -5,35 +5,48 @@
         <title>PaintCanvas</title>
         <meta name="description" content="">
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-        
-        <style>
-            html { 
-                min-height:100%;
-                position:relative
-            }
-            body { 
-                height:100%
-            }
-
-            #easel {
-                padding: 0;
-                margin: auto;
-                display: block;
-                width: 800px;
-                height: 600px;
-                position: absolute;
-                top: 5%;
-                left: 0;
-                right: 0;
-                box-shadow: 10px 10px 5px #888888;
-            }
-        </style>
-
+        <link rel="stylesheet" href="assets/css/bootstrap.css">
+        <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/style.css">
     </head>
     <body>
-        <div id="easel">
-            <canvas id="canvas"></canvas>
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-3">
+                    <div class="row">
+                        <div class="col">
+                            <h1>
+                                Input Settings
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!--div class="col-6">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Circle <i class="fa fa-circle" aria-hidden="true"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#">Pixel <i class="fa fa-dot-circle-o" aria-hidden="true"></i></a>
+                                    <a class="dropdown-item" href="#">Circle <i class="fa fa-circle" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                        </div-->
+                        <div class="col-6">
+                            <span id="brushSizeText">Size: 10px</span>
+                            <input type="range" id="sizeRange" min="1" value="10"></input>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div id="easel">
+                        <canvas id="canvas"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
+
         <script>
             var canvas = document.getElementById("canvas");
             var easel = document.getElementById("easel");
@@ -57,8 +70,11 @@
             }
         </script>
 
+        <script src="assets/js/jquery-3.1.1.min.js"></script>
+        <script src="assets/js/bootstrap.js"></script>
         <script src="app/glcore.js"></script>
-        <script src="app/input.js"></script>
+        <script src="app/inputController.js"></script>
+        <script src="app/inputSettings.js"></script>
         <script src="app/paintCanvas.js"></script>
 
         <script>       

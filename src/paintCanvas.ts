@@ -1,4 +1,5 @@
-/// <reference path="input.ts" />
+/// <reference path="inputController.ts" />
+/// <reference path="inputSettings.ts" />
 
 var Module : any;
 
@@ -7,6 +8,7 @@ module PaintCanvas {
     export class Program {
 
         private inputControl : InputController;
+        private inputSettings : InputSettings;
         private forceHandler : any;
 
         private velocityBuffer : any;
@@ -46,11 +48,10 @@ module PaintCanvas {
             console.log("initialised");
 
             this.inputControl = new InputController(canvas, this.forceHandler);
+            this.inputSettings = new InputSettings(this.inputControl);
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
-
-            this.draw();
             
             this.timer = setInterval(function() { 
                 this.update(); 
@@ -71,13 +72,10 @@ module PaintCanvas {
 
             // apply force
             if(this.forceHandler.isForceAvailable()) {
-
-                console.log("force");
-
+                
                 this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
-
-                // only need to swap buffers if we use circles to draw;
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+
                 //reset forces
                 this.forceHandler.reset();
             }
@@ -87,8 +85,8 @@ module PaintCanvas {
 
             //calc pressures
             //clear buffers
-            //Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            //Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+            // Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            // Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
 
             for(let i = 0; i < 5; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
