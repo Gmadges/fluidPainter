@@ -12,6 +12,8 @@ class InputSettings {
         $(".dropdown-item").click(function(ev) {
             $(".dropdown-toggle").html($(this).html());
             let option : string = $(this).text();
+        });
+    }
             
     private brushChange() {
 
