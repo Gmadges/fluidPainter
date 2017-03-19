@@ -22,15 +22,21 @@ class InputController {
     private lastPos : vec2 = new vec2(0,0);
     private currentPos : vec2 = new vec2(0,0);
 
+    private XScaleFactor : number = 1.0;
+    private YScaleFactor : number = 1.0;
+
     private debugDrawState : string = "visualise";
     public brushSize : number = 10;
 
-    constructor(private canvas: HTMLCanvasElement, private forceHandler : any) {
+    constructor(private canvas: HTMLCanvasElement, private forceHandler : any, width : number, height: number) {
 
         canvas.onmousedown = this.mouseDown.bind(this);
         canvas.onmouseup = this.mouseUp.bind(this);
         canvas.onmousemove = this.mouseMove.bind(this);
         canvas.onmouseleave = this.mouseUp.bind(this);
+
+        this.XScaleFactor = width / canvas.width;
+        this.YScaleFactor = height / canvas.height;
 
         // using listeners because the other way didnt work for touch
         canvas.addEventListener("touchstart", this.touchDown.bind(this), false);
@@ -87,12 +93,16 @@ class InputController {
 
     private getCursorPosition(canvas, event) : any {
         var rect = canvas.getBoundingClientRect();
-        return new vec2(event.clientX - rect.left, event.clientY - rect.top);
+        var X = (event.clientX - rect.left) * this.XScaleFactor;
+        var Y = (event.clientY - rect.top) * this.YScaleFactor;
+        return new vec2(X, Y);
     }
 
     private getTouchPosition(canvas, event) : any {
         var rect = canvas.getBoundingClientRect();
-        return new vec2(event.touches[0].clientX - rect.left, event.touches[0].clientY - rect.top);
+        var X = (event.touches[0].clientX - rect.left) * this.XScaleFactor;
+        var Y = (event.touches[0].clientY - rect.top) * this.YScaleFactor;
+        return new vec2(X, Y);
     }
 
     // for testing debugDrawing
