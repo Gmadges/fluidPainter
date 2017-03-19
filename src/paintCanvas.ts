@@ -37,7 +37,7 @@ module PaintCanvas {
                 return;
             }
             
-            this.reset(canvas.width / 2, canvas.height / 2);
+            this.reset(canvas.width * 0.75, canvas.height * 0.75);
         }
 
         public reset(width : number, height: number) {

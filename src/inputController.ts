@@ -87,8 +87,8 @@ class InputController {
         let xforce : number = dist.x;// / this.canvas.width;
         let yforce : number = dist.y;// / this.canvas.height;
 
-        // hardcode size for now
-        this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, this.brushSize);
+        let brush : number = this.brushSize * ((this.YScaleFactor + this.XScaleFactor) / 2);
+        this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, brush);
     }
 
     private getCursorPosition(canvas, event) : any {
