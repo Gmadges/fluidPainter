@@ -123,8 +123,6 @@ void GridFluidSolver::createVisBuffer(Buffer& buffer)
 
 void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, float dt)
 {
-    glViewport(0, 0, m_width, m_height);
-
     // set shader
     glUseProgram(advectProgram);
 

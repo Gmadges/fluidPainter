@@ -13,10 +13,13 @@ public:
     Drawing(){};
     ~Drawing(){};
 
-    void init();
+    void init(int width, int height);
     void drawBuffer(Buffer& buffer);
 
 private:
+    int m_width; 
+    int m_height;
+
     GLuint simpleShaderProgram;
     std::vector<float> quadVerts;
     std::vector<float> quadTex;
@@ -32,7 +35,7 @@ EMSCRIPTEN_BINDINGS(DrawingBindings)
 
 ///////////////////////////////////// SOURCE
 
-void Drawing::init()
+void Drawing::init(int width, int height)
 {
     quadVerts =  {
         -1.0f,  1.0f, 0.0f, // Top-left
@@ -54,11 +57,15 @@ void Drawing::init()
         0.0f, 0.0f, // Top-left
     };
 
+    m_width = width; 
+    m_height = height;
+
     simpleShaderProgram = Shaders::buildProgramFromFiles("shaders/simpleTex.vert", "shaders/texture.frag");
 }
 
 void Drawing::drawBuffer(Buffer& buffer)
 {
+    glViewport(0, 0, m_width, m_height);
     //fill the screen with the clear color
     glClear(GL_COLOR_BUFFER_BIT);
 
