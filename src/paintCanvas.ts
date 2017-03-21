@@ -88,11 +88,11 @@ module PaintCanvas {
             // apply force
             if(this.forceHandler.isForceAvailable()) {
                 
-                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
+                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
                 // test
-                this.fluidSolver.applyForces(this.visBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
+                this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), 0.0, 0.0, 0.0);
                 this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
 
                 //reset forces

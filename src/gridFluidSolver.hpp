@@ -6,11 +6,6 @@
 #include "bufferUtils.hpp"
 #include "forceHandler.hpp"
 
-enum class ForceType {
-    PIXEL,
-    CIRCLE
-};
-
 
 class GridFluidSolver
 {
@@ -24,12 +19,12 @@ public:
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
-    void applyForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, ForceType type);
+    void applyForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces);
+    void applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B);
     void createVisBuffer(Buffer& buffer);
 
 private:
     void drawQuad();
-    void applyPixelForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces);
     void applyCircleForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces);
 
 private:
@@ -48,6 +43,7 @@ private:
     GLuint applyForceProgram;
     GLuint simpleDrawProgram;
     GLuint visBufferProgram;
+    GLuint applyPaintProgram;
 };
 
 EMSCRIPTEN_BINDINGS(GridFluidSolver) 
@@ -57,14 +53,11 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("init", &GridFluidSolver::init)
         .function("advect", &GridFluidSolver::advect)
         .function("applyForces", &GridFluidSolver::applyForces)
+        .function("applyPaint", &GridFluidSolver::applyPaint)
         .function("computeDivergance", &GridFluidSolver::computeDivergence)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
         .function("subtractGradient", &GridFluidSolver::subtractGradient)
         .function("createVisBuffer", &GridFluidSolver::createVisBuffer);
-
-    emscripten::enum_<ForceType>("ForceType")
-        .value("pixel", ForceType::PIXEL)
-        .value("circle", ForceType::CIRCLE);
 }
 
 //////////////////////////////////////////// SOURCE
@@ -90,6 +83,7 @@ bool GridFluidSolver::init(int width, int height)
     subtractGradientProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/subGradient.frag");
     computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
     applyForceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyForce.frag");
+    applyPaintProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyPaint.frag");
 
     visBufferProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/visBuffer.frag");
 
@@ -149,55 +143,38 @@ void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, fl
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, ForceType type)
+void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces)
 {
-    switch(type)
-    {
-        case ForceType::PIXEL:
-        {
-            applyPixelForces(velocity, forces);
-            break;
-        }
-        case ForceType::CIRCLE:
-        {
-            applyCircleForces(velocity, forces);
-            break;
-        }
-        default:
-        {
-            // do nothing
-            return;
-        }
-    }
+    applyCircleForces(velocity, forces);
 }
 
-void GridFluidSolver::applyPixelForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces)
+void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B)
 {
-    // gonna try and do this without the draw call first
-    // maybe benchmark the diff between uploading uniforms and doing a draw call
-    // and making multiple calls to the subBuffer thing
-
     // lets loop this for now
     for(ForcePacket pkt : forces)
     {
-        // create pixel value
-        float data[] = {pkt.xForce, pkt.yForce, 0.0f, 0.0f};
+        glUseProgram(applyPaintProgram);
 
-        // bind tex
+        GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
+        glUniform2f(res, (float)m_width, (float)m_height);
+
+        GLint force = glGetUniformLocation(applyPaintProgram, "color");
+        glUniform3f(force, R, G, B);
+
+        GLint pos = glGetUniformLocation(applyPaintProgram, "pos");
+        glUniform2f(pos, pkt.xPix, pkt.yPix);
+
+        GLint radius = glGetUniformLocation(applyPaintProgram, "radius");
+        glUniform1f(radius, pkt.size);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
-        
-        glTexSubImage2D(GL_TEXTURE_2D,
- 	                    0,
- 	                    pkt.xPix,
- 	                    pkt.yPix,
- 	                    1,
- 	                    1,
- 	                    GL_RGBA,
- 	                    GL_FLOAT,
- 	                    data);
 
-        // unbind
+        drawQuad();
+
+        // unbind the framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
