@@ -39,21 +39,33 @@ class InputController {
         this.YScaleFactor = height / canvas.height;
 
         // using listeners because the other way didnt work for touch
-        canvas.addEventListener("touchstart", this.touchDown.bind(this), false);
-        canvas.addEventListener("touchend", this.mouseUp.bind(this), false);
-        canvas.addEventListener("touchmove", this.touchMove.bind(this), false);
+        // canvas.addEventListener("touchstart", this.touchDown.bind(this), false);
+        // canvas.addEventListener("touchend", this.mouseUp.bind(this), false);
+        // canvas.addEventListener("touchmove", this.touchMove.bind(this), false);
 
         // for debugging
         window.onkeyup = this.debugDrawing.bind(this);
     }
 
-    private mouseUp(e : Event) {
-        this.bMouseDown = false;
+    private mouseUp(e : MouseEvent) {
+
+        if(e.button === 0) { // left
+            this.bMouseDown = false;
+        }
+        else if(e.button === 2) { // right
+            
+        }
     }
 
-    private mouseDown(e : Event) {
+    private mouseDown(e : MouseEvent) {
         this.currentPos = this.getCursorPosition(this.canvas, e);
-        this.bMouseDown = true;
+
+        if(e.button === 0) { // left
+            this.bMouseDown = true;
+        }
+        else if(e.button === 2) { // right
+            
+        }
     }
 
     private touchDown(e: Event) {

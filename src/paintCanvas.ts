@@ -88,8 +88,8 @@ module PaintCanvas {
             // apply force
             if(this.forceHandler.isForceAvailable()) {
                 
-                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
-                this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+                //this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
+                //this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
                 // test
                 this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), 0.0, 0.0, 0.0);
@@ -103,10 +103,6 @@ module PaintCanvas {
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
 
             //calc pressures
-            //clear buffers
-            // Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            // Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
-
             for(let i = 0; i < 5; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
                 this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);

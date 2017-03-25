@@ -151,37 +151,52 @@ void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacke
 void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B)
 {
     // lets loop this for now
-    for(ForcePacket pkt : forces)
+
+    //forces.clear();
+    //forces.push_back();
+    //forces.push_back();
+    //forces.push_back();
+
+    if(forces.size() > 1)
     {
-        glUseProgram(applyPaintProgram);
+        for(unsigned int i = 1; i < forces.size(); i++)
+        {
+            glUseProgram(applyPaintProgram);
 
-        GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
-        glUniform2f(res, (float)m_width, (float)m_height);
+            GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
+            glUniform2f(res, (float)m_width, (float)m_height);
 
-        GLint force = glGetUniformLocation(applyPaintProgram, "color");
-        glUniform3f(force, R, G, B);
+            GLint force = glGetUniformLocation(applyPaintProgram, "color");
+            glUniform3f(force, R, G, B);
 
-        GLint pos = glGetUniformLocation(applyPaintProgram, "pos");
-        glUniform2f(pos, pkt.xPix, pkt.yPix);
+            GLint startpos = glGetUniformLocation(applyPaintProgram, "startPos");
+            glUniform2f(startpos, forces[i-1].xPix, forces[i-1].yPix);
 
-        GLint radius = glGetUniformLocation(applyPaintProgram, "radius");
-        glUniform1f(radius, pkt.size);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+            GLint endpos = glGetUniformLocation(applyPaintProgram, "endPos");
+            glUniform2f(endpos, forces[i].xPix, forces[i].yPix);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
 
-        drawQuad();
+            GLint radius = glGetUniformLocation(applyPaintProgram, "radius");
+            glUniform1f(radius, forces[i].size);
 
-        // unbind the framebuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+
+            drawQuad();
+
+            // unbind the framebuffer
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
     }
 }
 
 void GridFluidSolver::applyCircleForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces)
 {
     // lets loop this for now
+    
     for(ForcePacket pkt : forces)
     {
         glUseProgram(applyForceProgram);
