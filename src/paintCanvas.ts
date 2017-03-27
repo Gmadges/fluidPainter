@@ -88,8 +88,12 @@ module PaintCanvas {
             // apply force
             if(this.forceHandler.isForceAvailable()) {
                 
-                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces(), Module.ForceType.circle);
+                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+
+                // test
+                this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), 0.0, 0.0, 0.0);
+                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
 
                 //reset forces
                 this.forceHandler.reset();
@@ -117,11 +121,14 @@ module PaintCanvas {
         }
 
         private draw() {
+
+            // advect vis buffer
+            this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
+            this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
+
             // draw 
             let debugDraw = this.inputControl.getDebugDrawState();
             if(debugDraw === "visualise") {
-                this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
-                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
                 this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
             }
             else if(debugDraw === "velocity") {

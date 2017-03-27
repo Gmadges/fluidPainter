@@ -10,5 +10,6 @@ void main()
     float G = mod(coord.y , 200.0) / 200.0;
     float B = 1.0 - (G + R) * 0.5;
 
-    gl_FragColor = vec4(R, G, B, 0.0);
+    //gl_FragColor = vec4(R, G, B, 0.0);
+    gl_FragColor = vec4(1.0, 1.0, 1.0, 0.0);
 }                                                                     
