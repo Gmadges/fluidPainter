@@ -151,32 +151,56 @@ void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacke
 void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B)
 {
     // lets loop this for now
-    for(ForcePacket pkt : forces)
-    {
-        glUseProgram(applyPaintProgram);
 
-        GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
-        glUniform2f(res, (float)m_width, (float)m_height);
+    if(forces.size() < 2) return;
 
-        GLint force = glGetUniformLocation(applyPaintProgram, "color");
-        glUniform3f(force, R, G, B);
+    glUseProgram(applyPaintProgram);
 
-        GLint pos = glGetUniformLocation(applyPaintProgram, "pos");
-        glUniform2f(pos, pkt.xPix, pkt.yPix);
+    //GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
+    //glUniform2f(res, (float)m_width, (float)m_height);
 
-        GLint radius = glGetUniformLocation(applyPaintProgram, "radius");
-        glUniform1f(radius, pkt.size);
+    GLint force = glGetUniformLocation(applyPaintProgram, "color");
+    glUniform3f(force, R, G, B);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
+    //GLint pos = glGetUniformLocation(applyPaintProgram, "pos");
+    //glUniform2f(pos, pkt.xPix, pkt.yPix);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+    //GLint radius = glGetUniformLocation(applyPaintProgram, "radius");
+    //glUniform1f(radius, pkt.size);
 
-        drawQuad();
+    glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
 
-        // unbind the framebuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+
+    float x1 = -1.0f + (2.0f * forces[0].xPix / (float)m_width);
+    float y1 = -1.0f + (2.0f * forces[0].yPix / (float)m_height);
+
+    float x2 = -1.0f + (2.0f * forces[1].xPix / (float)m_width);
+    float y2 = -1.0f + (2.0f * forces[1].yPix / (float)m_height);
+
+    std::vector<float> testVerts =  {
+        x1,  y1, 0.0f, // Top-left
+        x2,  y1, 0.0f, // Top-right
+        x2,  y2, 0.0f, // Bottom-right
+
+        x2,  y2, 0.0f, // Bottom-right
+        x1,  y2, 0.0f, // Bottom-left
+        x1,  y1, 0.0f, // Top-left
+    };
+
+    //drawQuad();
+
+    //set up the vertices array
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, testVerts.data());
+    glEnableVertexAttribArray(0);
+
+    // draw
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // unbind the framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void GridFluidSolver::applyCircleForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces)

@@ -8,14 +8,14 @@ uniform float radius;
 
 void main()
 {
-    vec4 vel = texture2D(canvas, gl_FragCoord.xy / resolution);
+    // vec4 vel = texture2D(canvas, gl_FragCoord.xy / resolution);
 
-    float d = distance(pos, gl_FragCoord.xy);
+    // float d = distance(pos, gl_FragCoord.xy);
 
-    if (d < radius) 
-    {
-        vel.xyz = color;
-    }
+    // if (d < radius) 
+    // {
+    //     vel.xyz = color;
+    // }
 
-    gl_FragColor = vel;
+    gl_FragColor = vec4(color, 1.0);
 }
