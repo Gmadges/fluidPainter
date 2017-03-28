@@ -6,6 +6,8 @@
 #include "bufferUtils.hpp"
 #include "forceHandler.hpp"
 
+#include <math.h>
+
 
 class GridFluidSolver
 {
@@ -154,44 +156,57 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
 
     std::vector<float> testVerts;
     
-    for(auto& pkt : forces)
+    for(unsigned int i = 0; i < (forces.size()-1); i++)
     {
-        float x1 = -1.0f + (2.0f * pkt.xPix / (float)m_width);
-        float y1 = -1.0f + (2.0f * pkt.yPix / (float)m_height);
+        float x1 = -1.0f + (2.0f * forces[i].xPix / (float)m_width);
+        float y1 = -1.0f + (2.0f * forces[i].yPix / (float)m_height);
 
-        float radX = 0.5 * (pkt.size / (float)m_width);
-        float radY = 0.5 * (pkt.size / (float)m_height);
+        float x2 = -1.0f + (2.0f * forces[i+1].xPix / (float)m_width);
+        float y2 = -1.0f + (2.0f * forces[i+1].yPix / (float)m_height);
+
+        // test
+        float rad = 0.5 * (forces[i].size / (float)m_height);
+
+        // get perp vectors
+        float tmpX = y2 - y1;
+        float tmpY = -(x2 - x1);
+
+        // normalize
+        float perpX = tmpX / sqrt((tmpX * tmpX) + (tmpY * tmpY));
+        float perpY = tmpY / sqrt((tmpX * tmpX) + (tmpY * tmpY));
 
         // Top-left
-        testVerts.push_back(x1-radX);
-        testVerts.push_back(y1+radY);
+        testVerts.push_back(x1+(perpX * rad));
+        testVerts.push_back(y1+(perpY * rad));
         testVerts.push_back(0.0f);
         
         // Top-right
-        testVerts.push_back(x1+radX);
-        testVerts.push_back(y1+radY);
+        testVerts.push_back(x2+(perpX * rad));
+        testVerts.push_back(y2+(perpY * rad));
         testVerts.push_back(0.0f);
 
         // Bottom-right
-        testVerts.push_back(x1+radX);
-        testVerts.push_back(y1-radY);
+        testVerts.push_back(x2-(perpX * rad));
+        testVerts.push_back(y2-(perpY * rad));
         testVerts.push_back(0.0f);
 
         // Bottom-right
-        testVerts.push_back(x1+radX);
-        testVerts.push_back(y1-radY);
+        testVerts.push_back(x2-(perpX * rad));
+        testVerts.push_back(y2-(perpY * rad));
         testVerts.push_back(0.0f);
 
         // Bottom-left
-        testVerts.push_back(x1-radX);
-        testVerts.push_back(y1-radY);
+        testVerts.push_back(x1-(perpX * rad));
+        testVerts.push_back(y1-(perpY * rad));
         testVerts.push_back(0.0f);
 
         // Top-left
-        testVerts.push_back(x1-radX);
-        testVerts.push_back(y1+radY);
+        testVerts.push_back(x1+(perpX * rad));
+        testVerts.push_back(y1+(perpY * rad));
         testVerts.push_back(0.0f);
     }
+
+    if(testVerts.empty()) return;
 
     glUseProgram(applyPaintProgram);
 

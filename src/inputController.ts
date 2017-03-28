@@ -49,6 +49,7 @@ class InputController {
 
     private mouseUp(e : Event) {
         this.bMouseDown = false;
+        this.resetMouse();
     }
 
     private mouseDown(e : Event) {
@@ -108,12 +109,9 @@ class InputController {
         return new vec2(X, Y);
     }
 
-    public resetMouse() {
+    private resetMouse() {
         this.mouseHandler.reset();
-
-        if(!this.bMouseDown) return;
-        
-        this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, 0);
+        //this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, 0);
     }
 
     // for testing debugDrawing

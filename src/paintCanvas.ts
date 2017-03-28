@@ -103,8 +103,6 @@ module PaintCanvas {
                 
                 this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), 0.0, 0.0, 0.0);
                 this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
-                //reset forces
-                this.inputControl.resetMouse();
             }
             
             
