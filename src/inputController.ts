@@ -28,7 +28,7 @@ class InputController {
     private debugDrawState : string = "visualise";
     public brushSize : number = 10;
 
-    constructor(private canvas: HTMLCanvasElement, private forceHandler : any, width : number, height: number) {
+    constructor(private canvas: HTMLCanvasElement, private forceHandler : any, private mouseHandler : any, width : number, height: number) {
 
         canvas.onmousedown = this.mouseDown.bind(this);
         canvas.onmouseup = this.mouseUp.bind(this);
@@ -89,6 +89,9 @@ class InputController {
 
         let brush : number = this.brushSize * ((this.YScaleFactor + this.XScaleFactor) / 2);
         this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, brush);
+
+        // add for paint
+        this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
     }
 
     private getCursorPosition(canvas, event) : any {
@@ -105,8 +108,15 @@ class InputController {
         return new vec2(X, Y);
     }
 
-    // for testing debugDrawing
+    public resetMouse() {
+        this.mouseHandler.reset();
 
+        if(!this.bMouseDown) return;
+        
+        this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, 0);
+    }
+
+    // for testing debugDrawing
     public getDebugDrawState() : string {
         return this.debugDrawState;
     }

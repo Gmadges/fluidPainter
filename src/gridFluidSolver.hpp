@@ -152,7 +152,40 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
 {
     // lets loop this for now
 
-    if(forces.size() < 2) return;
+    std::vector<float> testVerts;
+    
+    for(auto& pkt : forces)
+    {
+        float x1 = -1.0f + (2.0f * pkt.xPix / (float)m_width);
+        float y1 = -1.0f + (2.0f * pkt.yPix / (float)m_height);
+
+        float radX = 0.5 * (pkt.size / (float)m_width);
+        float radY = 0.5 * (pkt.size / (float)m_height);
+
+        testVerts.push_back(x1-radX);
+        testVerts.push_back(y1+radY);
+        testVerts.push_back(0.0f);
+        
+        testVerts.push_back(x1+radX);
+        testVerts.push_back(y1+radY);
+        testVerts.push_back(0.0f);
+
+        testVerts.push_back(x1+radX);
+        testVerts.push_back(y1-radY);
+        testVerts.push_back(0.0f);
+
+        testVerts.push_back(x1+radX);
+        testVerts.push_back(y1-radY);
+        testVerts.push_back(0.0f);
+
+        testVerts.push_back(x1-radX);
+        testVerts.push_back(y1-radY);
+        testVerts.push_back(0.0f);
+
+        testVerts.push_back(x1-radX);
+        testVerts.push_back(y1+radY);
+        testVerts.push_back(0.0f);
+    }
 
     glUseProgram(applyPaintProgram);
 
@@ -173,22 +206,6 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
 
-    float x1 = -1.0f + (2.0f * forces[0].xPix / (float)m_width);
-    float y1 = -1.0f + (2.0f * forces[0].yPix / (float)m_height);
-
-    float x2 = -1.0f + (2.0f * forces[1].xPix / (float)m_width);
-    float y2 = -1.0f + (2.0f * forces[1].yPix / (float)m_height);
-
-    std::vector<float> testVerts =  {
-        x1,  y1, 0.0f, // Top-left
-        x2,  y1, 0.0f, // Top-right
-        x2,  y2, 0.0f, // Bottom-right
-
-        x2,  y2, 0.0f, // Bottom-right
-        x1,  y2, 0.0f, // Bottom-left
-        x1,  y1, 0.0f, // Top-left
-    };
-
     //drawQuad();
 
     //set up the vertices array
@@ -196,7 +213,7 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
     glEnableVertexAttribArray(0);
 
     // draw
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLES, 0, testVerts.size() / 3);
 
     // unbind the framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

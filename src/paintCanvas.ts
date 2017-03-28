@@ -10,6 +10,7 @@ module PaintCanvas {
         private inputControl : InputController;
         private inputSettings : InputSettings;
         private forceHandler : any;
+        private mouseHandler : any;
 
         private velocityBuffer : any;
         private divergenceBuffer : any;
@@ -55,13 +56,16 @@ module PaintCanvas {
             this.fluidSolver = new Module.GridFluidSolver();
             this.forceHandler = new Module.ForceHandler();
 
+            // using a forcehandler for now
+            this.mouseHandler = new Module.ForceHandler();
+
             // init
             this.drawingProgram.init(this.canvas.width, this.canvas.height);
             this.fluidSolver.init(width, height);
 
             console.log("initialised");
 
-            this.inputControl = new InputController(this.canvas, this.forceHandler, width, height);
+            this.inputControl = new InputController(this.canvas, this.forceHandler, this.mouseHandler, width, height);
             this.inputSettings = new InputSettings(this.inputControl);
 
             // testing creating a test buffer
@@ -91,13 +95,18 @@ module PaintCanvas {
                 this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
                 this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
-                // test
-                this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), 0.0, 0.0, 0.0);
-                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
-
                 //reset forces
                 this.forceHandler.reset();
             }
+
+            if(this.mouseHandler.isForceAvailable()) {
+                
+                this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), 0.0, 0.0, 0.0);
+                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
+                //reset forces
+                this.inputControl.resetMouse();
+            }
+            
             
             // // compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
