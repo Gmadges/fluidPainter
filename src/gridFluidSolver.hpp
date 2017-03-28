@@ -162,26 +162,32 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
         float radX = 0.5 * (pkt.size / (float)m_width);
         float radY = 0.5 * (pkt.size / (float)m_height);
 
+        // Top-left
         testVerts.push_back(x1-radX);
         testVerts.push_back(y1+radY);
         testVerts.push_back(0.0f);
         
+        // Top-right
         testVerts.push_back(x1+radX);
         testVerts.push_back(y1+radY);
         testVerts.push_back(0.0f);
 
+        // Bottom-right
         testVerts.push_back(x1+radX);
         testVerts.push_back(y1-radY);
         testVerts.push_back(0.0f);
 
+        // Bottom-right
         testVerts.push_back(x1+radX);
         testVerts.push_back(y1-radY);
         testVerts.push_back(0.0f);
 
+        // Bottom-left
         testVerts.push_back(x1-radX);
         testVerts.push_back(y1-radY);
         testVerts.push_back(0.0f);
 
+        // Top-left
         testVerts.push_back(x1-radX);
         testVerts.push_back(y1+radY);
         testVerts.push_back(0.0f);
