@@ -195,17 +195,11 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
 
     glUseProgram(applyPaintProgram);
 
-    //GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
-    //glUniform2f(res, (float)m_width, (float)m_height);
+    GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
+    glUniform2f(res, (float)m_width, (float)m_height);
 
     GLint force = glGetUniformLocation(applyPaintProgram, "color");
     glUniform3f(force, R, G, B);
-
-    //GLint pos = glGetUniformLocation(applyPaintProgram, "pos");
-    //glUniform2f(pos, pkt.xPix, pkt.yPix);
-
-    //GLint radius = glGetUniformLocation(applyPaintProgram, "radius");
-    //glUniform1f(radius, pkt.size);
 
     glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
 
