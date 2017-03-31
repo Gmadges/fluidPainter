@@ -109,9 +109,9 @@ class InputController {
         return new vec2(X, Y);
     }
 
-    private resetMouse() {
+    public resetMouse() {
         this.mouseHandler.reset();
-        //this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, 0);
+        this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, 0);
     }
 
     // for testing debugDrawing

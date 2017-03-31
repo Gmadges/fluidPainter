@@ -70,6 +70,7 @@ module PaintCanvas {
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
+            this.fluidSolver.createVisBuffer(this.visBuffer.writeBuffer);
 
             this.timer = setInterval(function() { 
                this.update(); 
@@ -98,13 +99,6 @@ module PaintCanvas {
                 //reset forces
                 this.forceHandler.reset();
             }
-
-            if(this.mouseHandler.isForceAvailable()) {
-                
-                this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), 0.0, 0.0, 0.0);
-                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
-            }
-            
             
             // // compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
@@ -128,6 +122,11 @@ module PaintCanvas {
         }
 
         private draw() {
+
+            if(this.mouseHandler.isForceAvailable()) {
+                this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), 0.0, 0.0, 0.0);
+                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
+            }
 
             // advect vis buffer
             this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
