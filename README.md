@@ -39,13 +39,13 @@ Getting and Building the Code
 git clone https://github.com/Gmadges/fluidPainter
 ```
 
-### 2. Create a build location:
+### 2. Download packages:
 ```bash
 cd fluidPainter
 npm install
 ```
 
-### 3. Run a Basic build
+### 3. Building
 
 #### Using Build tools 
 
