@@ -7,6 +7,7 @@
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
         <link rel="stylesheet" href="assets/css/bootstrap.css">
         <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/css/bootstrap-colorpicker.css">
         <link rel="stylesheet" href="assets/style.css">
     </head>
     <body>
@@ -15,27 +16,26 @@
             <div class="row">
                 <div class="col-3">
                     <div class="row">
-                        <div class="col">
-                            <h1>
-                                Input Settings
-                            </h1>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <!--div class="col-6">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Circle <i class="fa fa-circle" aria-hidden="true"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Pixel <i class="fa fa-dot-circle-o" aria-hidden="true"></i></a>
-                                    <a class="dropdown-item" href="#">Circle <i class="fa fa-circle" aria-hidden="true"></i></a>
-                                </div>
+                        <div class="card">
+                        <h3 class="card-header">Settings</h3>
+                            <div class="card-block">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <h4 class="card-title">Brush</h4>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <p class="card-text" id="brushSizeText">Size: 10px</p>
+                                        <input type="range" id="sizeRange" min="1" value="10" style="width:100%"></input>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <p class="card-text">Color:</p>
+                                        <div id="brushColor" class="input-group colorpicker-component">
+                                            <input type="text" class="form-control" />
+                                            <span class="input-group-addon"><i></i></span>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
-                        </div-->
-                        <div class="col-6">
-                            <span id="brushSizeText">Size: 10px</span>
-                            <input type="range" id="sizeRange" min="1" value="10"></input>
                         </div>
                     </div>
                 </div>
@@ -71,7 +71,8 @@
         </script>
 
         <script src="assets/js/jquery-3.1.1.min.js"></script>
-        <script src="assets/js/bootstrap.js"></script>
+        <script src="assets/js/bootstrap.min.js"></script>
+        <script src="assets/js/bootstrap-colorpicker.min.js"></script>
         <script src="app/glcore.js"></script>
         <script src="app/inputController.js"></script>
         <script src="app/inputSettings.js"></script>
