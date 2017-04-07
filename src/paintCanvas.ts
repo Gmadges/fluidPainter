@@ -70,7 +70,6 @@ module PaintCanvas {
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
-            this.fluidSolver.createVisBuffer(this.visBuffer.writeBuffer);
 
             this.timer = setInterval(function() { 
                this.update(); 
