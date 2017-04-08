@@ -22,6 +22,7 @@ public:
     std::vector<ForcePacket>& getForceList();
     void reset();
     bool isForceAvailable();
+    int getNumberForces();
 
 private:  
     std::vector<ForcePacket> forceList;
@@ -43,7 +44,8 @@ EMSCRIPTEN_BINDINGS(ForceBindings)
         .function("addForce", &ForceHandler::addForcetoList)
         .function("reset", &ForceHandler::reset)
         .function("getForces", &ForceHandler::getForceList)
-        .function("isForceAvailable", &ForceHandler::isForceAvailable);
+        .function("isForceAvailable", &ForceHandler::isForceAvailable)
+        .function("getNumberForces", &ForceHandler::getNumberForces);
 }
 
 void ForceHandler::addForcetoList(int xPixel,int yPixel,float xForce, float yForce, float size)
@@ -72,6 +74,11 @@ void ForceHandler::reset()
 bool ForceHandler::isForceAvailable()
 {
     return !forceList.empty();
+}
+
+int ForceHandler::getNumberForces()
+{
+    return forceList.size();
 }
 
 #endif

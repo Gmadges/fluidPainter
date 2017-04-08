@@ -60,7 +60,7 @@ void Drawing::init(int width, int height)
     m_width = width; 
     m_height = height;
 
-    simpleShaderProgram = Shaders::buildProgramFromFiles("shaders/simpleTex.vert", "shaders/texture.frag");
+    simpleShaderProgram = Shaders::buildProgramFromFiles("data/simpleTex.vert", "data/texture.frag");
 }
 
 void Drawing::drawBuffer(Buffer& buffer)
