@@ -62,6 +62,7 @@ class InputController {
 
     private mouseDown(e : Event) {
         this.currentPos = this.getCursorPosition(this.canvas, e);
+        this.lastPos = this.currentPos;
         this.bMouseDown = true;
         this.addForce();
     }
@@ -78,18 +79,24 @@ class InputController {
 
     private addForce() {
         // calc the distance
-        var dist : vec2 = this.currentPos.distance(this.lastPos);
+        let dist : vec2 = this.currentPos.distance(this.lastPos);
 
-        // normalize
-        let xforce : number = dist.x * 2 / this.canvas.width ;
-        let yforce : number = dist.y * 2 / this.canvas.height;
+        let xforce : number = 0;
+        let yforce : number = 0;
+        
+        if(dist.x !== 0){
+            xforce = (dist.x / dist.length()) * 0.001;
+        }    
+
+        if(dist.y !== 0){
+            yforce = (dist.y / dist.length()) * 0.001;
+        }      
 
         let brush : number = this.brushSize * ((this.YScaleFactor + this.XScaleFactor) / 2);
         this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, brush);
 
         // add for paint
         if(this.lastlastPos.y > -1 && dist.length() > brush * 0.25){
-            console.log("triple");
             this.mouseHandler.addForce(this.lastlastPos.x, this.lastlastPos.y, 0, 0, brush);
             this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, brush);
             this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
