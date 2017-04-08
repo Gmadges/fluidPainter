@@ -12,6 +12,10 @@ class vec2 {
     public distance( pos : vec2) : any {
         return new vec2(this.x - pos.x, this.y - pos.y);
     }
+
+    public length() : number {
+        return Math.sqrt((Math.pow(this.x, 2) + Math.pow(this.y, 2)));
+    }
 }
 
 class InputController {
@@ -19,8 +23,9 @@ class InputController {
     private forceApplied : boolean = false;
     private bMouseDown : boolean = false;
 
-    private lastPos : vec2 = new vec2(0,0);
-    private currentPos : vec2 = new vec2(0,0);
+    private lastlastPos : vec2 = new vec2(-1,-1);
+    private lastPos : vec2 = new vec2(-1,-1);
+    private currentPos : vec2 = new vec2(-1,-1);
 
     private XScaleFactor : number = 1.0;
     private YScaleFactor : number = 1.0;
@@ -28,7 +33,12 @@ class InputController {
     private debugDrawState : string = "visualise";
     public brushSize : number = 10;
 
-    constructor(private canvas: HTMLCanvasElement, private forceHandler : any, private mouseHandler : any, width : number, height: number) {
+    constructor(private canvas: HTMLCanvasElement, 
+                    private forceHandler : any, 
+                    private mouseHandler : any, 
+                    width : number, 
+                    height: number, 
+                    private paintCanvas : any) {
 
         canvas.onmousedown = this.mouseDown.bind(this);
         canvas.onmouseup = this.mouseUp.bind(this);
@@ -38,42 +48,28 @@ class InputController {
         this.XScaleFactor = width / canvas.width;
         this.YScaleFactor = height / canvas.height;
 
-        // using listeners because the other way didnt work for touch
-        canvas.addEventListener("touchstart", this.touchDown.bind(this), false);
-        canvas.addEventListener("touchend", this.mouseUp.bind(this), false);
-        canvas.addEventListener("touchmove", this.touchMove.bind(this), false);
-
         // for debugging
         window.onkeyup = this.debugDrawing.bind(this);
     }
 
     private mouseUp(e : Event) {
         this.bMouseDown = false;
-        this.resetMouse();
+
+        this.lastlastPos = new vec2(-1,-1);
+        this.lastPos = new vec2(-1,-1);
+        this.currentPos = new vec2(-1,-1);
     }
 
     private mouseDown(e : Event) {
         this.currentPos = this.getCursorPosition(this.canvas, e);
         this.bMouseDown = true;
-    }
-
-    private touchDown(e: Event) {
-        this.currentPos = this.getTouchPosition(this.canvas, e);
-        this.bMouseDown = true;
-    }
-
-    private touchMove(e : Event) {
-        if(!this.bMouseDown) return;
-        
-        this.lastPos = this.currentPos;
-        this.currentPos = this.getTouchPosition(this.canvas, e);
-        
         this.addForce();
     }
 
     private mouseMove(e : Event) {
         if(!this.bMouseDown) return;
         
+        this.lastlastPos = this.lastPos;
         this.lastPos = this.currentPos;
         this.currentPos = this.getCursorPosition(this.canvas, e);
         
@@ -92,7 +88,19 @@ class InputController {
         this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, brush);
 
         // add for paint
-        this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
+        if(this.lastlastPos.y > -1 && dist.length() > brush * 0.25){
+            console.log("triple");
+            this.mouseHandler.addForce(this.lastlastPos.x, this.lastlastPos.y, 0, 0, brush);
+            this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, brush);
+            this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
+        }
+        else {
+            this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
+        }
+
+        this.paintCanvas.applyPaint();
+
+        this.mouseHandler.reset();
     }
 
     private getCursorPosition(canvas, event) : any {
@@ -100,18 +108,6 @@ class InputController {
         var X = (event.clientX - rect.left) * this.XScaleFactor;
         var Y = (event.clientY - rect.top) * this.YScaleFactor;
         return new vec2(X, Y);
-    }
-
-    private getTouchPosition(canvas, event) : any {
-        var rect = canvas.getBoundingClientRect();
-        var X = (event.touches[0].clientX - rect.left) * this.XScaleFactor;
-        var Y = (event.touches[0].clientY - rect.top) * this.YScaleFactor;
-        return new vec2(X, Y);
-    }
-
-    private resetMouse() {
-        this.mouseHandler.reset();
-        //this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, 0);
     }
 
     // for testing debugDrawing

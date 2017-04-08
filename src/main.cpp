@@ -19,7 +19,7 @@ SDL_Surface* screen;
 int initGL(int width, int height)
 {
 	//initialise SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == 0) 
+	if (SDL_Init(SDL_INIT_VIDEO) == 0) 
 	{
 		screen = SDL_SetVideoMode(width, height, 0, SDL_OPENGL);
 		if (screen == NULL)

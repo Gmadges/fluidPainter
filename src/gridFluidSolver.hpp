@@ -7,6 +7,8 @@
 #include "forceHandler.hpp"
 
 #include <math.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 
 class GridFluidSolver
@@ -28,11 +30,16 @@ public:
 private:
     void drawQuad();
     void applyCircleForces(DoubleBuffer& velocity, std::vector<ForcePacket>& forces);
+    void loadBrushTexture();
+
+    std::vector<float> createQuadFromOnePoint(ForcePacket& pnt);
+    std::vector<float> createQuadFromTwoPoints(ForcePacket& pnt1, ForcePacket& pnt2);
+    std::vector<float> createStripFrom3Points(ForcePacket& pnt1, ForcePacket& pnt2, ForcePacket& pnt3);
 
 private:
 
     std::vector<float> quadVerts;
-    std::vector<float> quadTex;
+    std::vector<float> doubleQuadTex;
 
     int m_height;
     int m_width;
@@ -46,6 +53,8 @@ private:
     GLuint simpleDrawProgram;
     GLuint visBufferProgram;
     GLuint applyPaintProgram;
+
+    GLuint brushTex;
 };
 
 EMSCRIPTEN_BINDINGS(GridFluidSolver) 
@@ -76,18 +85,38 @@ bool GridFluidSolver::init(int width, int height)
         -1.0f,  1.0f, 0.0f, // Top-left
     };
 
+    doubleQuadTex = {
+        0.0f, 0.0f, // Top-left
+        1.0f, 0.0f, // Top-right
+        1.0f, 1.0f, // Bottom-right
+        
+        1.0f, 1.0f, // Bottom-right
+        0.0f, 1.0f,  // Bottom-left
+        0.0f, 0.0f, // Top-left
+
+        0.0f, 0.0f, // Top-left
+        1.0f, 0.0f, // Top-right
+        1.0f, 1.0f, // Bottom-right
+        
+        1.0f, 1.0f, // Bottom-right
+        0.0f, 1.0f,  // Bottom-left
+        0.0f, 0.0f, // Top-left
+    };
+
     m_height = height;
     m_width = width;
 
     // init programs 
-    advectProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/advect.frag");
-    jacobiProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/jacobi.frag");
-    subtractGradientProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/subGradient.frag");
-    computeDivergenceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/compDivergence.frag");
-    applyForceProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyForce.frag");
-    applyPaintProgram  = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/applyPaint.frag");
+    advectProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/advect.frag");
+    jacobiProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/jacobi.frag");
+    subtractGradientProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/subGradient.frag");
+    computeDivergenceProgram  = Shaders::buildProgramFromFiles("data/simple.vert", "data/compDivergence.frag");
+    applyForceProgram  = Shaders::buildProgramFromFiles("data/simple.vert", "data/applyForce.frag");
+    applyPaintProgram  = Shaders::buildProgramFromFiles("data/simpleTex.vert", "data/applyPaint.frag");
 
-    visBufferProgram = Shaders::buildProgramFromFiles("shaders/simple.vert", "shaders/visBuffer.frag");
+    visBufferProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/visBuffer.frag");
+
+    loadBrushTexture();
 
     return true;
 }
@@ -150,66 +179,207 @@ void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacke
     applyCircleForces(velocity, forces);
 }
 
+std::vector<float> GridFluidSolver::createQuadFromOnePoint(ForcePacket& pnt)
+{
+    std::vector<float> verts;
+    
+    float x1 = -1.0f + (2.0f * pnt.xPix / (float)m_width);
+    float y1 = -1.0f + (2.0f * pnt.yPix / (float)m_height);
+
+    // test for ease
+    float rad = 0.5 * (pnt.size / (float)((m_height+m_width)/2));
+
+    // Top-left
+    verts.push_back(x1+rad);
+    verts.push_back(y1-rad);
+    verts.push_back(0.0f);
+    
+    // Top-right
+    verts.push_back(x1+rad);
+    verts.push_back(y1+rad);
+    verts.push_back(0.0f);
+
+    // Bottom-right
+    verts.push_back(x1-rad);
+    verts.push_back(y1+rad);
+    verts.push_back(0.0f);
+
+    // Bottom-right
+    verts.push_back(x1-rad);
+    verts.push_back(y1+rad);
+    verts.push_back(0.0f);
+
+    // Bottom-left
+    verts.push_back(x1-rad);
+    verts.push_back(y1-rad);
+    verts.push_back(0.0f);
+
+    // Top-left
+    verts.push_back(x1+rad);
+    verts.push_back(y1-rad);
+    verts.push_back(0.0f);
+
+    return verts;
+}
+
+
+
+std::vector<float> GridFluidSolver::createStripFrom3Points(ForcePacket& pnt1, ForcePacket& pnt2, ForcePacket& pnt3)
+{
+    std::vector<float> verts;
+    
+    float x1 = -1.0f + (2.0f * pnt1.xPix / (float)m_width);
+    float y1 = -1.0f + (2.0f * pnt1.yPix / (float)m_height);
+
+    float x2 = -1.0f + (2.0f * pnt2.xPix / (float)m_width);
+    float y2 = -1.0f + (2.0f * pnt2.yPix / (float)m_height);
+
+    float x3 = -1.0f + (2.0f * pnt3.xPix / (float)m_width);
+    float y3 = -1.0f + (2.0f * pnt3.yPix / (float)m_height);
+
+    // test for ease
+    float rad = 0.5 * (pnt1.size / (float)((m_height+m_width)/2));
+
+    // get perp vectors
+    float tmpX1 = y2 - y1;
+    float tmpY1 = -(x2 - x1);
+
+    // get perp vectors
+    float tmpX2 = y3 - y2;
+    float tmpY2 = -(x3 - x2);
+
+    // get perp vectors
+    float tmpX3 = y3 - y1;
+    float tmpY3 = -(x3 - x1);
+
+    // normalize
+    float perpX1 = tmpX1 / sqrt((tmpX1 * tmpX1) + (tmpY1 * tmpY1));
+    float perpY1 = tmpY1 / sqrt((tmpX1 * tmpX1) + (tmpY1 * tmpY1));
+
+    // normalize
+    float perpX2 = tmpX2 / sqrt((tmpX2 * tmpX2) + (tmpY2 * tmpY2));
+    float perpY2 = tmpY2 / sqrt((tmpX2 * tmpX2) + (tmpY2 * tmpY2));
+
+    // calc our mid point
+    // normalize
+    float perpX3 = tmpX3 / sqrt((tmpX3 * tmpX3) + (tmpY3 * tmpY3));
+    float perpY3 = tmpY3 / sqrt((tmpX3 * tmpX3) + (tmpY3 * tmpY3));
+
+    float midP1X = x2-(perpX3 * rad);
+    float midP1Y = y2-(perpY3 * rad);
+
+    float midP2X = x2+(perpX3 * rad);
+    float midP2Y = y2+(perpY3 * rad);
+
+    // quad 1
+
+    // Top-left
+    verts.push_back(x1-(perpX1 * rad));
+    verts.push_back(y1-(perpY1 * rad));
+    verts.push_back(0.0f);
+    
+    // Top-right
+    verts.push_back(x1+(perpX1 * rad));
+    verts.push_back(y1+(perpY1 * rad));
+    verts.push_back(0.0f);
+
+    // Bottom-right
+    verts.push_back(midP2X);
+    verts.push_back(midP2Y);
+    verts.push_back(0.0f);
+
+    // Bottom-right
+    verts.push_back(midP2X);
+    verts.push_back(midP2Y);
+    verts.push_back(0.0f);
+
+    // Bottom-left
+    verts.push_back(midP1X);
+    verts.push_back(midP1Y);
+    verts.push_back(0.0f);
+
+    // Top-left
+    verts.push_back(x1-(perpX1 * rad));
+    verts.push_back(y1-(perpY1 * rad));
+    verts.push_back(0.0f);
+
+    // quad 2
+
+    // Top-left
+    verts.push_back(midP1X);
+    verts.push_back(midP1Y);
+    verts.push_back(0.0f);
+
+    // Top-right
+    verts.push_back(midP2X);
+    verts.push_back(midP2Y);
+    verts.push_back(0.0f);
+
+    // Bottom-right
+    verts.push_back(x3+(perpX2 * rad));
+    verts.push_back(y3+(perpY2 * rad));
+    verts.push_back(0.0f);
+
+    // Bottom-right
+    verts.push_back(x3+(perpX2 * rad));
+    verts.push_back(y3+(perpY2 * rad));
+    verts.push_back(0.0f);
+
+    // Bottom-left
+    verts.push_back(x3-(perpX2 * rad));
+    verts.push_back(y3-(perpY2 * rad));
+    verts.push_back(0.0f);
+
+    // Top-left
+    verts.push_back(midP1X);
+    verts.push_back(midP1Y);
+    verts.push_back(0.0f);
+
+    return verts;
+}
+
+void GridFluidSolver::loadBrushTexture()
+{   
+    SDL_Surface *image;
+
+    if(!(image = IMG_Load("data/blur.png"))) 
+    {
+        fprintf(stderr, "Could not load texture image: %s\n", IMG_GetError());
+        return;
+    }
+
+    glGenTextures(1, &brushTex);
+    glBindTexture(GL_TEXTURE_2D, brushTex);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+
+    SDL_FreeSurface(image);
+}
+
 void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B)
 {
-    // lets loop this for now
-
     std::vector<float> testVerts;
-    
-    for(unsigned int i = 0; i < (forces.size()-1); i++)
+
+    // how many points?
+
+    if(forces.size() == 3)
     {
-        float x1 = -1.0f + (2.0f * forces[i].xPix / (float)m_width);
-        float y1 = -1.0f + (2.0f * forces[i].yPix / (float)m_height);
-
-        float x2 = -1.0f + (2.0f * forces[i+1].xPix / (float)m_width);
-        float y2 = -1.0f + (2.0f * forces[i+1].yPix / (float)m_height);
-
-        // test
-        float rad = 0.5 * (forces[i].size / (float)m_height);
-
-        // get perp vectors
-        float tmpX = y2 - y1;
-        float tmpY = -(x2 - x1);
-
-        // normalize
-        float perpX = tmpX / sqrt((tmpX * tmpX) + (tmpY * tmpY));
-        float perpY = tmpY / sqrt((tmpX * tmpX) + (tmpY * tmpY));
-
-        // Top-left
-        testVerts.push_back(x1+(perpX * rad));
-        testVerts.push_back(y1+(perpY * rad));
-        testVerts.push_back(0.0f);
-        
-        // Top-right
-        testVerts.push_back(x2+(perpX * rad));
-        testVerts.push_back(y2+(perpY * rad));
-        testVerts.push_back(0.0f);
-
-        // Bottom-right
-        testVerts.push_back(x2-(perpX * rad));
-        testVerts.push_back(y2-(perpY * rad));
-        testVerts.push_back(0.0f);
-
-        // Bottom-right
-        testVerts.push_back(x2-(perpX * rad));
-        testVerts.push_back(y2-(perpY * rad));
-        testVerts.push_back(0.0f);
-
-        // Bottom-left
-        testVerts.push_back(x1-(perpX * rad));
-        testVerts.push_back(y1-(perpY * rad));
-        testVerts.push_back(0.0f);
-
-        // Top-left
-        testVerts.push_back(x1+(perpX * rad));
-        testVerts.push_back(y1+(perpY * rad));
-        testVerts.push_back(0.0f);
+        testVerts = createStripFrom3Points(forces[0], forces[1], forces[2]);
+    }
+    else if(forces.size() == 1) 
+    {
+        testVerts = createQuadFromOnePoint(forces[0]);
     }
 
     if(testVerts.empty()) return;
 
     glUseProgram(applyPaintProgram);
 
+    GLint brushSample = glGetUniformLocation(applyPaintProgram, "brush");
+    glUniform1i(brushSample, 1);
+    
     GLint res = glGetUniformLocation(applyPaintProgram, "resolution");
     glUniform2f(res, (float)m_width, (float)m_height);
 
@@ -221,11 +391,15 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
 
-    //drawQuad();
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, brushTex);
 
     //set up the vertices array
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, testVerts.data());
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, doubleQuadTex.data());
+    glEnableVertexAttribArray(1);
 
     // draw
     glDrawArrays(GL_TRIANGLES, 0, testVerts.size() / 3);

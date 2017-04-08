@@ -38,10 +38,10 @@ module PaintCanvas {
                 return;
             }
             
-            this.reset(canvas.width, canvas.height);
+            this.init(canvas.width, canvas.height);
         }
 
-        public reset(width : number, height: number) {
+        public init(width : number, height: number) {
 
             // we must must must do this first.
             // this program uses opengl for speed
@@ -65,14 +65,15 @@ module PaintCanvas {
 
             console.log("initialised");
 
-            this.inputControl = new InputController(this.canvas, this.forceHandler, this.mouseHandler, width, height);
+            this.inputControl = new InputController(this.canvas, this.forceHandler, this.mouseHandler, width, height, this);
             this.inputSettings = new InputSettings(this.inputControl);
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
 
             this.timer = setInterval(function() { 
-               this.update(); 
+               this.update();
+               this.draw();
             }.bind(this), 100);
         }
 
@@ -102,11 +103,6 @@ module PaintCanvas {
             // // compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
 
-            //calc pressures
-            //clear buffers
-            // Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
-            // Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
-
             for(let i = 0; i < 5; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
                 this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);
@@ -116,16 +112,18 @@ module PaintCanvas {
             this.fluidSolver.subtractGradient(this.velocityBuffer, this.pressureBuffer.readBuffer);
             //this.fluidSolver.subtractGradient(this.velocityBuffer, this.divergenceBuffer);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+        }
 
-            this.draw();
+        public applyPaint() {
+            if(this.mouseHandler.isForceAvailable()) {
+                let color = this.inputSettings.brushColor;
+                this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), color.r, color.g, color.b);
+                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
+            }
+
         }
 
         private draw() {
-
-            if(this.mouseHandler.isForceAvailable()) {
-                this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), 0.0, 0.0, 0.0);
-                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
-            }
 
             // advect vis buffer
             this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
