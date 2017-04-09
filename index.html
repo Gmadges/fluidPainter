@@ -11,32 +11,68 @@
         <link rel="stylesheet" href="assets/style.css">
     </head>
     <body>
-        
         <div class="container-fluid">
-            <div class="row">
+            <div class="row" style="height: 100%">
                 <div class="col-3">
                     <div class="row">
-                        <div class="card">
-                        <h3 class="card-header">Settings</h3>
-                            <div class="card-block">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                        <h4 class="card-title">Brush</h4>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <p class="card-text" id="brushSizeText">Size: 10px</p>
-                                        <input type="range" id="sizeRange" min="1" value="10" style="width:100%"></input>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <p class="card-text">Color:</p>
-                                        <div id="brushColor" class="input-group colorpicker-component">
-                                            <input type="text" class="form-control" />
-                                            <span class="input-group-addon"><i></i></span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                        <div class="card" style="width:100%">
+                            <h3 class="card-header">Tools
+                                <i class="fa fa-wrench" aria-hidden="true"></i>
+                                <button type="button" class="btn btn-primary pull-right" title="Save painting">
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                </button>
+                            </h3>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div id="accordion" role="tablist" style="width:100%">
+                            <div class="card">
+                               <div class="card-header" role="tab" id="headingOne">
+                                <h5>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Brush
+                                    <i class="fa fa-paint-brush" aria-hidden="true"></i>
+                                    </a>
+                                </h5>
+                                </div>
+                                <div id="collapseTwo" class="collapse hide" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="card-block">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <p class="card-text" id="brushSizeText">Size: 10px</p>
+                                                <input type="range" id="sizeRange" min="1" value="10" style="width:100%"></input>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <p class="card-text">Color:</p>
+                                                <div id="brushColor" class="input-group colorpicker-component">
+                                                    <input type="text" class="form-control" />
+                                                    <span class="input-group-addon"><i></i></span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                               <div class="card-header" role="tab" id="headingTwo">
+                                <h5>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Fluid
+                                    <i class="fa fa-tint" aria-hidden="true"></i>
+                                    </a>
+                                </h5>
+                                </div>
+                                <div id="collapseThree" class="collapse hide" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div class="card-block">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                Something
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
                     </div>
                 </div>
                 <div class="col-9">
