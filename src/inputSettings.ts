@@ -4,7 +4,8 @@ var $ : JQueryStatic;
 
 class InputSettings {
 
-    public brushColor : any = {r:0, g:0, b:0}
+    public brushColor : any = {r:0, g:0, b:0};
+    public saveImage : boolean = false;
 
     constructor(private inputControl : InputController) {
 
@@ -20,6 +21,12 @@ class InputSettings {
             color: '#000000',
             format: 'rgb'
         }).on('changeColor', this.brushColorChange.bind(this));
+
+        $('#saveButton').on('click', this.enableSaveImage.bind(this));
+    }
+
+    private enableSaveImage() {
+        this.saveImage = true;
     }
 
     private brushColorChange() {

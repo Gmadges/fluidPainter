@@ -143,6 +143,13 @@ module PaintCanvas {
             else if(debugDraw === "pressure") {
                 this.drawingProgram.drawBuffer(this.pressureBuffer.readBuffer);
             }
+
+            // save image maybe
+            if(this.inputSettings.saveImage === true){
+                this.inputSettings.saveImage = false;
+                window.open(this.canvas.toDataURL(), '_blank');
+                window.focus();
+            }
         }
     }
 }
