@@ -32,21 +32,25 @@ class InputSettings {
     private initScaleDropDown() {
         $('#scale1').click(function(e){
             this.paintCanvas.reset(1, 1);
+            this.inputControl.scaleFactor = 1;
             e.preventDefault();
         }.bind(this));
     
         $('#scale075').click(function(e){
             this.paintCanvas.reset(0.86, 0.86);
+            this.inputControl.scaleFactor = 0.75;
             e.preventDefault();
         }.bind(this));
 
         $('#scale050').click(function(e){
             this.paintCanvas.reset(0.7, 0.7);
+            this.inputControl.scaleFactor = 0.5;
             e.preventDefault();
         }.bind(this));
 
         $('#scale025').click(function(e){
             this.paintCanvas.reset(0.5, 0.5);
+            this.inputControl.scaleFactor = 0.25;
             e.preventDefault();
         }.bind(this));
     }

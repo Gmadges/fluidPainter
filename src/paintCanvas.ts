@@ -15,6 +15,7 @@ module PaintCanvas {
         private velocityBuffer : any;
         private divergenceBuffer : any;
         private pressureBuffer : any;
+        private forceBuffer : any;
 
         //test
         private visBuffer : any;
@@ -45,9 +46,8 @@ module PaintCanvas {
             this.init(canvas.width, canvas.height);
 
             this.forceHandler = new Module.ForceHandler();
-            this.mouseHandler = new Module.ForceHandler();
             
-            this.inputControl = new InputController(this, this.forceHandler, this.mouseHandler, canvas.width, canvas.height);
+            this.inputControl = new InputController(this, this.forceHandler);
             this.inputSettings = new InputSettings(this.inputControl, this);
         }
 
@@ -60,6 +60,7 @@ module PaintCanvas {
             // this program uses opengl for speed
             this.velocityBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.pressureBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
+            this.forceBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(width, height);
             this.visBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
 
@@ -80,7 +81,6 @@ module PaintCanvas {
             this.drawingProgram.delete();
             this.fluidSolver.delete();
             this.forceHandler.delete();
-            this.mouseHandler.delete();
         }
 
         public reset(scaleX : number, scaleY: number) {
@@ -92,8 +92,6 @@ module PaintCanvas {
             let h = Math.floor(this.canvas.height * scaleY);
 
             this.init(w, h);
-
-            this.inputControl.setNewSizes(w, h);
         }
 
         public resetBuffers() {
@@ -102,6 +100,9 @@ module PaintCanvas {
 
             Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
             Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+
+            Module.BufferUtils.clearBuffer(this.forceBuffer.readBuffer);
+            Module.BufferUtils.clearBuffer(this.forceBuffer.writeBuffer);
 
             Module.BufferUtils.clearBuffer(this.divergenceBuffer);
 
@@ -116,17 +117,12 @@ module PaintCanvas {
             this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 1);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
-            // apply force
-            if(this.forceHandler.isForceAvailable()) {
-                
-                this.fluidSolver.applyForces(this.velocityBuffer, this.forceHandler.getForces());
-                this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
-
-                //reset forces
-                this.forceHandler.reset();
-            }
+            // might be able to to put a flag to not do an add if no force
+            this.fluidSolver.addBuffers(this.velocityBuffer.readBuffer, this.forceBuffer.readBuffer, this.velocityBuffer.writeBuffer);
+            this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+            Module.BufferUtils.clearBuffer(this.forceBuffer.readBuffer);
             
-            // // compute divergence
+            //compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
 
             for(let i = 0; i < 5; i++) {
@@ -140,12 +136,14 @@ module PaintCanvas {
         }
 
         public applyPaint() {
-            if(this.mouseHandler.isForceAvailable()) {
-                let color = this.inputSettings.brushColor;
-                this.fluidSolver.applyPaint(this.visBuffer, this.mouseHandler.getForces(), color.r, color.g, color.b);
-                this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
-            }
+            let color = this.inputSettings.brushColor;
+            this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), color.r, color.g, color.b);
+            this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
+        }
 
+        public applyForce() {
+            this.fluidSolver.applyForces(this.forceBuffer, this.forceHandler.getForces());
+            this.forceBuffer = Module.BufferUtils.swapBuffers(this.forceBuffer);
         }
 
         private draw() {
