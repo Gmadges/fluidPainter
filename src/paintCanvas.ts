@@ -66,7 +66,7 @@ module PaintCanvas {
             console.log("initialised");
 
             this.inputControl = new InputController(this.canvas, this.forceHandler, this.mouseHandler, width, height, this);
-            this.inputSettings = new InputSettings(this.inputControl);
+            this.inputSettings = new InputSettings(this.inputControl, this);
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
@@ -83,6 +83,21 @@ module PaintCanvas {
             this.drawingProgram.delete();
             this.fluidSolver.delete();
             this.forceHandler.delete();
+        }
+
+        public reset() {
+            Module.BufferUtils.clearBuffer(this.velocityBuffer.readBuffer);
+            Module.BufferUtils.clearBuffer(this.velocityBuffer.writeBuffer);
+
+            Module.BufferUtils.clearBuffer(this.pressureBuffer.readBuffer);
+            Module.BufferUtils.clearBuffer(this.pressureBuffer.writeBuffer);
+
+            Module.BufferUtils.clearBuffer(this.divergenceBuffer);
+
+            Module.BufferUtils.clearBuffer(this.visBuffer.readBuffer);
+            Module.BufferUtils.clearBuffer(this.visBuffer.writeBuffer);
+
+            this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);         
         }
 
         private update() {
@@ -110,7 +125,6 @@ module PaintCanvas {
 
             //subtractGradient
             this.fluidSolver.subtractGradient(this.velocityBuffer, this.pressureBuffer.readBuffer);
-            //this.fluidSolver.subtractGradient(this.velocityBuffer, this.divergenceBuffer);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
         }
 
