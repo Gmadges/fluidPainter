@@ -27,26 +27,18 @@ class InputController {
     private lastPos : vec2 = new vec2(-1,-1);
     private currentPos : vec2 = new vec2(-1,-1);
 
-    private XScaleFactor : number = 1.0;
-    private YScaleFactor : number = 1.0;
-
     private debugDrawState : string = "visualise";
     public brushSize : number = 10;
 
-    constructor(private canvas: HTMLCanvasElement, 
-                    private forceHandler : any, 
-                    private mouseHandler : any, 
-                    width : number, 
-                    height: number, 
-                    private paintCanvas : any) {
+    public scaleFactor : number = 1;
 
-        canvas.onmousedown = this.mouseDown.bind(this);
-        canvas.onmouseup = this.mouseUp.bind(this);
-        canvas.onmousemove = this.mouseMove.bind(this);
-        canvas.onmouseleave = this.mouseUp.bind(this);
+    constructor(private paintCanvas : any, 
+                    private forceHandler : any) {
 
-        this.XScaleFactor = width / canvas.width;
-        this.YScaleFactor = height / canvas.height;
+        this.paintCanvas.canvas.onmousedown = this.mouseDown.bind(this);
+        this.paintCanvas.canvas.onmouseup = this.mouseUp.bind(this);
+        this.paintCanvas.canvas.onmousemove = this.mouseMove.bind(this);
+        this.paintCanvas.canvas.onmouseleave = this.mouseUp.bind(this);
 
         // for debugging
         window.onkeyup = this.debugDrawing.bind(this);
@@ -61,7 +53,7 @@ class InputController {
     }
 
     private mouseDown(e : Event) {
-        this.currentPos = this.getCursorPosition(this.canvas, e);
+        this.currentPos = this.getCursorPosition(this.paintCanvas.canvas, e);
         this.lastPos = this.currentPos;
         this.bMouseDown = true;
         this.addForce();
@@ -72,8 +64,7 @@ class InputController {
         
         this.lastlastPos = this.lastPos;
         this.lastPos = this.currentPos;
-        this.currentPos = this.getCursorPosition(this.canvas, e);
-        
+        this.currentPos = this.getCursorPosition(this.paintCanvas.canvas, e);
         this.addForce();
     }
 
@@ -85,35 +76,36 @@ class InputController {
         let yforce : number = 0;
         
         if(dist.x !== 0){
-            xforce = (dist.x / dist.length()) * 0.001;
+            xforce = (dist.x / dist.length()) * 0.01;
         }    
 
         if(dist.y !== 0){
-            yforce = (dist.y / dist.length()) * 0.001;
+            yforce = (dist.y / dist.length()) * 0.01;
         }      
 
-        let brush : number = this.brushSize * ((this.YScaleFactor + this.XScaleFactor) / 2);
-        this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, brush);
+        let brush : number = this.brushSize * this.scaleFactor;
 
         // add for paint
         if(this.lastlastPos.y > -1 && dist.length() > brush * 0.25){
-            this.mouseHandler.addForce(this.lastlastPos.x, this.lastlastPos.y, 0, 0, brush);
-            this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, brush);
-            this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
+
+            this.forceHandler.addForce(this.lastlastPos.x, this.lastlastPos.y, xforce, yforce, brush);
+            this.forceHandler.addForce(this.lastPos.x, this.lastPos.y, xforce, yforce, brush);
+            this.forceHandler.addForce(this.currentPos.x, this.currentPos.y,  xforce, yforce, brush);
         }
         else {
-            this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
+            this.forceHandler.addForce(this.currentPos.x, this.currentPos.y,  xforce, yforce, brush);
         }
 
         this.paintCanvas.applyPaint();
+        this.paintCanvas.applyForce();
 
-        this.mouseHandler.reset();
+        this.forceHandler.reset();
     }
 
     private getCursorPosition(canvas, event) : any {
         var rect = canvas.getBoundingClientRect();
-        var X = (event.clientX - rect.left) * this.XScaleFactor;
-        var Y = (event.clientY - rect.top) * this.YScaleFactor;
+        var X = (event.clientX - rect.left) * this.scaleFactor;
+        var Y = (event.clientY - rect.top) * this.scaleFactor;
         return new vec2(X, Y);
     }
 
