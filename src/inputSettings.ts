@@ -16,12 +16,39 @@ class InputSettings {
             $(".dropdown-toggle").html($(this).html());
             let option : string = $(this).text();
         });
+
         $('#brushColor').colorpicker({
             color: '#000000',
             format: 'rgb'
         }).on('changeColor', this.brushColorChange.bind(this));
+        
         $('#saveButton').on('click', this.enableSaveImage.bind(this));
+        
         $('#resetButton').on('click', this.resize.bind(this));
+
+        this.initScaleDropDown();
+    }
+
+    private initScaleDropDown() {
+        $('#scale1').click(function(e){
+            this.paintCanvas.reset(1, 1);
+            e.preventDefault();
+        }.bind(this));
+    
+        $('#scale075').click(function(e){
+            this.paintCanvas.reset(0.86, 0.86);
+            e.preventDefault();
+        }.bind(this));
+
+        $('#scale050').click(function(e){
+            this.paintCanvas.reset(0.7, 0.7);
+            e.preventDefault();
+        }.bind(this));
+
+        $('#scale025').click(function(e){
+            this.paintCanvas.reset(0.5, 0.5);
+            e.preventDefault();
+        }.bind(this));
     }
 
     private enableSaveImage() {
@@ -36,7 +63,7 @@ class InputSettings {
     }
 
     private resize() {
-        this.paintCanvas.reset();
+        this.paintCanvas.resetBuffers();
     }
 
     private brushChange() {

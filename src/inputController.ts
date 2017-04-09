@@ -33,23 +33,27 @@ class InputController {
     private debugDrawState : string = "visualise";
     public brushSize : number = 10;
 
-    constructor(private canvas: HTMLCanvasElement, 
+    constructor(private paintCanvas : any, 
                     private forceHandler : any, 
                     private mouseHandler : any, 
                     width : number, 
-                    height: number, 
-                    private paintCanvas : any) {
+                    height: number) {
 
-        canvas.onmousedown = this.mouseDown.bind(this);
-        canvas.onmouseup = this.mouseUp.bind(this);
-        canvas.onmousemove = this.mouseMove.bind(this);
-        canvas.onmouseleave = this.mouseUp.bind(this);
+        this.paintCanvas.canvas.onmousedown = this.mouseDown.bind(this);
+        this.paintCanvas.canvas.onmouseup = this.mouseUp.bind(this);
+        this.paintCanvas.canvas.onmousemove = this.mouseMove.bind(this);
+        this.paintCanvas.canvas.onmouseleave = this.mouseUp.bind(this);
 
-        this.XScaleFactor = width / canvas.width;
-        this.YScaleFactor = height / canvas.height;
+        this.XScaleFactor = width / this.paintCanvas.canvas.width;
+        this.YScaleFactor = height / this.paintCanvas.canvas.height;
 
         // for debugging
         window.onkeyup = this.debugDrawing.bind(this);
+    }
+
+    public setNewSizes(width : number, height : number) {
+        this.XScaleFactor = width / this.paintCanvas.canvas.width;
+        this.YScaleFactor = height / this.paintCanvas.canvas.height;
     }
 
     private mouseUp(e : Event) {
@@ -61,7 +65,7 @@ class InputController {
     }
 
     private mouseDown(e : Event) {
-        this.currentPos = this.getCursorPosition(this.canvas, e);
+        this.currentPos = this.getCursorPosition(this.paintCanvas.canvas, e);
         this.lastPos = this.currentPos;
         this.bMouseDown = true;
         this.addForce();
@@ -72,8 +76,7 @@ class InputController {
         
         this.lastlastPos = this.lastPos;
         this.lastPos = this.currentPos;
-        this.currentPos = this.getCursorPosition(this.canvas, e);
-        
+        this.currentPos = this.getCursorPosition(this.paintCanvas.canvas, e);
         this.addForce();
     }
 
@@ -85,28 +88,32 @@ class InputController {
         let yforce : number = 0;
         
         if(dist.x !== 0){
-            xforce = (dist.x / dist.length()) * 0.001;
+            xforce = (dist.x / dist.length()) * 0.01;
         }    
 
         if(dist.y !== 0){
-            yforce = (dist.y / dist.length()) * 0.001;
+            yforce = (dist.y / dist.length()) * 0.01;
         }      
 
         let brush : number = this.brushSize * ((this.YScaleFactor + this.XScaleFactor) / 2);
+
         this.forceHandler.addForce(this.currentPos.x, this.currentPos.y, xforce, yforce, brush);
 
         // add for paint
         if(this.lastlastPos.y > -1 && dist.length() > brush * 0.25){
+
+            // TODO
+            // scale factor hack. remove when force uses a similer style to paint
             this.mouseHandler.addForce(this.lastlastPos.x, this.lastlastPos.y, 0, 0, brush);
             this.mouseHandler.addForce(this.lastPos.x, this.lastPos.y, 0, 0, brush);
             this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
+            console.log(this.currentPos.x, this.currentPos.y);
         }
         else {
             this.mouseHandler.addForce(this.currentPos.x, this.currentPos.y, 0, 0, brush);
         }
 
         this.paintCanvas.applyPaint();
-
         this.mouseHandler.reset();
     }
 

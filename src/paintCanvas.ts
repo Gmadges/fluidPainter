@@ -24,7 +24,7 @@ module PaintCanvas {
 
         private timer : any;
 
-        constructor(private canvas: HTMLCanvasElement) {
+        constructor(public canvas: HTMLCanvasElement) {
 
             var gl = canvas.getContext('webgl');
 
@@ -37,36 +37,31 @@ module PaintCanvas {
                 console.error('no float linear support'); 
                 return;
             }
-            
+
+            Module.initGL(canvas.width, canvas.height);
+            this.drawingProgram = new Module.Drawing();
+            this.drawingProgram.init(canvas.width, canvas.height);
+
             this.init(canvas.width, canvas.height);
+
+            this.forceHandler = new Module.ForceHandler();
+            this.mouseHandler = new Module.ForceHandler();
+            
+            this.inputControl = new InputController(this, this.forceHandler, this.mouseHandler, canvas.width, canvas.height);
+            this.inputSettings = new InputSettings(this.inputControl, this);
         }
 
-        public init(width : number, height: number) {
+        private init(width : number, height: number) {
+
+            this.fluidSolver = new Module.GridFluidSolver();
+            this.fluidSolver.init(width, height);
 
             // we must must must do this first.
             // this program uses opengl for speed
-            Module.initGL(this.canvas.width, this.canvas.height);
-
             this.velocityBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.pressureBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(width, height);
             this.visBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
-
-            this.drawingProgram = new Module.Drawing();
-            this.fluidSolver = new Module.GridFluidSolver();
-            this.forceHandler = new Module.ForceHandler();
-
-            // using a forcehandler for now
-            this.mouseHandler = new Module.ForceHandler();
-
-            // init
-            this.drawingProgram.init(this.canvas.width, this.canvas.height);
-            this.fluidSolver.init(width, height);
-
-            console.log("initialised");
-
-            this.inputControl = new InputController(this.canvas, this.forceHandler, this.mouseHandler, width, height, this);
-            this.inputSettings = new InputSettings(this.inputControl, this);
 
             // testing creating a test buffer
             this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
@@ -75,17 +70,33 @@ module PaintCanvas {
                this.update();
                this.draw();
             }.bind(this), 100);
+
+            
+            console.log("initialised");
         }
 
         public cleanup() {
-            console.log("clean up");
             clearInterval(this.timer);
             this.drawingProgram.delete();
             this.fluidSolver.delete();
             this.forceHandler.delete();
+            this.mouseHandler.delete();
         }
 
-        public reset() {
+        public reset(scaleX : number, scaleY: number) {
+            
+            clearInterval(this.timer);
+            this.fluidSolver.delete();
+
+            let w = Math.floor(this.canvas.width * scaleX);
+            let h = Math.floor(this.canvas.height * scaleY);
+
+            this.init(w, h);
+
+            this.inputControl.setNewSizes(w, h);
+        }
+
+        public resetBuffers() {
             Module.BufferUtils.clearBuffer(this.velocityBuffer.readBuffer);
             Module.BufferUtils.clearBuffer(this.velocityBuffer.writeBuffer);
 
