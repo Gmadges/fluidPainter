@@ -211,12 +211,27 @@ void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacke
 
     glBindFramebuffer(GL_FRAMEBUFFER, velocity.writeBuffer.fboHandle);
 
+    GLint brushSample = glGetUniformLocation(applyForceProgram, "brush");
+    glUniform1i(brushSample, 1);
+    
+    GLint res = glGetUniformLocation(applyForceProgram, "resolution");
+    glUniform2f(res, (float)m_width, (float)m_height);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, brushTex);
+
     //set up the vertices array
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, verts.data());
     glEnableVertexAttribArray(0);
-
+    
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, cols.data());
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, doubleQuadTex.data());
+    glEnableVertexAttribArray(2);
 
     // draw
     glDrawArrays(GL_TRIANGLES, 0, verts.size() / 3);
