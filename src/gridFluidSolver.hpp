@@ -19,7 +19,7 @@ public:
     ~GridFluidSolver(){};
 
     bool init(int width, int height);
-    void advect(Buffer& output, Buffer& velocity, Buffer& input, float dt);
+    void advect(Buffer& output, Buffer& velocity, Buffer& input, float dissipate);
     void computeDivergence(Buffer& divBuffer, Buffer& velocity);
     void pressureSolve(DoubleBuffer& pressure, Buffer& divergence);    
     void subtractGradient(DoubleBuffer& velocity, Buffer& pressure);
@@ -148,16 +148,16 @@ void GridFluidSolver::createVisBuffer(Buffer& buffer)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, float dt)
+void GridFluidSolver::advect(Buffer& output, Buffer& velocity, Buffer& input, float dissipate)
 {
     // set shader
     glUseProgram(advectProgram);
 
     // set uniforms
     GLint resLoc = glGetUniformLocation(advectProgram, "resolution");
-    GLint timeStepLoc = glGetUniformLocation(advectProgram, "dt");
+    GLint dissLoc = glGetUniformLocation(advectProgram, "dissipate");
     glUniform2f(resLoc, (float)m_width, (float)m_height);
-    glUniform1f(timeStepLoc, dt);
+    glUniform1f(dissLoc, dissipate);
 
     // set textures
     GLint sourceTexture = glGetUniformLocation(advectProgram, "inputSampler");

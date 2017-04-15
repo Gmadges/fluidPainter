@@ -7,23 +7,29 @@ module PaintCanvas {
 
     export class Program {
 
+        // helper classes
         private inputControl : InputController;
         private inputSettings : InputSettings;
         private forceHandler : any;
         private mouseHandler : any;
 
+        // buffers
         private velocityBuffer : any;
         private divergenceBuffer : any;
         private pressureBuffer : any;
         private forceBuffer : any;
-
-        //test
         private visBuffer : any;
 
+        // webgl classes
         private drawingProgram : any;
         private fluidSolver : any;
 
+        // update timer
         private timer : any;
+        
+        // paint drying vals
+        private dryTimer : any;
+        private paintIsDry : boolean = true;
 
         constructor(public canvas: HTMLCanvasElement) {
 
@@ -94,7 +100,7 @@ module PaintCanvas {
             this.init(w, h);
         }
 
-        public resetBuffers() {
+        private resetSimBuffers() {
             Module.BufferUtils.clearBuffer(this.velocityBuffer.readBuffer);
             Module.BufferUtils.clearBuffer(this.velocityBuffer.writeBuffer);
 
@@ -105,7 +111,13 @@ module PaintCanvas {
             Module.BufferUtils.clearBuffer(this.forceBuffer.writeBuffer);
 
             Module.BufferUtils.clearBuffer(this.divergenceBuffer);
+        }
 
+        public resetBuffers() {
+
+            this.resetSimBuffers();
+
+            // clear vis and reset;
             Module.BufferUtils.clearBuffer(this.visBuffer.readBuffer);
             Module.BufferUtils.clearBuffer(this.visBuffer.writeBuffer);
 
@@ -113,8 +125,11 @@ module PaintCanvas {
         }
 
         private update() {
+
+            if(this.paintIsDry) return;
+
             // advect
-            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 1);
+            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 0.75);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // might be able to to put a flag to not do an add if no force
@@ -144,28 +159,22 @@ module PaintCanvas {
         public applyForce() {
             this.fluidSolver.applyForces(this.forceBuffer, this.forceHandler.getForces());
             this.forceBuffer = Module.BufferUtils.swapBuffers(this.forceBuffer);
+            this.paintIsDry = false;
+
+            clearTimeout(this.dryTimer);
+            this.dryTimer = setTimeout(() => {
+               this.resetSimBuffers();
+               this.paintIsDry = true;
+            }, 1000);
         }
 
         private draw() {
-
             // advect vis buffer
-            this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1);
+            this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1.0);
             this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
 
             // draw 
-            let debugDraw = this.inputControl.getDebugDrawState();
-            if(debugDraw === "visualise") {
-                this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
-            }
-            else if(debugDraw === "velocity") {
-                this.drawingProgram.drawBuffer(this.velocityBuffer.readBuffer);
-            }
-            else if(debugDraw === "divergence") {
-                this.drawingProgram.drawBuffer(this.divergenceBuffer);
-            }
-            else if(debugDraw === "pressure") {
-                this.drawingProgram.drawBuffer(this.pressureBuffer.readBuffer);
-            }
+            this.drawingProgram.drawBuffer(this.visBuffer.readBuffer);
 
             // save image maybe
             if(this.inputSettings.saveImage === true){
