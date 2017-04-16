@@ -27,10 +27,12 @@ public:
     void applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B);
     void createVisBuffer(Buffer& buffer);
     void addBuffers(Buffer& input1, Buffer& input2 , Buffer& output);
+    void setBrush(int b); 
 
 private:
     void drawQuad();
-    void loadBrushTexture();
+    void loadBrushes(); 
+    GLuint loadBrushTexture(std::string path);
 
     std::vector<float> createQuadFromOnePoint(ForcePacket& pnt);
     std::vector<float> createStripFrom3Points(ForcePacket& pnt1, ForcePacket& pnt2, ForcePacket& pnt3);
@@ -54,7 +56,8 @@ private:
     GLuint applyPaintProgram;
     GLuint addProgram;
 
-    GLuint brushTex;
+    std::vector<GLuint> brushes;
+    GLuint currentBrush;
 };
 
 EMSCRIPTEN_BINDINGS(GridFluidSolver) 
@@ -69,7 +72,8 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
         .function("subtractGradient", &GridFluidSolver::subtractGradient)
         .function("createVisBuffer", &GridFluidSolver::createVisBuffer)
-        .function("addBuffers", &GridFluidSolver::addBuffers);
+        .function("addBuffers", &GridFluidSolver::addBuffers)
+        .function("setBrush", &GridFluidSolver::setBrush);
 }
 
 //////////////////////////////////////////// SOURCE
@@ -118,8 +122,8 @@ bool GridFluidSolver::init(int width, int height)
 
     visBufferProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/visBuffer.frag");
 
-    loadBrushTexture();
-
+    loadBrushes();
+    
     return true;
 }
 
@@ -221,7 +225,7 @@ void GridFluidSolver::applyForces(DoubleBuffer& velocity, std::vector<ForcePacke
     glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, brushTex);
+    glBindTexture(GL_TEXTURE_2D, currentBrush);
 
     //set up the vertices array
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, verts.data());
@@ -412,24 +416,45 @@ std::vector<float> GridFluidSolver::createStripFrom3Points(ForcePacket& pnt1, Fo
     return verts;
 }
 
-void GridFluidSolver::loadBrushTexture()
+void GridFluidSolver::setBrush(int b) 
+{
+    if(b >= brushes.size() || b < 0) return;
+
+    currentBrush = brushes[b];
+}
+
+void GridFluidSolver::loadBrushes() 
+{
+    brushes.push_back(loadBrushTexture("data/blur.png"));
+    brushes.push_back(loadBrushTexture("data/spotty.png"));
+    brushes.push_back(loadBrushTexture("data/line.png"));
+    brushes.push_back(loadBrushTexture("data/cross.png"));
+    brushes.push_back(loadBrushTexture("data/star.png"));
+
+    setBrush(0);
+}
+
+GLuint GridFluidSolver::loadBrushTexture(std::string path)
 {   
+    GLuint tex;
     SDL_Surface *image;
 
-    if(!(image = IMG_Load("data/spotty.png"))) 
+    if(!(image = IMG_Load(path.c_str()))) 
     {
         fprintf(stderr, "Could not load texture image: %s\n", IMG_GetError());
-        return;
+        return tex;
     }
 
-    glGenTextures(1, &brushTex);
-    glBindTexture(GL_TEXTURE_2D, brushTex);
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
 
     SDL_FreeSurface(image);
+
+    return tex;
 }
 
 void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket>& forces, float R, float G, float B)
@@ -466,7 +491,7 @@ void GridFluidSolver::applyPaint(DoubleBuffer& velocity, std::vector<ForcePacket
     glBindTexture(GL_TEXTURE_2D, velocity.readBuffer.texHandle);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, brushTex);
+    glBindTexture(GL_TEXTURE_2D, currentBrush);
 
     //set up the vertices array
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, testVerts.data());

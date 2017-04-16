@@ -150,6 +150,10 @@ module PaintCanvas {
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
         }
 
+        public updateBrush(b : number) {
+            this.fluidSolver.setBrush(b);
+        }
+
         public applyPaint() {
             let color = this.inputSettings.brushColor;
             this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), color.r, color.g, color.b);

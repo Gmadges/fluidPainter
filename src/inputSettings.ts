@@ -12,10 +12,6 @@ class InputSettings {
 
         $('#sizeRange').on("change",  this.sizeChange.bind(this));
         // set value on drop down
-        $(".dropdown-item").click(function(ev) {
-            $(".dropdown-toggle").html($(this).html());
-            let option : string = $(this).text();
-        });
 
         $('#brushColor').colorpicker({
             color: '#000000',
@@ -26,31 +22,69 @@ class InputSettings {
         
         $('#resetButton').on('click', this.resize.bind(this));
 
+        this.initBrushDropDown();
         this.initScaleDropDown();
+    }
+
+    private initBrushDropDown() {
+        
+        $('#circleBrush').click(function(e){
+            this.paintCanvas.updateBrush(0);
+            $('#brushDropdownMenuButton').html($('#circleBrush').html());
+            e.preventDefault();
+        }.bind(this));
+
+        $('#spottyBrush').click(function(e){
+            this.paintCanvas.updateBrush(1);
+            $('#brushDropdownMenuButton').html($('#spottyBrush').html());
+            e.preventDefault();
+        }.bind(this));
+
+        $('#lineBrush').click(function(e){
+            this.paintCanvas.updateBrush(2);
+            $('#brushDropdownMenuButton').html($('#lineBrush').html());
+            e.preventDefault();
+        }.bind(this));
+
+        $('#crossBrush').click(function(e){
+            this.paintCanvas.updateBrush(3);
+            $('#brushDropdownMenuButton').html($('#crossBrush').html());
+            e.preventDefault();
+        }.bind(this));
+    
+        $('#starBrush').click(function(e){
+            this.paintCanvas.updateBrush(4);
+            $('#brushDropdownMenuButton').html($('#starBrush').html());
+            e.preventDefault();
+        }.bind(this));
     }
 
     private initScaleDropDown() {
         $('#scale1').click(function(e){
             this.paintCanvas.reset(1, 1);
             this.inputControl.scaleFactor = 1;
+            $('#scaleDropdownMenuButton').html($('#scale1').html());
             e.preventDefault();
         }.bind(this));
     
         $('#scale075').click(function(e){
             this.paintCanvas.reset(0.86, 0.86);
             this.inputControl.scaleFactor = 0.75;
+            $('#scaleDropdownMenuButton').html($('#scale075').html());
             e.preventDefault();
         }.bind(this));
 
         $('#scale050').click(function(e){
             this.paintCanvas.reset(0.7, 0.7);
             this.inputControl.scaleFactor = 0.5;
+            $('#scaleDropdownMenuButton').html($('#scale050').html());
             e.preventDefault();
         }.bind(this));
 
         $('#scale025').click(function(e){
             this.paintCanvas.reset(0.5, 0.5);
             this.inputControl.scaleFactor = 0.25;
+            $('#scaleDropdownMenuButton').html($('#scale025').html());
             e.preventDefault();
         }.bind(this));
     }
