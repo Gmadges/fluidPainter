@@ -416,7 +416,7 @@ void GridFluidSolver::loadBrushTexture()
 {   
     SDL_Surface *image;
 
-    if(!(image = IMG_Load("data/blur.png"))) 
+    if(!(image = IMG_Load("data/spotty.png"))) 
     {
         fprintf(stderr, "Could not load texture image: %s\n", IMG_GetError());
         return;
