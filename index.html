@@ -49,7 +49,7 @@
                                                 <p class="card-text">Color:</p>
                                                 <div id="brushColor" class="input-group colorpicker-component">
                                                     <input type="text" class="form-control" />
-                                                    <span class="input-group-addon"><i></i></span>
+                                                    <span class="input-group-addon"></span>
                                                 </div>
                                             </li>
                                             <li class="list-group-item">
@@ -83,18 +83,22 @@
                                 <div id="collapseThree" class="collapse hide" role="tabpanel" aria-labelledby="headingTwo">
                                     <div class="card-block">
                                         <ul class="list-group list-group-flush">
+                                             <li class="list-group-item">
+                                                <p class="card-text" title="Increasing iterations improves the simulation but comes with a performance hit.">Pressure Iterations:</p>
+                                                <input class="form-control" type="number" id="pressureIterations" value="5" style="width:100%"></input>
+                                            </li>
                                             <li class="list-group-item">
                                                 <p title="Reducing the scale of the simulation will increase performance." class="card-text">Scale: </p>
                                                 <div class="dropdown" style="width:100%">
                                                 <button class="btn btn-secondary btn-block dropdown-toggle" type="button" id="scaleDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     1.0x
                                                 </button>
-                                                <div class="dropdown-menu" aria-labelledby="scaleDropdownMenuButton">
-                                                    <a id="scale1" class="dropdown-item">1.0x</a>
-                                                    <a id="scale075" class="dropdown-item">0.75x</a>
-                                                    <a id="scale050" class="dropdown-item">0.50x</a>
-                                                    <a id="scale025" class="dropdown-item">0.25x</a>
-                                                </div>
+                                                    <div class="dropdown-menu" aria-labelledby="scaleDropdownMenuButton">
+                                                        <a id="scale1" class="dropdown-item">1.0x</a>
+                                                        <a id="scale075" class="dropdown-item">0.75x</a>
+                                                        <a id="scale050" class="dropdown-item">0.50x</a>
+                                                        <a id="scale025" class="dropdown-item">0.25x</a>
+                                                    </div>
                                                 </div>
                                             </li>
                                         </ul>

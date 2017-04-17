@@ -22,6 +22,8 @@ class InputSettings {
         
         $('#resetButton').on('click', this.resize.bind(this));
 
+        $('#pressureIterations').on('change', this.jacobiChange.bind(this));
+
         this.initBrushDropDown();
         this.initScaleDropDown();
     }
@@ -104,8 +106,8 @@ class InputSettings {
         this.paintCanvas.resetBuffers();
     }
 
-    private brushChange() {
-
+    private jacobiChange() {
+        this.paintCanvas.updateJacobiIterations($('#pressureIterations').val());
     }
 
     private sizeChange() {

@@ -31,6 +31,9 @@ module PaintCanvas {
         private dryTimer : any;
         private paintIsDry : boolean = true;
 
+        //solve
+        private solverIterations : number = 5;
+
         constructor(public canvas: HTMLCanvasElement) {
 
             var gl = canvas.getContext('webgl');
@@ -140,7 +143,7 @@ module PaintCanvas {
             //compute divergence
             this.fluidSolver.computeDivergance(this.divergenceBuffer, this.velocityBuffer.readBuffer);
 
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < this.solverIterations; i++) {
                 this.fluidSolver.pressureSolve(this.pressureBuffer, this.divergenceBuffer);
                 this.pressureBuffer = Module.BufferUtils.swapBuffers(this.pressureBuffer);
             }
@@ -148,6 +151,10 @@ module PaintCanvas {
             //subtractGradient
             this.fluidSolver.subtractGradient(this.velocityBuffer, this.pressureBuffer.readBuffer);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
+        }
+
+        public updateJacobiIterations(val : number) {
+            this.solverIterations = val;
         }
 
         public updateBrush(b : number) {
