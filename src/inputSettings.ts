@@ -24,6 +24,7 @@ class InputSettings {
 
         $('#pressureIterations').on('change', this.jacobiChange.bind(this));
         $('#fpsNumber').on('change', this.fpsChange.bind(this));
+        $('#brushForceRange').on('change', this.brushForceChange.bind(this));
 
         this.initBrushDropDown();
         this.initScaleDropDown();
@@ -105,6 +106,11 @@ class InputSettings {
 
     private resize() {
         this.paintCanvas.resetBuffers();
+    }
+
+    private brushForceChange() {
+        //TODO maybe change the values we use give a bigger range
+        this.inputControl.brushForce = $('#brushForceRange').val() / 100;
     }
 
     private jacobiChange() {

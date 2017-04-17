@@ -79,7 +79,7 @@ module PaintCanvas {
             this.timer = setInterval(function() { 
                this.update();
                this.draw();
-            }.bind(this), 30 / 1000);
+            }.bind(this), 1000 / 30);
         }
 
         public cleanup() {
