@@ -23,6 +23,7 @@ class InputSettings {
         $('#resetButton').on('click', this.resize.bind(this));
 
         $('#pressureIterations').on('change', this.jacobiChange.bind(this));
+        $('#fpsNumber').on('change', this.fpsChange.bind(this));
 
         this.initBrushDropDown();
         this.initScaleDropDown();
@@ -108,6 +109,10 @@ class InputSettings {
 
     private jacobiChange() {
         this.paintCanvas.updateJacobiIterations($('#pressureIterations').val());
+    }
+
+    private fpsChange() {
+        this.paintCanvas.updateFPS($('#fpsNumber').val());
     }
 
     private brushSizeChange() {

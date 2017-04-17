@@ -79,10 +79,7 @@ module PaintCanvas {
             this.timer = setInterval(function() { 
                this.update();
                this.draw();
-            }.bind(this), 100);
-
-            
-            console.log("initialised");
+            }.bind(this), 30 / 1000);
         }
 
         public cleanup() {
@@ -101,6 +98,16 @@ module PaintCanvas {
             let h = Math.floor(this.canvas.height * scaleY);
 
             this.init(w, h);
+        }
+
+        public updateFPS(fps : number) {
+
+            clearInterval(this.timer);
+            
+            this.timer = setInterval(function() { 
+               this.update();
+               this.draw();
+            }.bind(this), 1000 / fps);
         }
 
         private resetSimBuffers() {
