@@ -10,8 +10,8 @@ class InputSettings {
 
     constructor(private inputControl : InputController, private paintCanvas : PaintCanvas.Program) {
 
-        $('#sizeRange').on("change",  this.sizeChange.bind(this));
-        // set value on drop down
+        $('#brushSizeRange').on("change",  this.brushSizeChange.bind(this));
+        $('#canvasSizeRange').on("change",  this.canvasSizeChange.bind(this));
 
         $('#brushColor').colorpicker({
             color: '#000000',
@@ -110,8 +110,26 @@ class InputSettings {
         this.paintCanvas.updateJacobiIterations($('#pressureIterations').val());
     }
 
-    private sizeChange() {
-        this.inputControl.brushSize = parseInt($('#sizeRange').val());
+    private brushSizeChange() {
+        this.inputControl.brushSize = parseInt($('#brushSizeRange').val());
         $('#brushSizeText').text('Size: ' + this.inputControl.brushSize + 'px');
+    }
+
+    private canvasSizeChange() {
+        let scale = parseInt($('#canvasSizeRange').val()) / 100;
+        
+        // get the max size we can have
+        let newWidth = Math.floor($('#canvasContainer').outerWidth() * scale);
+        let newHeight = Math.floor(newWidth * 0.75);
+
+        // set the new canvas
+        $('#canvas').width(newWidth);
+        $('#canvas').height(newHeight);
+        
+        $('#easel').css({'height': newHeight + 'px', 'width': newWidth + 'px'});
+
+        this.paintCanvas.reset(this.inputControl.scaleFactor, this.inputControl.scaleFactor);
+
+        $('#canvasSizeText').text('Size: ' + newWidth + ' x ' + newHeight + 'px');
     }
 }

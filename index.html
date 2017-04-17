@@ -32,18 +32,18 @@
                             <div class="card">
                                <div class="card-header" role="tab" id="headingOne">
                                 <h5>
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                     Brush
-                                    <i class="fa fa-paint-brush" aria-hidden="true"></i>
+                                    <i class="fa fa-paint-brush pull-right" aria-hidden="true"></i>
                                     </a>
                                 </h5>
                                 </div>
-                                <div id="collapseTwo" class="collapse hide" role="tabpanel" aria-labelledby="headingOne">
+                                <div id="collapseOne" class="collapse hide" role="tabpanel" aria-labelledby="headingOne">
                                     <div class="card-block">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
-                                                <p class="card-text" id="brushSizeText">Size: 10px</p>
-                                                <input type="range" id="sizeRange" min="1" value="10" style="width:100%"></input>
+                                                <p class="card-text" id="brushSizeText">Size: 50px</p>
+                                                <input type="range" id="brushSizeRange" min="1" value="50" style="width:100%"></input>
                                             </li>
                                             <li class="list-group-item">
                                                 <p class="card-text">Color:</p>
@@ -74,19 +74,15 @@
                             <div class="card">
                                <div class="card-header" role="tab" id="headingTwo">
                                 <h5>
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                    Fluid
-                                    <i class="fa fa-tint" aria-hidden="true"></i>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Canvas
+                                    <i class="fa fa-picture-o pull-right" aria-hidden="true"></i>
                                     </a>
                                 </h5>
                                 </div>
-                                <div id="collapseThree" class="collapse hide" role="tabpanel" aria-labelledby="headingTwo">
+                                <div id="collapseTwo" class="collapse hide" role="tabpanel" aria-labelledby="headingTwo">
                                     <div class="card-block">
                                         <ul class="list-group list-group-flush">
-                                             <li class="list-group-item">
-                                                <p class="card-text" title="Increasing iterations improves the simulation but comes with a performance hit.">Pressure Iterations:</p>
-                                                <input class="form-control" type="number" id="pressureIterations" value="5" style="width:100%"></input>
-                                            </li>
                                             <li class="list-group-item">
                                                 <p title="Reducing the scale of the simulation will increase performance." class="card-text">Scale: </p>
                                                 <div class="dropdown" style="width:100%">
@@ -101,6 +97,30 @@
                                                     </div>
                                                 </div>
                                             </li>
+                                            <li class="list-group-item">
+                                                <p class="card-text" id="canvasSizeText">Size: 800 x 600px</p>
+                                                <input type="range" id="canvasSizeRange" min="25" value="75" style="width:100%"></input>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                               <div class="card-header" role="tab" id="headingThree">
+                                <h5>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Fluid
+                                    <i class="fa fa-tint pull-right" aria-hidden="true"></i>
+                                    </a>
+                                </h5>
+                                </div>
+                                <div id="collapseThree" class="collapse hide" role="tabpanel" aria-labelledby="headingThree">
+                                    <div class="card-block">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <p class="card-text" title="Increasing iterations improves the simulation but comes with a performance hit.">Pressure Iterations:</p>
+                                                <input class="form-control" type="number" id="pressureIterations" value="5" style="width:100%"></input>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -108,7 +128,7 @@
                         </div>    
                     </div>
                 </div>
-                <div class="col-9">
+                <div id="canvasContainer" class="col-9">
                     <div id="easel">
                         <canvas id="canvas"></canvas>
                     </div>
@@ -119,12 +139,10 @@
         <script>
             var canvas = document.getElementById("canvas");
             var easel = document.getElementById("easel");
-            //make the canvas fullscreen
-            // basically we overload if we do full screen at the moment
-            // canvas.width = window.innerWidth * 0.8;
-            // canvas.height = window.innerHeight * 0.6;
-            canvas.width = 800;
-            canvas.height = 600;
+            var canvasContainer = document.getElementById("canvasContainer");
+
+            canvas.width = Math.floor(canvasContainer.clientWidth * 0.75);
+            canvas.height = Math.floor(canvasContainer.clientWidth * 0.56);
 
             // set style vals
             easel.style.width = canvas.width + 'px';
