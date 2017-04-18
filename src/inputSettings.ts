@@ -12,6 +12,7 @@ class InputSettings {
 
         $('#brushSizeRange').on("change",  this.brushSizeChange.bind(this));
         $('#canvasSizeRange').on("change",  this.canvasSizeChange.bind(this));
+        $('#brushForceRange').on('change', this.brushForceChange.bind(this));
 
         $('#brushColor').colorpicker({
             color: '#000000',
@@ -24,7 +25,8 @@ class InputSettings {
 
         $('#pressureIterations').on('change', this.jacobiChange.bind(this));
         $('#fpsNumber').on('change', this.fpsChange.bind(this));
-        $('#brushForceRange').on('change', this.brushForceChange.bind(this));
+        $('#timeoutNumber').on('change', this.timeoutChange.bind(this));
+        $('#dissipationNumber').on('change', this.dissipationChange.bind(this));
 
         this.initBrushDropDown();
         this.initScaleDropDown();
@@ -113,12 +115,20 @@ class InputSettings {
         this.inputControl.brushForce = $('#brushForceRange').val() / 100;
     }
 
+    private dissipationChange() {
+        this.paintCanvas.updateDissipation(parseFloat($('#dissipationNumber').val()));
+    }
+
+    private timeoutChange() {
+        this.paintCanvas.updateTimeout(parseFloat($('#timeoutNumber').val()));
+    }
+
     private jacobiChange() {
-        this.paintCanvas.updateJacobiIterations($('#pressureIterations').val());
+        this.paintCanvas.updateJacobiIterations(parseFloat($('#pressureIterations').val()));
     }
 
     private fpsChange() {
-        this.paintCanvas.updateFPS($('#fpsNumber').val());
+        this.paintCanvas.updateFPS(parseInt($('#fpsNumber').val()));
     }
 
     private brushSizeChange() {

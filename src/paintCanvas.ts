@@ -33,6 +33,8 @@ module PaintCanvas {
 
         //solve
         private solverIterations : number = 5;
+        private dissipation : number = 0.9;
+        private timeout : number = 0.5;
 
         constructor(public canvas: HTMLCanvasElement) {
 
@@ -139,7 +141,7 @@ module PaintCanvas {
             if(this.paintIsDry) return;
 
             // advect
-            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, 0.75);
+            this.fluidSolver.advect(this.velocityBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.velocityBuffer.readBuffer, this.dissipation);
             this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
 
             // might be able to to put a flag to not do an add if no force
@@ -164,6 +166,14 @@ module PaintCanvas {
             this.solverIterations = val;
         }
 
+        public updateTimeout(val : number) {
+            this.timeout = val;
+        }
+
+        public updateDissipation(val : number) {
+            this.dissipation = val;
+        }
+
         public updateBrush(b : number) {
             this.fluidSolver.setBrush(b);
         }
@@ -180,10 +190,13 @@ module PaintCanvas {
             this.paintIsDry = false;
 
             clearTimeout(this.dryTimer);
+
+            if(this.timeout === 0) return;
+
             this.dryTimer = setTimeout(() => {
                this.resetSimBuffers();
                this.paintIsDry = true;
-            }, 1000);
+            }, this.timeout * 1000);
         }
 
         private draw() {
