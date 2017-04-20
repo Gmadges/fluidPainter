@@ -8,6 +8,8 @@ class InputSettings {
     public brushColor : any = {r:0, g:0, b:0};
     public saveImage : boolean = false;
 
+    private canvasScale : number = 1.0;
+
     constructor(private inputControl : InputController, private paintCanvas : PaintCanvas.Program) {
 
         $('#brushSizeRange').on("change",  this.brushSizeChange.bind(this));
@@ -66,30 +68,34 @@ class InputSettings {
     }
 
     private initScaleDropDown() {
-        $('#scale1').click(function(e){
-            this.paintCanvas.reset(1, 1);
+        $('#scale1').click(function(e) {
+            this.canvasScale = 1.0;
             this.inputControl.scaleFactor = 1;
+            this.updateCanvasSizing();
             $('#scaleDropdownMenuButton').html($('#scale1').html());
             e.preventDefault();
         }.bind(this));
     
         $('#scale075').click(function(e){
-            this.paintCanvas.reset(0.86, 0.86);
+            this.canvasScale = 0.86;
             this.inputControl.scaleFactor = 0.75;
+            this.updateCanvasSizing();
             $('#scaleDropdownMenuButton').html($('#scale075').html());
             e.preventDefault();
         }.bind(this));
 
-        $('#scale050').click(function(e){
-            this.paintCanvas.reset(0.7, 0.7);
+        $('#scale050').click(function(e) {
+            this.canvasScale = 0.7;
             this.inputControl.scaleFactor = 0.5;
+            this.updateCanvasSizing();
             $('#scaleDropdownMenuButton').html($('#scale050').html());
             e.preventDefault();
         }.bind(this));
 
         $('#scale025').click(function(e){
-            this.paintCanvas.reset(0.5, 0.5);
+            this.canvasScale = 0.5;
             this.inputControl.scaleFactor = 0.25;
+            this.updateCanvasSizing();
             $('#scaleDropdownMenuButton').html($('#scale025').html());
             e.preventDefault();
         }.bind(this));
@@ -137,20 +143,28 @@ class InputSettings {
     }
 
     private canvasSizeChange() {
-        let scale = parseInt($('#canvasSizeRange').val()) / 100;
+        let scale : number = parseInt($('#canvasSizeRange').val()) / 100;
         
         // get the max size we can have
-        let newWidth = Math.floor($('#canvasContainer').outerWidth() * scale);
-        let newHeight = Math.floor(newWidth * 0.75);
+        let newWidth : number = Math.floor($('#canvasContainer').outerWidth() * scale);
+        let newHeight : number = Math.floor(newWidth * 0.75);
 
         // set the new canvas
-        $('#canvas').width(newWidth);
-        $('#canvas').height(newHeight);
+        let canvas = <HTMLCanvasElement> document.getElementById("canvas");
+        canvas.height = newHeight;
+        canvas.width = newWidth;
         
         $('#easel').css({'height': newHeight + 'px', 'width': newWidth + 'px'});
 
-        this.paintCanvas.reset(this.inputControl.scaleFactor, this.inputControl.scaleFactor);
+        this.updateCanvasSizing();
 
         $('#canvasSizeText').text('Size: ' + newWidth + ' x ' + newHeight + 'px');
+    }
+
+    private updateCanvasSizing() {
+        let scale : number = this.canvasScale;
+        let w : number = $('#canvas').width();
+        let h : number = $('#canvas').height()
+        this.paintCanvas.reset(w, h, scale, scale);
     }
 }

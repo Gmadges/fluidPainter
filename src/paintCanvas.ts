@@ -75,8 +75,8 @@ module PaintCanvas {
             this.divergenceBuffer = Module.BufferUtils.createBuffer(width, height);
             this.visBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
 
-            // testing creating a test buffer
-            this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);
+            // make this buffer white.
+            this.drawingProgram.resetBuffer(this.visBuffer.readBuffer);
 
             this.timer = setInterval(function() { 
                this.update();
@@ -91,14 +91,14 @@ module PaintCanvas {
             this.forceHandler.delete();
         }
 
-        public reset(scaleX : number, scaleY: number) {
+        public reset(width : number, height : number, scaleX : number, scaleY: number) {
+
+            let w = Math.floor(width * scaleX);
+            let h = Math.floor(height * scaleY);
             
             clearInterval(this.timer);
             this.fluidSolver.delete();
-
-            let w = Math.floor(this.canvas.width * scaleX);
-            let h = Math.floor(this.canvas.height * scaleY);
-
+            this.drawingProgram.setSize(width, height);
             this.init(w, h);
         }
 
@@ -133,7 +133,7 @@ module PaintCanvas {
             Module.BufferUtils.clearBuffer(this.visBuffer.readBuffer);
             Module.BufferUtils.clearBuffer(this.visBuffer.writeBuffer);
 
-            this.fluidSolver.createVisBuffer(this.visBuffer.readBuffer);         
+            this.drawingProgram.resetBuffer(this.visBuffer.readBuffer);         
         }
 
         private update() {

@@ -14,13 +14,16 @@ public:
     ~Drawing(){};
 
     void init(int width, int height);
+    void resetBuffer(Buffer& buffer);
     void drawBuffer(Buffer& buffer);
+    void setSize(int width, int height);
 
 private:
     int m_width; 
     int m_height;
 
     GLuint simpleShaderProgram;
+    GLuint resetBufferProgram;
     std::vector<float> quadVerts;
     std::vector<float> quadTex;
 };
@@ -30,7 +33,9 @@ EMSCRIPTEN_BINDINGS(DrawingBindings)
     emscripten::class_<Drawing>("Drawing")
         .constructor<>()
         .function("init", &Drawing::init)
-        .function("drawBuffer", &Drawing::drawBuffer);
+        .function("drawBuffer", &Drawing::drawBuffer)
+        .function("setSize", &Drawing::setSize)
+        .function("resetBuffer", &Drawing::resetBuffer);
 }
 
 ///////////////////////////////////// SOURCE
@@ -61,6 +66,32 @@ void Drawing::init(int width, int height)
     m_height = height;
 
     simpleShaderProgram = Shaders::buildProgramFromFiles("data/simpleTex.vert", "data/texture.frag");
+    resetBufferProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/visBuffer.frag");
+}
+
+void Drawing::setSize(int width, int height)
+{
+    m_width = width;
+    m_height = height;
+}
+
+void Drawing::resetBuffer(Buffer& buffer)
+{
+    glViewport(0, 0, m_width, m_height);
+
+    //enable our shader program
+    glUseProgram(resetBufferProgram);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, buffer.fboHandle);
+
+    //set up the vertices array
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
+    glEnableVertexAttribArray(0);
+    
+    //draw the triangle
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Drawing::drawBuffer(Buffer& buffer)
