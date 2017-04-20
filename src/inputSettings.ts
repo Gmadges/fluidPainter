@@ -16,6 +16,10 @@ class InputSettings {
         $('#canvasSizeRange').on("change",  this.canvasSizeChange.bind(this));
         $('#brushForceRange').on('change', this.brushForceChange.bind(this));
 
+        // set write values on size
+        let canvas = <HTMLCanvasElement> document.getElementById("canvas");
+        this.updateCanvasSizeText(canvas.width, canvas.height);
+
         $('#brushColor').colorpicker({
             color: '#000000',
             format: 'rgb'
@@ -157,8 +161,14 @@ class InputSettings {
         $('#easel').css({'height': newHeight + 'px', 'width': newWidth + 'px'});
 
         this.updateCanvasSizing();
+        this.updateCanvasSizeText(newWidth, newHeight);
+    }
 
-        $('#canvasSizeText').text('Size: ' + newWidth + ' x ' + newHeight + 'px');
+    private updateCanvasSizeText(width : number, height : number) {
+        let text = $('#canvasSizeText');
+        let info = text.find('i'); 
+        text.text('Size: ' + width + ' x ' + height + 'px ');
+        text.append(info);
     }
 
     private updateCanvasSizing() {
