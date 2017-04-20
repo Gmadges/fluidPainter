@@ -18,14 +18,14 @@ public:
     ForceHandler(){};
     ~ForceHandler(){};
 
-    void addForcetoList(int xPixel,int yPixel,float xForce, float yForce, float size);
+    void addForcetoList(int _xPixel, int _yPixel, float _xForce, float _yForce, float _size);
     std::vector<ForcePacket>& getForceList();
     void reset();
     bool isForceAvailable();
     int getNumberForces();
 
 private:  
-    std::vector<ForcePacket> forceList;
+    std::vector<ForcePacket> m_forceList;
 };
 
 EMSCRIPTEN_BINDINGS(ForceBindings) 
@@ -48,37 +48,37 @@ EMSCRIPTEN_BINDINGS(ForceBindings)
         .function("getNumberForces", &ForceHandler::getNumberForces);
 }
 
-void ForceHandler::addForcetoList(int xPixel,int yPixel,float xForce, float yForce, float size)
+void ForceHandler::addForcetoList(int _xPixel, int _yPixel, float _xForce, float _yForce, float _size)
 {
     ForcePacket pkt;
 
-    pkt.xPix = xPixel;
-    pkt.yPix = yPixel;
-    pkt.xForce = xForce;
-    pkt.yForce = yForce;
-    pkt.size = size;
+    pkt.xPix = _xPixel;
+    pkt.yPix = _yPixel;
+    pkt.xForce = _xForce;
+    pkt.yForce = _yForce;
+    pkt.size = _size;
 
-    forceList.push_back(pkt);
+    m_forceList.push_back(pkt);
 }
 
 std::vector<ForcePacket>& ForceHandler::getForceList()
 {
-    return forceList;
+    return m_forceList;
 }
 
 void ForceHandler::reset()
 {
-    forceList.clear();
+    m_forceList.clear();
 }
 
 bool ForceHandler::isForceAvailable()
 {
-    return !forceList.empty();
+    return !m_forceList.empty();
 }
 
 int ForceHandler::getNumberForces()
 {
-    return forceList.size();
+    return m_forceList.size();
 }
 
 #endif

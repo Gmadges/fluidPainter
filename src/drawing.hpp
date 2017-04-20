@@ -13,19 +13,19 @@ public:
     Drawing(){};
     ~Drawing(){};
 
-    void init(int width, int height);
-    void resetBuffer(Buffer& buffer);
-    void drawBuffer(Buffer& buffer);
-    void setSize(int width, int height);
+    void init(int _width, int _height);
+    void resetBuffer(Buffer& _buffer);
+    void drawBuffer(Buffer& _buffer);
+    void setSize(int _width, int _height);
 
 private:
     int m_width; 
     int m_height;
 
-    GLuint simpleShaderProgram;
-    GLuint resetBufferProgram;
-    std::vector<float> quadVerts;
-    std::vector<float> quadTex;
+    GLuint m_simpleShaderProgram;
+    GLuint m_resetBufferProgram;
+    std::vector<float> m_quadVerts;
+    std::vector<float> m_quadTex;
 };
 
 EMSCRIPTEN_BINDINGS(DrawingBindings) 
@@ -40,9 +40,9 @@ EMSCRIPTEN_BINDINGS(DrawingBindings)
 
 ///////////////////////////////////// SOURCE
 
-void Drawing::init(int width, int height)
+void Drawing::init(int _width, int _height)
 {
-    quadVerts =  {
+    m_quadVerts =  {
         -1.0f,  1.0f, 0.0f, // Top-left
         1.0f,  1.0f, 0.0f, // Top-right
         1.0f, -1.0f, 0.0f, // Bottom-right
@@ -52,7 +52,7 @@ void Drawing::init(int width, int height)
         -1.0f,  1.0f, 0.0f, // Top-left
     };
 
-    quadTex = {
+    m_quadTex = {
         0.0f, 0.0f, // Top-left
         1.0f, 0.0f, // Top-right
         1.0f, 1.0f, // Bottom-right
@@ -62,30 +62,30 @@ void Drawing::init(int width, int height)
         0.0f, 0.0f, // Top-left
     };
 
-    m_width = width; 
-    m_height = height;
+    m_width = _width; 
+    m_height = _height;
 
-    simpleShaderProgram = Shaders::buildProgramFromFiles("data/simpleTex.vert", "data/texture.frag");
-    resetBufferProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/visBuffer.frag");
+    m_simpleShaderProgram = Shaders::buildProgramFromFiles("data/simpleTex.vert", "data/texture.frag");
+    m_resetBufferProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/visBuffer.frag");
 }
 
-void Drawing::setSize(int width, int height)
+void Drawing::setSize(int _width, int _height)
 {
-    m_width = width;
-    m_height = height;
+    m_width = _width;
+    m_height = _height;
 }
 
-void Drawing::resetBuffer(Buffer& buffer)
+void Drawing::resetBuffer(Buffer& _buffer)
 {
     glViewport(0, 0, m_width, m_height);
 
     //enable our shader program
-    glUseProgram(resetBufferProgram);
+    glUseProgram(m_resetBufferProgram);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, buffer.fboHandle);
+    glBindFramebuffer(GL_FRAMEBUFFER, _buffer.fboHandle);
 
     //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, m_quadVerts.data());
     glEnableVertexAttribArray(0);
     
     //draw the triangle
@@ -94,23 +94,23 @@ void Drawing::resetBuffer(Buffer& buffer)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Drawing::drawBuffer(Buffer& buffer)
+void Drawing::drawBuffer(Buffer& _buffer)
 {
     glViewport(0, 0, m_width, m_height);
     //fill the screen with the clear color
     glClear(GL_COLOR_BUFFER_BIT);
 
     //enable our shader program
-    glUseProgram(simpleShaderProgram);
+    glUseProgram(m_simpleShaderProgram);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, buffer.texHandle);
+    glBindTexture(GL_TEXTURE_2D, _buffer.texHandle);
 
     //set up the vertices array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, quadVerts.data());
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, m_quadVerts.data());
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, quadTex.data());
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, m_quadTex.data());
     glEnableVertexAttribArray(1);
     
     //draw the triangle
