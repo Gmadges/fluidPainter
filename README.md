@@ -23,7 +23,7 @@ Dependencies
 
 | Name | Version |
 | ---- | --------- |
-| [Emscripten](https://kripken.github.io/)      | todo |
+| [Emscripten](https://kripken.github.io/)      | 1.35.0 |
 | [Nodejs]()                                    | todo |
 | [gnu make]()                                  | todo |
 | [npm]()                                       | todo |
