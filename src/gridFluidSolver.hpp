@@ -24,7 +24,7 @@ public:
     void pressureSolve(DoubleBuffer& _pressure, Buffer& _divergence);    
     void subtractGradient(DoubleBuffer& _velocity, Buffer& _pressure);
     void applyForces(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces);
-    void applyPaint(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces, float _R, float _G, float _B);
+    void applyPaint(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces, float _R, float _G, float _B, float _alpha);
     void addBuffers(Buffer& _input1, Buffer& _input2 , Buffer& _output);
     void setBrush(int _b); 
 
@@ -437,12 +437,11 @@ GLuint GridFluidSolver::loadBrushTexture(std::string _path)
     return tex;
 }
 
-void GridFluidSolver::applyPaint(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces, float _R, float _G, float _B)
+void GridFluidSolver::applyPaint(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces, float _R, float _G, float _B, float _alpha)
 {
     std::vector<float> testVerts;
 
     // how many points?
-
     if(_forces.size() == 3)
     {
         testVerts = createStripFrom3Points(_forces[0], _forces[1], _forces[2]);
@@ -463,7 +462,7 @@ void GridFluidSolver::applyPaint(DoubleBuffer& _velocity, std::vector<ForcePacke
     glUniform2f(res, (float)m_width, (float)m_height);
 
     GLint force = glGetUniformLocation(m_applyPaintProgram, "color");
-    glUniform3f(force, _R, _G, _B);
+    glUniform4f(force, _R, _G, _B, _alpha);
 
     glBindFramebuffer(GL_FRAMEBUFFER, _velocity.writeBuffer.fboHandle);
 

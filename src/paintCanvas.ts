@@ -179,8 +179,11 @@ module PaintCanvas {
         }
 
         public applyPaint() {
+            if(this.inputSettings.dryBrush) return;
+            
             let color = this.inputSettings.brushColor;
-            this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), color.r, color.g, color.b);
+            let alpha : number = this.inputSettings.brushAlpha;
+            this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), color.r, color.g, color.b, alpha);
             this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
         }
 

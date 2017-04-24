@@ -16,7 +16,20 @@ Additional Documentation
 Supported Platforms
 -------------------
 
-Tested on linux and windows
+#### Operating System
+
+| OS | Version |
+| ---- | --------- |
+| Windows	| Tested (Windows 10) |
+| Linux     | Working (RedHat 7.2)  |
+| OSX		| Coming soon |
+
+#### Browser
+
+| Browser | Version |
+| ---- | --------- |
+| Chrome	| >= 51.0.2704.106 |
+| Firefox   | >= 45.3.0 |
 
 Dependencies
 ------------
@@ -24,13 +37,13 @@ Dependencies
 | Name | Version |
 | ---- | --------- |
 | [Emscripten](https://kripken.github.io/)      | 1.35.0 |
-| [Nodejs]()                                    | todo |
-| [gnu make]()                                  | todo |
-| [npm]()                                       | todo |
-| [python(optional)]()                          | todo |
+| [Nodejs](https://nodejs.org/)                 | >= v4.1.1 |
+| [gnu make](https://www.gnu.org/software/make/)| 3.82 |
+| [npm](https://www.npmjs.com/)                 | 2.14.4 |
+| [python(optional)](https://www.python.org/)   | 2.7 |
 
 
-Getting and Building the Code
+Getting and Building the Code (Basic)
 -----------------------------
 
 ### 1. Clone the repo:
@@ -74,4 +87,5 @@ tsc
 make clean
 make
 ```
-make clean is important when rebuilding shaders.
+The "make clean" command is important if any changes have occured to data that will be packaged up(shaders, textures).
+

@@ -43,7 +43,7 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
                                                 <p class="card-text" id="brushSizeText">Size: 50px</p>
-                                                <input type="range" id="brushSizeRange" min="1" value="50" style="width:100%"></input>
+                                                <input type="range" id="brushSizeRange" min="1" value="50" max="250" style="width:100%"></input>
                                             </li>
                                             <li class="list-group-item">
                                                 <p class="card-text">Color:</p>
@@ -51,6 +51,10 @@
                                                     <input type="text" class="form-control" />
                                                     <span class="input-group-addon"></span>
                                                 </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <p class="card-text" id="brushAlphaText">Alpha: 1.0</p>
+                                                <input type="range" id="brushAlphaRange" min="1" value="100" style="width:100%"></input>
                                             </li>
                                             <li class="list-group-item">
                                                 <p class="card-text">Brush type: </p>
@@ -66,6 +70,12 @@
                                                         <a id="starBrush" class="dropdown-item" ><img height="25" width="25" src="assets/img/brush/star.png">Star</a>
                                                     </div>
                                                 </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <p class="card-text" title="Switch this on to place no color on the canvas">Dry Brush:</p>
+                                                <button  id="dryBrushCheck" style="width:100%;" type="button" class="btn btn-primary btn-block" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                OFF <i class="fa fa-close" aria-hidden="true"></i>
+                                                </button>
                                             </li>
                                         </ul>
                                     </div>
@@ -125,7 +135,7 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
                                                 <p class="card-text" title="Increasing iterations improves the simulation but comes with a performance hit.">Pressure Iterations:</p>
-                                                <input class="form-control" type="number" id="pressureIterations" min="1" value="5" style="width:100%"></input>
+                                                <input class="form-control" type="number" id="pressureIterations" min="1" value="5" max="10" style="width:100%"></input>
                                             </li>
                                             <li class="list-group-item">
                                                 <p class="card-text">Frames per second:</p>
@@ -182,6 +192,8 @@
             }
         </script>
 
+        <!-- > Including a cdn to tether, just to get rid of an annoying error that that bootstrap needs its<-->
+        <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
         <script src="assets/js/jquery-3.1.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
         <script src="assets/js/bootstrap-colorpicker.min.js"></script>

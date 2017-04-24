@@ -5,7 +5,9 @@ var $ : JQueryStatic;
 
 class InputSettings {
 
+    public dryBrush : boolean = false;
     public brushColor : any = {r:0, g:0, b:0};
+    public brushAlpha : number = 1.0;
     public saveImage : boolean = false;
 
     private canvasScale : number = 1.0;
@@ -15,6 +17,7 @@ class InputSettings {
         $('#brushSizeRange').on("change",  this.brushSizeChange.bind(this));
         $('#canvasSizeRange').on("change",  this.canvasSizeChange.bind(this));
         $('#brushForceRange').on('change', this.brushForceChange.bind(this));
+        $('#brushAlphaRange').on('change', this.brushAlphaChange.bind(this));
 
         // set write values on size
         let canvas = <HTMLCanvasElement> document.getElementById("canvas");
@@ -28,6 +31,8 @@ class InputSettings {
         $('#saveButton').on('click', this.enableSaveImage.bind(this));
         
         $('#resetButton').on('click', this.resize.bind(this));
+
+        $('#dryBrushCheck').on('click', this.dryBrushChange.bind(this));
 
         $('#pressureIterations').on('change', this.jacobiChange.bind(this));
         $('#fpsNumber').on('change', this.fpsChange.bind(this));
@@ -114,6 +119,23 @@ class InputSettings {
         this.brushColor.r = color.r / 255;
         this.brushColor.g = color.g / 255;
         this.brushColor.b = color.b / 255;
+    }
+
+    private brushAlphaChange() {
+        this.brushAlpha = $('#brushAlphaRange').val() / 100;
+        $('#brushAlphaText').text('Alpha: ' + this.brushAlpha);
+    }
+
+    private dryBrushChange() {
+        // bit of a hack
+        // TODO requires two clicks to get started.
+        let checked : boolean = $('#dryBrushCheck').hasClass('active');
+        if(checked) {
+            $('#dryBrushCheck').html('ON <i class="fa fa-check" aria-hidden="true"></i>');
+        } else {
+            $('#dryBrushCheck').html('OFF <i class="fa fa-close" aria-hidden="true"></i>');
+        }
+        this.dryBrush = checked;
     }
 
     private resize() {
