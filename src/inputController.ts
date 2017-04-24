@@ -40,9 +40,6 @@ class InputController {
         this.paintCanvas.canvas.onmouseup = this.mouseUp.bind(this);
         this.paintCanvas.canvas.onmousemove = this.mouseMove.bind(this);
         this.paintCanvas.canvas.onmouseleave = this.mouseUp.bind(this);
-
-        // for debugging
-        window.onkeyup = this.debugDrawing.bind(this);
     }
 
     private mouseUp(e : Event) {
@@ -77,11 +74,11 @@ class InputController {
         let yforce : number = 0;
         
         if(dist.x !== 0){
-            xforce = (dist.x / dist.length()) * 0.01;
+            xforce = (dist.x / dist.length()) * this.brushForce;
         }    
 
         if(dist.y !== 0){
-            yforce = (dist.y / dist.length()) * 0.01;
+            yforce = (dist.y / dist.length()) * this.brushForce;
         }      
 
         let brush : number = this.brushSize * this.scaleFactor;
@@ -108,37 +105,5 @@ class InputController {
         var X = (event.clientX - rect.left) * this.scaleFactor;
         var Y = (event.clientY - rect.top) * this.scaleFactor;
         return new vec2(X, Y);
-    }
-
-    // for testing debugDrawing
-    public getDebugDrawState() : string {
-        return this.debugDrawState;
-    }
-
-    private debugDrawing(e : KeyboardEvent) {
-        let code = e.keyCode;
-
-        switch(code) {
-            case 49: {
-                // key 1
-                this.debugDrawState = "visualise";
-                break;
-            }
-            case 50: {
-                // key 1
-                this.debugDrawState = "velocity";
-                break;
-            }
-            case 51: {
-                // key 2
-                this.debugDrawState = "divergence";
-                break;
-            }
-            case 52: {
-                // key 3
-                this.debugDrawState = "pressure";
-                break;
-            }
-        }
     }
 }
