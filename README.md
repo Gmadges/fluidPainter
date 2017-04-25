@@ -5,8 +5,10 @@ implementation in browser of a paint tool that uses fluid dynamics for more real
 
 Build Status
 ------------
+|       | master |
+| ----- | ------ |
+| Linux | [![Build Status](https://travis-ci.org/Gmadges/fluidPainter.svg?branch=master)](https://travis-ci.org/Gmadges/fluidPainter) |
 
-// TODO with travis
 
 Additional Documentation
 ------------------------

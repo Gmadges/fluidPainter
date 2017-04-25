@@ -4,8 +4,9 @@
   "description": "fluid painting",
   "scripts": {
     "build": "gulp",
-    "build-ts": "gulp typescript",
-    "build-emcc": "gulp emscripten"
+    "build-ts": "tsc",
+    "build-emcc": "gulp emscripten",
+    "test": "mocha"
   },
   "dependencies": {
     "browser-sync": "^2.18.8",
@@ -14,6 +15,8 @@
     "typescript": "^2.2.1"
   },
   "devDependencies": {
-    "@types/jquery": "^2.0.41"
+    "@types/jquery": "^2.0.41",
+    "fs": "0.0.2",
+    "mocha": "^3.3.0"
   }
 }
