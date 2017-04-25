@@ -11,10 +11,10 @@ TSFLAGS= --outDir app/
 all: $(CPPSOURCES) $(OUTPUT)
 
 $(OUTPUT): $(CPPSOURCES) 
-	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file data/ --profiling -std=c++11 $(LDFLAGS) -o $(OUTPUT)
+	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file data/ --profiling -std=c++11 $(LDFLAGS) -o $(OUTPUT)
 
 RELEASE: $(CPPSOURCES) 
-	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file data/  -std=c++11 $(RELEASEFLAGS) -o $(OUTPUT)
+	$(EMCC) $(CPPSOURCES) --bind -s FULL_ES2=1 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file data/  -std=c++11 $(RELEASEFLAGS) -o $(OUTPUT)
 
 TSBUILD: $(TSSOURCES)
 	$(TSC) $(TSSOURCES) $(TSFLAGS) 

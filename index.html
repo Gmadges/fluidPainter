@@ -186,7 +186,6 @@
             // tell emscripten about the canvas we're using
             // also let it know that the .mem file is within the app/ dir.
             var Module = {};
-            Module.canvas = canvas;
             Module.locateFile = function(url) {
                 return "app/" + url;
             }

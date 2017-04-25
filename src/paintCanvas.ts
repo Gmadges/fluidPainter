@@ -2,6 +2,7 @@
 /// <reference path="inputSettings.ts" />
 
 var Module : any;
+var GL : any;
 
 module PaintCanvas {
 
@@ -38,7 +39,7 @@ module PaintCanvas {
 
         constructor(public canvas: HTMLCanvasElement) {
 
-            var gl = canvas.getContext('webgl');
+            let gl = Module.createContext(canvas, true, true, {});
 
             if(gl.getExtension('OES_texture_float') === null) {
                 console.error('no texture float support'); 
@@ -50,7 +51,6 @@ module PaintCanvas {
                 return;
             }
 
-            Module.initGL(canvas.width, canvas.height);
             this.drawingProgram = new Module.Drawing();
             this.drawingProgram.init(canvas.width, canvas.height);
 
