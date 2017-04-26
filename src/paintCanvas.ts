@@ -1,8 +1,8 @@
 /// <reference path="inputController.ts" />
 /// <reference path="inputSettings.ts" />
+/// <reference path="moduleInterface.ts" />
 
-var Module : any;
-var GL : any;
+var Module : emModule;
 
 module PaintCanvas {
 
@@ -11,25 +11,24 @@ module PaintCanvas {
         // helper classes
         private inputControl : InputController;
         private inputSettings : InputSettings;
-        private forceHandler : any;
-        private mouseHandler : any;
+        private forceHandler : ForceHandler;
 
         // buffers
-        private velocityBuffer : any;
-        private divergenceBuffer : any;
-        private pressureBuffer : any;
-        private forceBuffer : any;
-        private visBuffer : any;
+        private velocityBuffer : DoubleBuffer;
+        private divergenceBuffer : Buffer;
+        private pressureBuffer : DoubleBuffer;
+        private forceBuffer : DoubleBuffer;
+        private visBuffer : DoubleBuffer;
 
         // webgl classes
-        private drawingProgram : any;
-        private fluidSolver : any;
+        private drawingProgram : Drawing;
+        private fluidSolver : GridFluidSolver;
 
         // update timer
-        private timer : any;
+        private timer : number;
         
         // paint drying vals
-        private dryTimer : any;
+        private dryTimer : number;
         private paintIsDry : boolean = true;
 
         //solve
