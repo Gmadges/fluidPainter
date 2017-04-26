@@ -7,6 +7,7 @@ interface emModule {
 }
 
 interface GridFluidSolver {
+    () : void;
     init(width : number, height : number) : void;
     advect(output : Buffer, velocity : Buffer, input : Buffer, dissipation : number) : void;
     applyForces(buffer : DoubleBuffer, forces : Object) : void;
@@ -20,6 +21,7 @@ interface GridFluidSolver {
 }
 
 interface Drawing {
+    () : void;
     init(width : number, height : number) : void;
     drawBuffer(buffer : Buffer) : void;
     setSize(width : number, height : number) : void;
@@ -45,6 +47,7 @@ interface BufferUtils {
 }
 
 interface ForceHandler {
+    () : void;
     addForce(xPix : number, yPix : number, xForce : number, yForce : number, size : number) : void;
     reset() : void;
     getForces() : any[];
