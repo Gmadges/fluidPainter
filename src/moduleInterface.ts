@@ -16,6 +16,7 @@ interface GridFluidSolver {
     subtractGradient(velocity : DoubleBuffer, pressure : Buffer) : void;
     addBuffers(input1 : Buffer, input2 : Buffer, output : Buffer) : void;
     setBrush(index : number) : void;
+    delete() : void;
 }
 
 interface Drawing {
@@ -23,6 +24,7 @@ interface Drawing {
     drawBuffer(buffer : Buffer) : void;
     setSize(width : number, height : number) : void;
     resetBuffer(buffer : Buffer) : void;
+    delete() : void ;
 }
 
 interface Buffer {
@@ -48,6 +50,7 @@ interface ForceHandler {
     getForces() : any[];
     isForceAvailable() : boolean;
     getNumberForces() : number;
+    delete() : void;
 }
 
 
