@@ -1,19 +1,13 @@
 FluidPainter
 ===========================
 
-implementation in browser of a paint tool that uses fluid dynamics for more realistic paint.
+a browser based paint tool that uses fluid dynamics for a more realistic painting experience.
 
 Build Status
 ------------
 |       | master |
 | ----- | ------ |
 | Linux | [![Build Status](https://travis-ci.org/Gmadges/fluidPainter.svg?branch=master)](https://travis-ci.org/Gmadges/fluidPainter) |
-
-
-Additional Documentation
-------------------------
-
-// TODO WIKI
 
 Supported Platforms
 -------------------
@@ -44,50 +38,7 @@ Dependencies
 | [npm](https://www.npmjs.com/)                 | 2.14.4 |
 | [python(optional)](https://www.python.org/)   | 2.7 |
 
+Additional Documentation
+------------------------
 
-Getting and Building the Code (Basic)
------------------------------
-
-### 1. Clone the repo:
-
-```bash 
-git clone https://github.com/Gmadges/fluidPainter
-```
-
-### 2. Download packages:
-```bash
-cd fluidPainter
-npm install
-```
-
-### 3. Building
-
-#### Using Build tools 
-
-```bash
-npm run build
-```
-This will build all and serve on localhost:3000.
-It will also look for changes made and rebuild and refresh accordingly.
-
-#### Manually Building
-
-2 Steps to build the project "manually"
-
-##### Typescript
-Install typescript globally so we can call it easier
-```bash
-npm install -g typescript
-```
-To build
-```bash
-tsc
-```
-
-##### Emscripten
-```bash
-make clean
-make
-```
-The "make clean" command is important if any changes have occured to data that will be packaged up(shaders, textures).
-
+For info on building and all things related to this project check out the wiki [here.](https://github.com/Gmadges/fluidPainter/wiki)
