@@ -19,6 +19,7 @@ module PaintCanvas {
         private pressureBuffer : DoubleBuffer;
         private forceBuffer : DoubleBuffer;
         private visBuffer : DoubleBuffer;
+        private storedBuffer : Buffer;
 
         // webgl classes
         private drawingProgram : Drawing;
@@ -73,6 +74,7 @@ module PaintCanvas {
             this.forceBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(width, height);
             this.visBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
+            this.storedBuffer = Module.BufferUtils.createBuffer(width, height);
 
             // make this buffer white.
             this.drawingProgram.resetBuffer(this.visBuffer.readBuffer);
@@ -199,6 +201,17 @@ module PaintCanvas {
                this.resetSimBuffers();
                this.paintIsDry = true;
             }, this.timeout * 1000);
+        }
+
+        public storeLastBuffer() {
+            // Decide whether to store buffer after sim or after mouse up.
+            this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, this.storedBuffer);
+            console.log("stored");
+        }
+
+        public undo() {
+            this.fluidSolver.copyBuffer(this.storedBuffer, this.visBuffer.readBuffer);
+            console.log("undo");
         }
 
         private draw() {

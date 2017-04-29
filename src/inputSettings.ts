@@ -30,7 +30,9 @@ class InputSettings {
         
         $('#saveButton').on('click', this.enableSaveImage.bind(this));
         
-        $('#resetButton').on('click', this.resize.bind(this));
+        $('#resetButton').on('click', this.reset.bind(this));
+
+        $('#undoButton').on('click', this.undo.bind(this));
 
         $('#dryBrushCheck').on('click', this.dryBrushChange.bind(this));
 
@@ -138,8 +140,12 @@ class InputSettings {
         this.dryBrush = checked;
     }
 
-    private resize() {
+    private reset() {
         this.paintCanvas.resetBuffers();
+    }
+
+    private undo() {
+        this.paintCanvas.undo();
     }
 
     private brushForceChange() {
