@@ -1,6 +1,7 @@
 /// <reference path="inputController.ts" />
 /// <reference path="inputSettings.ts" />
 /// <reference path="moduleInterface.ts" />
+/// <reference path="undo.ts"/>
 
 var Module : emModule;
 
@@ -19,7 +20,7 @@ module PaintCanvas {
         private pressureBuffer : DoubleBuffer;
         private forceBuffer : DoubleBuffer;
         private visBuffer : DoubleBuffer;
-        private storedBuffer : Buffer;
+        private undoHandler : Undo;
 
         // webgl classes
         private drawingProgram : Drawing;
@@ -74,7 +75,12 @@ module PaintCanvas {
             this.forceBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(width, height);
             this.visBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
-            this.storedBuffer = Module.BufferUtils.createBuffer(width, height);
+
+            let bufferArray : Buffer[] = [];
+            for(let i = 0; i < 5; i++) {
+                bufferArray.push(Module.BufferUtils.createBuffer(width, height));
+            }
+            this.undoHandler = new Undo(bufferArray);
 
             // make this buffer white.
             this.drawingProgram.resetBuffer(this.visBuffer.readBuffer);
@@ -204,14 +210,13 @@ module PaintCanvas {
         }
 
         public storeLastBuffer() {
-            // Decide whether to store buffer after sim or after mouse up.
-            this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, this.storedBuffer);
-            console.log("stored");
+            let buffer : Buffer = this.undoHandler.getItemToStoreTo();
+            this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, buffer);
         }
 
         public undo() {
-            this.fluidSolver.copyBuffer(this.storedBuffer, this.visBuffer.readBuffer);
-            console.log("undo");
+            let buffer : Buffer = this.undoHandler.undo();
+            this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
         }
 
         private draw() {

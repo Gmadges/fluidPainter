@@ -12,7 +12,7 @@ class Undo {
     private undoEnabled : boolean = false;
     // private redoEnabled : boolean = false;
 
-    constructor(data : [Object]) {
+    constructor(data : Object[]) {
         this.reserveArray = data;
     };
 
