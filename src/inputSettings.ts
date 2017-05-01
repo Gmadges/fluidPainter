@@ -1,7 +1,12 @@
 /// <reference path="inputController.ts" />
 /// <reference path="paintCanvas.ts" />
 
-var $ : JQueryStatic;
+// color picker is a javascript library with no typescript typings.
+// Therefore I'm going to extend the Jquery interface to have a function that resembles it.
+// This will stop the annoying error we get.
+interface JQuery  {
+    colorpicker(settings : Object): JQuery;
+}
 
 class InputSettings {
 
