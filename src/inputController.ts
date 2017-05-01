@@ -33,8 +33,8 @@ class InputController {
 
     public scaleFactor : number = 1;
 
-    constructor(private paintCanvas : any, 
-                    private forceHandler : any) {
+    constructor(private paintCanvas : PaintCanvas, 
+                    private forceHandler : ForceHandler) {
 
         this.paintCanvas.canvas.onmousedown = this.mouseDown.bind(this);
         this.paintCanvas.canvas.onmouseup = this.mouseUp.bind(this);

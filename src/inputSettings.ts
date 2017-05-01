@@ -17,7 +17,7 @@ class InputSettings {
 
     private canvasScale : number = 1.0;
 
-    constructor(private inputControl : InputController, private paintCanvas : PaintCanvas.Program) {
+    constructor(private inputControl : InputController, private paintCanvas : PaintCanvas) {
 
         $('#brushSizeRange').on("change",  this.brushSizeChange.bind(this));
         $('#canvasSizeRange').on("change",  this.canvasSizeChange.bind(this));

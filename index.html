@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>PaintCanvas</title>
+        <title>FluidPainter</title>
         <meta name="description" content="">
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
         <link rel="stylesheet" href="assets/css/bootstrap.css">
@@ -222,7 +222,7 @@
         <script>       
             // This is needed because we dont have a main in the CPP code.
             Module['_main'] = function() {
-                var program = new PaintCanvas.Program(canvas); 
+                var program = new PaintCanvas(canvas); 
                 
                 // these methods should clean up some memory stuff on refresh and close
                 window.onbeforeunload = function(){
@@ -235,6 +235,5 @@
                 };
             };
         </script>
-
     </body>
 </html>
