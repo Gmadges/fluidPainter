@@ -58,6 +58,35 @@ describe('UndoBuffers', function() {
     });
   });
 
+  describe('reset', function() {
+    it('should reset values', function() {
+      var item1 = undo.getItemToStoreTo();
+      item1.val = 37;
+      var item2 = undo.getItemToStoreTo();
+      item2.val = 24;
+      var item3 = undo.getItemToStoreTo();
+      item3.val = 50;
+      var item = undo.getCurrentItemToStore();
+      item.val = 7;
+
+      undo.undo();
+      undo.undo();
+      undo.redo();
+      undo.undo();
+      undo.redo();
+
+      undo.reset();
+
+      assert.strictEqual(0, undo.getIndex());
+      assert.strictEqual(4, undo.MaxUndoAmount());
+      assert.strictEqual(false, undo.isRedoEnabled());
+
+      // nothing has been stored. so we shouldnt be able to perform these actions
+      assert.typeOf(undo.undo(), 'null', 'undo returns null');
+      assert.typeOf(undo.redo(), 'null', 'redo returns null');
+    });
+  });
+
   describe('storing', function() {
     describe('index', function() {
       it('check index after storage', function() {

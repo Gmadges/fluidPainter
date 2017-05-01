@@ -22,9 +22,20 @@ class Undo {
         }
     };
 
+    public reset() : void {
+        this.index = 0;
+        this.redoHead = 0;
+        this.undoEnabled = false;
+        this.redoEnabled = false;
+    }
+
+    public getDataArray() : Object[] {
+        return this.storageArray;
+    }
+
     public getIndex() : number {
         return this.index;
-    };
+    }
 
     public MaxUndoAmount() : number {
         return this.undoHead + 1;
