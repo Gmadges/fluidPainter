@@ -12,7 +12,7 @@ class InputSettings {
 
     public dryBrush : boolean = false;
     public brushColor : any = {r:0, g:0, b:0};
-    public brushAlpha : number = 1.0;
+    public brushAlpha : number = 0.5;
     public saveImage : boolean = false;
 
     private canvasScale : number = 1.0;
@@ -41,6 +41,7 @@ class InputSettings {
         $('#redoButton').on('click', this.redo.bind(this));
 
         $('#dryBrushCheck').on('click', this.dryBrushChange.bind(this));
+        $('#dryBrushCheck').click();
 
         $('#pressureIterations').on('change', this.jacobiChange.bind(this));
         $('#fpsNumber').on('change', this.fpsChange.bind(this));

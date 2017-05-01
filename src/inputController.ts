@@ -28,7 +28,7 @@ class InputController {
     private currentPos : vec2 = new vec2(-1,-1);
 
     private debugDrawState : string = "visualise";
-    public brushSize : number = 50;
+    public brushSize : number = 100;
     public brushForce : number = 0.01;
 
     public scaleFactor : number = 1;
