@@ -18,12 +18,6 @@
                         <div class="card" style="width:100%">
                             <h3 class="card-header">Tools
                                 <i class="fa fa-wrench" aria-hidden="true"></i>
-                                <!--button type="button" id="redoButton" class="btn btn-default pull-right" title="Redo undid item.(r)">
-                                    <i class="fa fa-repeat" aria-hidden="true"></i>
-                                </button-->
-                                <button type="button" id="undoButton" class="btn btn-default pull-right" title="Undo last item.(u)">
-                                    <i class="fa fa-undo" aria-hidden="true"></i>
-                                </button>
                                 <button type="button" id="saveButton" class="btn btn-primary pull-right" title="Save painting">
                                     <i class="fa fa-floppy-o" aria-hidden="true"></i>
                                 </button>
@@ -122,6 +116,23 @@
                                                     <i title="This will reset the canvas to blank!" style="color: #FF0000;" class="fa fa-info-circle" aria-hidden="true"></i>
                                                 </p>
                                                 <input type="range" id="canvasSizeRange" min="25" value="75" style="width:100%"></input>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <p class="card-text">
+                                                    Undo/Redo: 
+                                                </p>
+                                                <div class="row" style="width:100%">
+                                                    <div class="col-6">
+                                                        <button type="button" id="redoButton" class="btn btn-block btn-default" title="Redo last item. Key: R or Ctrl+Z">
+                                                            <i class="fa fa-repeat" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button type="button" id="undoButton" class="btn btn-block btn-default" title="Undo last item. Key: U or Ctrl+Y">
+                                                            <i class="fa fa-undo" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>    
                                             </li>
                                         </ul>
                                     </div>

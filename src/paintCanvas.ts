@@ -215,7 +215,20 @@ module PaintCanvas {
         }
 
         public undo() {
+
+            if(this.undoHandler.isRedoEnabled() === false) {
+                let buffer : Buffer = this.undoHandler.getCurrentItemToStore();
+                this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, buffer);
+            }
+
             let buffer : Buffer = this.undoHandler.undo();
+            if(buffer !== null){
+                this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
+            }
+        }
+
+        public redo() {
+            let buffer : Buffer = this.undoHandler.redo();
             if(buffer !== null){
                 this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
             }

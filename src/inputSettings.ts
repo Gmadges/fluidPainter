@@ -38,6 +38,7 @@ class InputSettings {
         $('#resetButton').on('click', this.reset.bind(this));
 
         $('#undoButton').on('click', this.undo.bind(this));
+        $('#redoButton').on('click', this.redo.bind(this));
 
         $('#dryBrushCheck').on('click', this.dryBrushChange.bind(this));
 
@@ -48,9 +49,42 @@ class InputSettings {
 
         this.initBrushDropDown();
         this.initScaleDropDown();
+        this.initKeypress();
     }
 
-    private initBrushDropDown() {
+    private initKeypress() : void {
+
+        $(document).keydown(function(e : JQueryKeyEventObject) {
+            switch(e.which) {
+                case 85: {
+                    // U
+                    this.undo();
+                    break;
+                }
+                case 82: {
+                    // R
+                    this.redo();
+                    break;
+                }
+                case 90: {
+                    // Z
+                    if(e.ctrlKey) {
+                        this.undo();
+                    }
+                    break;
+                }
+                case 89: {
+                    // Y
+                    if(e.ctrlKey) {
+                        this.redo();
+                    }
+                    break;
+                }
+            }
+        }.bind(this));
+    }
+
+    private initBrushDropDown() : void {
         
         $('#circleBrush').click(function(e){
             this.paintCanvas.updateBrush(0);
@@ -153,8 +187,11 @@ class InputSettings {
         this.paintCanvas.undo();
     }
 
+    private redo() {
+        this.paintCanvas.redo();
+    }
+
     private brushForceChange() {
-        //TODO maybe change the values we use give a bigger range
         this.inputControl.brushForce = $('#brushForceRange').val() / 100;
     }
 

@@ -14,7 +14,6 @@ class Undo {
     private undoEnabled : boolean = false;
     private redoEnabled : boolean = false;
 
-    // must be >= 2
     constructor(data : Object[]) {
         this.storageArray = data;
         this.undoHead = data.length - 2;
