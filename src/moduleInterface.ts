@@ -16,6 +16,7 @@ interface GridFluidSolver {
     pressureSolve(pressure : DoubleBuffer, divergence : Buffer) : void;
     subtractGradient(velocity : DoubleBuffer, pressure : Buffer) : void;
     addBuffers(input1 : Buffer, input2 : Buffer, output : Buffer) : void;
+    copyBuffer(input : Buffer, output : Buffer) : void;
     setBrush(index : number) : void;
     delete() : void;
 }

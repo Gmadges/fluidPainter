@@ -51,6 +51,9 @@ class InputController {
     }
 
     private mouseDown(e : Event) {
+        // is the mouse over the canvas
+        this.paintCanvas.storeLastBuffer();
+
         this.currentPos = this.getCursorPosition(this.paintCanvas.canvas, e);
         this.lastPos = this.currentPos;
         this.bMouseDown = true;

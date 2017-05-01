@@ -1,6 +1,7 @@
 /// <reference path="inputController.ts" />
 /// <reference path="inputSettings.ts" />
 /// <reference path="moduleInterface.ts" />
+/// <reference path="undo.ts"/>
 
 var Module : emModule;
 
@@ -19,6 +20,7 @@ module PaintCanvas {
         private pressureBuffer : DoubleBuffer;
         private forceBuffer : DoubleBuffer;
         private visBuffer : DoubleBuffer;
+        private undoHandler : Undo;
 
         // webgl classes
         private drawingProgram : Drawing;
@@ -73,6 +75,12 @@ module PaintCanvas {
             this.forceBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
             this.divergenceBuffer = Module.BufferUtils.createBuffer(width, height);
             this.visBuffer = Module.BufferUtils.createDoubleBuffer(width, height);
+
+            let bufferArray : Buffer[] = [];
+            for(let i = 0; i < 5; i++) {
+                bufferArray.push(Module.BufferUtils.createBuffer(width, height));
+            }
+            this.undoHandler = new Undo(bufferArray);
 
             // make this buffer white.
             this.drawingProgram.resetBuffer(this.visBuffer.readBuffer);
@@ -199,6 +207,31 @@ module PaintCanvas {
                this.resetSimBuffers();
                this.paintIsDry = true;
             }, this.timeout * 1000);
+        }
+
+        public storeLastBuffer() {
+            let buffer : Buffer = this.undoHandler.getItemToStoreTo();
+            this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, buffer);
+        }
+
+        public undo() {
+
+            if(this.undoHandler.isRedoEnabled() === false) {
+                let buffer : Buffer = this.undoHandler.getCurrentItemToStore();
+                this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, buffer);
+            }
+
+            let buffer : Buffer = this.undoHandler.undo();
+            if(buffer !== null){
+                this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
+            }
+        }
+
+        public redo() {
+            let buffer : Buffer = this.undoHandler.redo();
+            if(buffer !== null){
+                this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
+            }
         }
 
         private draw() {

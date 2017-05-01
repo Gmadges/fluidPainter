@@ -26,6 +26,7 @@ public:
     void applyForces(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces);
     void applyPaint(DoubleBuffer& _velocity, std::vector<ForcePacket>& _forces, float _R, float _G, float _B, float _alpha);
     void addBuffers(Buffer& _input1, Buffer& _input2 , Buffer& _output);
+    void copyBuffer(Buffer& _input, Buffer& _output);
     void setBrush(int _b); 
 
 private:
@@ -53,6 +54,7 @@ private:
     GLuint m_simpleDrawProgram;
     GLuint m_applyPaintProgram;
     GLuint m_addProgram;
+    GLuint m_copyProgram;
 
     std::vector<GLuint> m_brushes;
     GLuint m_currentBrush;
@@ -70,6 +72,7 @@ EMSCRIPTEN_BINDINGS(GridFluidSolver)
         .function("pressureSolve", &GridFluidSolver::pressureSolve)
         .function("subtractGradient", &GridFluidSolver::subtractGradient)
         .function("addBuffers", &GridFluidSolver::addBuffers)
+        .function("copyBuffer", &GridFluidSolver::copyBuffer)
         .function("setBrush", &GridFluidSolver::setBrush);
 }
 
@@ -116,6 +119,7 @@ bool GridFluidSolver::init(int _width, int _height)
     m_applyForceProgram  = Shaders::buildProgramFromFiles("data/simpleCol.vert", "data/applyForce.frag");
     m_applyPaintProgram  = Shaders::buildProgramFromFiles("data/simpleTex.vert", "data/applyPaint.frag");
     m_addProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/add.frag");
+    m_copyProgram = Shaders::buildProgramFromFiles("data/simple.vert", "data/copy.frag");
 
     loadBrushes();
     
@@ -502,6 +506,24 @@ void GridFluidSolver::addBuffers(Buffer& _input1, Buffer& _input2 , Buffer& _out
     glBindTexture(GL_TEXTURE_2D, _input1.texHandle);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, _input2.texHandle);
+
+    drawQuad();
+
+    // unbind the framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GridFluidSolver::copyBuffer(Buffer& _input, Buffer& _output)
+{
+    glUseProgram(m_copyProgram);
+
+    GLint res = glGetUniformLocation(m_copyProgram, "resolution");
+
+    glUniform2f(res, (float)m_width, (float)m_height);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, _output.fboHandle);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _input.texHandle);
 
     drawQuad();
 
