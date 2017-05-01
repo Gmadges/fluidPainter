@@ -3,6 +3,13 @@
 
 #include <GLES2/gl2.h>
 
+/*
+Helper class for loading shaders.
+
+This our only class with a .h and .cpp
+because we don't use embind and get horrible link issues.
+*/
+
 class Shaders
 {
 public:

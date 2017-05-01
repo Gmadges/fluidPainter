@@ -46,7 +46,7 @@ Buffer BufferUtils::createBuffer(int _width, int _height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // we use this large texture because webgl doesnt like using smaller ones
+    // we use this large RGBA texture because webgl doesnt like using smaller ones with less channels.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_FLOAT, 0);
 
     // turn into frame buffer

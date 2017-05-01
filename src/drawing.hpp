@@ -115,9 +115,6 @@ void Drawing::drawBuffer(Buffer& _buffer)
     
     //draw the triangle
     glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    //swap buffer to make whatever we've drawn to backbuffer appear on the screen
-    SDL_GL_SwapBuffers();
 }
 
 #endif

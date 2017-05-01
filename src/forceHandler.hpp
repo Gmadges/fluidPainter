@@ -3,6 +3,13 @@
 
 #include "emscripten/bind.h"
 
+/*
+
+This class was created because it was quite fiddle passing around arrays with these structures back and forth between javascript and emscripten.
+This means its much easier to work with the data I get from the javascript in c++.
+
+*/
+
 struct ForcePacket
 {
     int xPix;

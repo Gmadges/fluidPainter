@@ -10,6 +10,12 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
+/*
+
+Main class for all fluid solving problems
+A bit big, maybe should cut up a bit.
+
+*/
 
 class GridFluidSolver
 {

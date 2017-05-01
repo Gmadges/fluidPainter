@@ -11,3 +11,7 @@
 #include "bufferUtils.hpp"
 #include "drawing.hpp"
 #include "gridFluidSolver.hpp"
+
+/*
+This file is pretty pointless now but i still use it as the entry point for compilation.
+*/

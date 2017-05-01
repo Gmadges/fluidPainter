@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 
+// helper method
 std::string readFile(const char * filePath) {
     std::string content;
     std::ifstream fileStream(filePath, std::ios::in);
