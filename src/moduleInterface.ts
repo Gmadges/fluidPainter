@@ -1,3 +1,6 @@
+// These Interfaces allow us to use the Typescripts type system nicely.
+// I have defined the emscripten generated codes interface.
+
 interface emModule {
     createContext(canvas : HTMLCanvasElement, useWebGL : boolean, setInModule : boolean, attributes : WebGLContextAttributes) : WebGLRenderingContext;
     GridFluidSolver : GridFluidSolver;

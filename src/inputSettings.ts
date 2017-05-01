@@ -8,10 +8,17 @@ interface JQuery  {
     colorpicker(settings : Object): JQuery;
 }
 
+interface Color {
+    r : number;
+    g : number;
+    b : number;
+}
+
 class InputSettings {
 
+    // make this public for because their just settings.
     public dryBrush : boolean = false;
-    public brushColor : any = {r:0, g:0, b:0};
+    public brushColor : Color = { r:0, g:0, b:0 };
     public brushAlpha : number = 0.5;
     public saveImage : boolean = false;
 
@@ -19,6 +26,7 @@ class InputSettings {
 
     constructor(private inputControl : InputController, private paintCanvas : PaintCanvas) {
 
+        // set up all our gui connections.
         $('#brushSizeRange').on("change",  this.brushSizeChange.bind(this));
         $('#canvasSizeRange').on("change",  this.canvasSizeChange.bind(this));
         $('#brushForceRange').on('change', this.brushForceChange.bind(this));
@@ -87,39 +95,39 @@ class InputSettings {
 
     private initBrushDropDown() : void {
         
-        $('#circleBrush').click(function(e){
+        $('#circleBrush').click(function(e : Event){
             this.paintCanvas.updateBrush(0);
             $('#brushDropdownMenuButton').html($('#circleBrush').html());
             e.preventDefault();
         }.bind(this));
 
-        $('#spottyBrush').click(function(e){
+        $('#spottyBrush').click(function(e : Event){
             this.paintCanvas.updateBrush(1);
             $('#brushDropdownMenuButton').html($('#spottyBrush').html());
             e.preventDefault();
         }.bind(this));
 
-        $('#lineBrush').click(function(e){
+        $('#lineBrush').click(function(e : Event){
             this.paintCanvas.updateBrush(2);
             $('#brushDropdownMenuButton').html($('#lineBrush').html());
             e.preventDefault();
         }.bind(this));
 
-        $('#crossBrush').click(function(e){
+        $('#crossBrush').click(function(e : Event){
             this.paintCanvas.updateBrush(3);
             $('#brushDropdownMenuButton').html($('#crossBrush').html());
             e.preventDefault();
         }.bind(this));
     
-        $('#starBrush').click(function(e){
+        $('#starBrush').click(function(e : Event){
             this.paintCanvas.updateBrush(4);
             $('#brushDropdownMenuButton').html($('#starBrush').html());
             e.preventDefault();
         }.bind(this));
     }
 
-    private initScaleDropDown() {
-        $('#scale1').click(function(e) {
+    private initScaleDropDown() : void {
+        $('#scale1').click(function(e : Event) {
             this.canvasScale = 1.0;
             this.inputControl.scaleFactor = 1;
             this.updateCanvasSizing();
@@ -127,7 +135,7 @@ class InputSettings {
             e.preventDefault();
         }.bind(this));
     
-        $('#scale075').click(function(e){
+        $('#scale075').click(function(e : Event){
             this.canvasScale = 0.86;
             this.inputControl.scaleFactor = 0.75;
             this.updateCanvasSizing();
@@ -135,7 +143,7 @@ class InputSettings {
             e.preventDefault();
         }.bind(this));
 
-        $('#scale050').click(function(e) {
+        $('#scale050').click(function(e : Event) {
             this.canvasScale = 0.7;
             this.inputControl.scaleFactor = 0.5;
             this.updateCanvasSizing();
@@ -143,7 +151,7 @@ class InputSettings {
             e.preventDefault();
         }.bind(this));
 
-        $('#scale025').click(function(e){
+        $('#scale025').click(function(e : Event){
             this.canvasScale = 0.5;
             this.inputControl.scaleFactor = 0.25;
             this.updateCanvasSizing();
@@ -152,25 +160,24 @@ class InputSettings {
         }.bind(this));
     }
 
-    private enableSaveImage() {
+    private enableSaveImage() : void {
         this.saveImage = true;
     }
 
-    private brushColorChange() {
+    private brushColorChange() : void {
         let color : any = $('#brushColor').data('colorpicker').color.toRGB();
         this.brushColor.r = color.r / 255;
         this.brushColor.g = color.g / 255;
         this.brushColor.b = color.b / 255;
     }
 
-    private brushAlphaChange() {
+    private brushAlphaChange() : void {
         this.brushAlpha = $('#brushAlphaRange').val() / 100;
         $('#brushAlphaText').text('Alpha: ' + this.brushAlpha);
     }
 
-    private dryBrushChange() {
+    private dryBrushChange() : void {
         // bit of a hack
-        // TODO requires two clicks to get started.
         let checked : boolean = $('#dryBrushCheck').hasClass('active');
         if(checked) {
             $('#dryBrushCheck').html('ON <i class="fa fa-check" aria-hidden="true"></i>');
@@ -180,44 +187,44 @@ class InputSettings {
         this.dryBrush = checked;
     }
 
-    private reset() {
+    private reset() : void {
         this.paintCanvas.resetBuffers();
     }
 
-    private undo() {
+    private undo() : void {
         this.paintCanvas.undo();
     }
 
-    private redo() {
+    private redo() : void {
         this.paintCanvas.redo();
     }
 
-    private brushForceChange() {
+    private brushForceChange() : void {
         this.inputControl.brushForce = $('#brushForceRange').val() / 100;
     }
 
-    private dissipationChange() {
+    private dissipationChange() : void {
         this.paintCanvas.updateDissipation(parseFloat($('#dissipationNumber').val()));
     }
 
-    private timeoutChange() {
+    private timeoutChange() : void {
         this.paintCanvas.updateTimeout(parseFloat($('#timeoutNumber').val()));
     }
 
-    private jacobiChange() {
+    private jacobiChange() : void {
         this.paintCanvas.updateJacobiIterations(parseFloat($('#pressureIterations').val()));
     }
 
-    private fpsChange() {
+    private fpsChange() : void {
         this.paintCanvas.updateFPS(parseInt($('#fpsNumber').val()));
     }
 
-    private brushSizeChange() {
+    private brushSizeChange() : void {
         this.inputControl.brushSize = parseInt($('#brushSizeRange').val());
         $('#brushSizeText').text('Size: ' + this.inputControl.brushSize + 'px');
     }
 
-    private canvasSizeChange() {
+    private canvasSizeChange() : void {
         let scale : number = parseInt($('#canvasSizeRange').val()) / 100;
         
         // get the max size we can have
@@ -235,14 +242,14 @@ class InputSettings {
         this.updateCanvasSizeText(newWidth, newHeight);
     }
 
-    private updateCanvasSizeText(width : number, height : number) {
+    private updateCanvasSizeText(width : number, height : number) : void {
         let text = $('#canvasSizeText');
         let info = text.find('i'); 
         text.text('Size: ' + width + ' x ' + height + 'px ');
         text.append(info);
     }
 
-    private updateCanvasSizing() {
+    private updateCanvasSizing() : void {
         let scale : number = this.canvasScale;
         let w : number = $('#canvas').width();
         let h : number = $('#canvas').height()

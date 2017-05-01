@@ -1,4 +1,4 @@
-
+// handy vec2 class
 class vec2 {
 
     public x : number;
@@ -20,38 +20,37 @@ class vec2 {
 
 class InputController {
 
-    private forceApplied : boolean = false;
+    // mouse down flag.
     private bMouseDown : boolean = false;
 
+    // storing out last positions to help use generate a smooth quad.
     private lastlastPos : vec2 = new vec2(-1,-1);
     private lastPos : vec2 = new vec2(-1,-1);
     private currentPos : vec2 = new vec2(-1,-1);
 
-    private debugDrawState : string = "visualise";
+    // starting settings
     public brushSize : number = 100;
     public brushForce : number = 0.01;
+    public scaleFactor : number = 1.0;
 
-    public scaleFactor : number = 1;
-
-    constructor(private paintCanvas : PaintCanvas, 
-                    private forceHandler : ForceHandler) {
-
+    constructor(private paintCanvas : PaintCanvas, private forceHandler : ForceHandler) {
         this.paintCanvas.canvas.onmousedown = this.mouseDown.bind(this);
         this.paintCanvas.canvas.onmouseup = this.mouseUp.bind(this);
         this.paintCanvas.canvas.onmousemove = this.mouseMove.bind(this);
         this.paintCanvas.canvas.onmouseleave = this.mouseUp.bind(this);
     }
 
-    private mouseUp(e : Event) {
+    private mouseUp(e : MouseEvent) {
         this.bMouseDown = false;
 
+        // reset vals
         this.lastlastPos = new vec2(-1,-1);
         this.lastPos = new vec2(-1,-1);
         this.currentPos = new vec2(-1,-1);
     }
 
-    private mouseDown(e : Event) {
-        // is the mouse over the canvas
+    private mouseDown(e : MouseEvent) {
+        // quickly store a snapshot of the canvas before we paint more.
         this.paintCanvas.storeLastBuffer();
 
         this.currentPos = this.getCursorPosition(this.paintCanvas.canvas, e);
@@ -60,7 +59,7 @@ class InputController {
         this.addForce();
     }
 
-    private mouseMove(e : Event) {
+    private mouseMove(e : MouseEvent) {
         if(!this.bMouseDown) return;
         
         this.lastlastPos = this.lastPos;
@@ -76,6 +75,7 @@ class InputController {
         let xforce : number = 0;
         let yforce : number = 0;
         
+        // checks so that we dont divide by zero
         if(dist.x !== 0){
             xforce = (dist.x / dist.length()) * this.brushForce;
         }    
@@ -86,9 +86,10 @@ class InputController {
 
         let brush : number = this.brushSize * this.scaleFactor;
 
-        // add for paint
-        if(this.lastlastPos.y > -1 && dist.length() > brush * 0.25){
-
+        // if we have 3 points and the distence is over half the size of the brush
+        // lets make a nice quad
+        if(this.lastlastPos.y > -1 && dist.length() > brush * 0.50){
+            // 
             this.forceHandler.addForce(this.lastlastPos.x, this.lastlastPos.y, xforce, yforce, brush);
             this.forceHandler.addForce(this.lastPos.x, this.lastPos.y, xforce, yforce, brush);
             this.forceHandler.addForce(this.currentPos.x, this.currentPos.y,  xforce, yforce, brush);
@@ -97,16 +98,17 @@ class InputController {
             this.forceHandler.addForce(this.currentPos.x, this.currentPos.y,  xforce, yforce, brush);
         }
 
+        // use these values for the paint and the force.
         this.paintCanvas.applyPaint();
         this.paintCanvas.applyForce();
 
         this.forceHandler.reset();
     }
 
-    private getCursorPosition(canvas, event) : any {
-        var rect = canvas.getBoundingClientRect();
-        var X = (event.clientX - rect.left) * this.scaleFactor;
-        var Y = (event.clientY - rect.top) * this.scaleFactor;
+    private getCursorPosition(canvas : HTMLCanvasElement, event : MouseEvent) : vec2 {
+        let rect : ClientRect = canvas.getBoundingClientRect();
+        let X = (event.clientX - rect.left) * this.scaleFactor;
+        let Y = (event.clientY - rect.top) * this.scaleFactor;
         return new vec2(X, Y);
     }
 }

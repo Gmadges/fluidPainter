@@ -63,7 +63,7 @@ class PaintCanvas {
         this.inputSettings = new InputSettings(this.inputControl, this);
     }
 
-    private init(width : number, height: number) {
+    private init(width : number, height: number) : void {
 
         this.fluidSolver = new Module.GridFluidSolver();
         this.fluidSolver.init(width, height);
@@ -92,14 +92,14 @@ class PaintCanvas {
     }
 
     // we have to delete our emscripten classes due to some memory issues.
-    public cleanup() {
+    public cleanup() : void {
         clearInterval(this.timer);
         this.drawingProgram.delete();
         this.fluidSolver.delete();
         this.forceHandler.delete();
     }
 
-    public reset(width : number, height : number, scaleX : number, scaleY: number) {
+    public reset(width : number, height : number, scaleX : number, scaleY: number) : void {
 
         let w = Math.floor(width * scaleX);
         let h = Math.floor(height * scaleY);
@@ -111,7 +111,7 @@ class PaintCanvas {
     }
 
     // clears and restarts the FPS at the new rate.
-    public updateFPS(fps : number) {
+    public updateFPS(fps : number) : void {
 
         clearInterval(this.timer);
         
@@ -121,7 +121,7 @@ class PaintCanvas {
         }.bind(this), 1000 / fps);
     }
 
-    private resetSimBuffers() {
+    private resetSimBuffers() : void {
         Module.BufferUtils.clearBuffer(this.velocityBuffer.readBuffer);
         Module.BufferUtils.clearBuffer(this.velocityBuffer.writeBuffer);
 
@@ -134,7 +134,7 @@ class PaintCanvas {
         Module.BufferUtils.clearBuffer(this.divergenceBuffer);
     }
 
-    public resetBuffers() {
+    public resetBuffers() : void {
 
         this.resetSimBuffers();
 
@@ -152,7 +152,7 @@ class PaintCanvas {
         this.undoHandler.reset();
     }
 
-    private update() {
+    private update() : void {
 
         if(this.paintIsDry) return;
 
@@ -179,33 +179,33 @@ class PaintCanvas {
         this.velocityBuffer = Module.BufferUtils.swapBuffers(this.velocityBuffer);
     }
 
-    public updateJacobiIterations(val : number) {
+    public updateJacobiIterations(val : number) : void {
         this.solverIterations = val;
     }
 
-    public updateTimeout(val : number) {
+    public updateTimeout(val : number) : void {
         this.timeout = val;
     }
 
-    public updateDissipation(val : number) {
+    public updateDissipation(val : number) : void {
         this.dissipation = val;
     }
 
-    public updateBrush(b : number) {
+    public updateBrush(b : number) : void {
         this.fluidSolver.setBrush(b);
     }
 
-    public applyPaint() {
+    public applyPaint() : void {
         if(this.inputSettings.dryBrush) return;
         
         // this applies colored paint to the vis buffer.
-        let color = this.inputSettings.brushColor;
+        let color : Color = this.inputSettings.brushColor;
         let alpha : number = this.inputSettings.brushAlpha;
         this.fluidSolver.applyPaint(this.visBuffer, this.forceHandler.getForces(), color.r, color.g, color.b, alpha);
         this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
     }
 
-    public applyForce() {
+    public applyForce() : void {
         // add the forces to the force buffer
         this.fluidSolver.applyForces(this.forceBuffer, this.forceHandler.getForces());
         this.forceBuffer = Module.BufferUtils.swapBuffers(this.forceBuffer);
@@ -223,12 +223,12 @@ class PaintCanvas {
     }
 
     // this method add stores a snapshot of the canvas for undo functionality.
-    public storeLastBuffer() {
+    public storeLastBuffer() : void {
         let buffer : Buffer = this.undoHandler.getItemToStoreTo();
         this.fluidSolver.copyBuffer(this.visBuffer.readBuffer, buffer);
     }
 
-    public undo() {
+    public undo() : void {
 
         // this check tells us if this is the first undo being performed.
         // if so, it takes a snapshot of the canvas. so we can redo later back to it.
@@ -243,14 +243,14 @@ class PaintCanvas {
         }
     }
 
-    public redo() {
+    public redo() : void {
         let buffer : Buffer = this.undoHandler.redo();
         if(buffer !== null){
             this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
         }
     }
 
-    private draw() {
+    private draw() : void {
         // advect vis buffer with velocity.
         this.fluidSolver.advect(this.visBuffer.writeBuffer, this.velocityBuffer.readBuffer, this.visBuffer.readBuffer, 1.0);
         this.visBuffer = Module.BufferUtils.swapBuffers(this.visBuffer);
