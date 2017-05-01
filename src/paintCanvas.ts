@@ -216,7 +216,9 @@ module PaintCanvas {
 
         public undo() {
             let buffer : Buffer = this.undoHandler.undo();
-            this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
+            if(buffer !== null){
+                this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
+            }
         }
 
         private draw() {

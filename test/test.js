@@ -45,12 +45,16 @@ describe('UndoBuffers', function() {
   
   describe('initialise', function() {
     it('initialise values to be correct', function() {
-      assert.strictEqual(0, undo.getActiveSize());
-      assert.strictEqual(5, undo.getMaxSize());
+      assert.strictEqual(0, undo.getIndex());
+      assert.strictEqual(4, undo.MaxUndoAmount());
 
       // nothing has been stored. so we shouldnt be able to perform these actions
       assert.typeOf(undo.undo(), 'null', 'undo returns null');
-      // assert.typeOf(undo.redo(), 'null', 'redo returns null');
+      assert.typeOf(undo.redo(), 'null', 'redo returns null');
+
+      assert.throws( function() {
+        var test = new Undo([{val:0}]);
+      }, Error, "Data array too small!");
     });
   });
 
@@ -62,18 +66,16 @@ describe('UndoBuffers', function() {
         // we stored numbers so we'd expect them here
         assert.typeOf(item.val, 'number');
         assert.strictEqual(0, item.val);
-        assert.strictEqual(1, undo.getActiveSize());
+        assert.strictEqual(1, undo.getIndex());
 
         undo.getItemToStoreTo();
         undo.getItemToStoreTo();
 
-        assert.strictEqual(3, undo.getActiveSize());
+        assert.strictEqual(3, undo.getIndex());
         undo.getItemToStoreTo();
-        assert.strictEqual(4, undo.getActiveSize());
+        assert.strictEqual(4, undo.getIndex());
         undo.getItemToStoreTo();
-        assert.strictEqual(5, undo.getActiveSize());
-        undo.getItemToStoreTo();
-        assert.strictEqual(5, undo.getActiveSize());
+        assert.strictEqual(4, undo.getIndex());
       });
     });
 
@@ -81,7 +83,6 @@ describe('UndoBuffers', function() {
       it('correct index after storage methods', function() {
 
         // should be full of zeros
-        assert.strictEqual(0, undo.getItemToStoreTo().val);
         assert.strictEqual(0, undo.getItemToStoreTo().val);
         assert.strictEqual(0, undo.getItemToStoreTo().val);
         assert.strictEqual(0, undo.getItemToStoreTo().val);
@@ -96,15 +97,12 @@ describe('UndoBuffers', function() {
         item3.val = 3;
         var item4 = undo.getItemToStoreTo();
         item4.val = 4;
-        var item5 = undo.getItemToStoreTo();
-        item5.val = 5;
 
         // next item to overwrite will be the last in the pack which should be 1 etc
         assert.strictEqual(1, undo.getItemToStoreTo().val);
         assert.strictEqual(2, undo.getItemToStoreTo().val);
         assert.strictEqual(3, undo.getItemToStoreTo().val);
         assert.strictEqual(4, undo.getItemToStoreTo().val);
-        assert.strictEqual(5, undo.getItemToStoreTo().val);
       });
     });
   });
@@ -118,7 +116,7 @@ describe('UndoBuffers', function() {
         item2.val = 4;
 
         assert.equal(4, undo.undo().val);
-        assert.equal(1, undo.getActiveSize());
+        assert.equal(1, undo.getIndex());
       });
     });
 
@@ -134,7 +132,7 @@ describe('UndoBuffers', function() {
         var item = undo.undo();
         // 3 undos should still return 5, its the oldest value we have
         assert.equal(5, item.val);
-        assert.equal(0, undo.getActiveSize());
+        assert.equal(0, undo.getIndex());
       });
     });
 
@@ -147,7 +145,7 @@ describe('UndoBuffers', function() {
 
         var item = undo.undo();
         assert.equal(4, item.val);
-        assert.equal(1, undo.getActiveSize());
+        assert.equal(1, undo.getIndex());
       });
     });
 
@@ -169,142 +167,140 @@ describe('UndoBuffers', function() {
     });
   });
 
-  // describe('redo basic ', function() { 
-  //   describe('redo basic ', function() {
-  //     it('should return correct values after some redo ops', function() {
-  //       var item1 = undo.getItemToStoreTo();
-  //       item1.val = 5;
-  //       var item2 = undo.getItemToStoreTo();
-  //       item2.val = 4;
+  describe('redo basic ', function() { 
+    describe('redo basic ', function() {
+      it('should return correct values after some redo ops', function() {
+        var item1 = undo.getItemToStoreTo();
+        item1.val = 5;
+        var item2 = undo.getItemToStoreTo();
+        item2.val = 4;
 
-  //       // shouldnt be able to redo unless we have undone
-  //       assert.equal(null, undo.redo());
-  //       assert.equal(false, undo.isRedoEnabled());
+        // shouldnt be able to redo unless we have undone
+        assert.equal(null, undo.redo());
+        assert.equal(false, undo.isRedoEnabled());
 
-  //       var item = undo.storeCurrentItem();
-  //       item.val = 7;
+        assert.equal(4, undo.undo().val);
+        assert.equal(5, undo.undo().val);
 
-  //       assert.equal(4, undo.undo().val);
+        // this will be null because we never set the current item.
+        assert.equal(null, undo.redo());
+      });
+    });
 
-  //       assert.equal(7, undo.redo().val);
-  //       assert.equal(2, undo.getActiveSize());
-  //     });
-  //   });
+    describe('redo basic ', function() {
+      it('should return correct values after some redo ops', function() {
+        var item1 = undo.getItemToStoreTo();
+        item1.val = 5;
+        var item2 = undo.getItemToStoreTo();
+        item2.val = 4;
 
-  //   describe('redo basic ', function() {
-  //     it('should return correct values after some redo ops', function() {
-  //       var item1 = undo.getItemToStoreTo();
-  //       item1.val = 5;
-  //       var item2 = undo.getItemToStoreTo();
-  //       item2.val = 4;
+        var item = undo.getCurrentItemToStore();
+        item.val = 7;
 
-  //       var item = undo.storeCurrentItem();
-  //       item.val = 7;
+        assert.equal(4, undo.undo().val);
 
-  //       assert.equal(4, undo.undo().val);
+        assert.equal(7, undo.redo().val);
+        assert.equal(7, undo.redo().val);
+        assert.equal(7, undo.redo().val);
+      });
+    });
 
-  //       assert.equal(7, undo.redo().val);
-  //       assert.equal(7, undo.redo().val);
-  //       assert.equal(7, undo.redo().val);
-  //     });
-  //   });
+    describe('redo advanced 1 ', function() {
+      it('should return correct values after some redo ops', function() {
+        var item1 = undo.getItemToStoreTo();
+        item1.val = 5;
+        var item2 = undo.getItemToStoreTo();
+        item2.val = 4;
 
-  //   describe('redo advanced 1 ', function() {
-  //     it('should return correct values after some redo ops', function() {
-  //       var item1 = undo.getItemToStoreTo();
-  //       item1.val = 5;
-  //       var item2 = undo.getItemToStoreTo();
-  //       item2.val = 4;
+        undo.undo();
+        var item = undo.getItemToStoreTo();
+        item.val = 3;
 
-  //       undo.undo();
-  //       var item = undo.getItemToStoreTo();
-  //       item.val = 3;
+        assert.equal(null, undo.redo());
+      });
+    });
 
-  //       assert.equal(null, undo.redo());
-  //     });
-  //   });
+    describe('redo advanced 2 ', function() {
+      it('should return correct values after some redo ops', function() {
+        var item1 = undo.getItemToStoreTo();
+        item1.val = 5;
+        var item2 = undo.getItemToStoreTo();
+        item2.val = 4;
 
-  //   describe('redo advanced 2 ', function() {
-  //     it('should return correct values after some redo ops', function() {
-  //       var item1 = undo.getItemToStoreTo();
-  //       item1.val = 5;
-  //       var item2 = undo.getItemToStoreTo();
-  //       item2.val = 4;
-
-  //       var item = undo.storeCurrentItem();
-  //       item.val = 7;
+        var item = undo.getCurrentItemToStore();
+        item.val = 7;
         
-  //       undo.undo();
-  //       undo.undo();
+        undo.undo();
+        undo.undo();
 
-  //       assert.equal(4, undo.redo().val);
-  //     });
-  //   });
-  // });
+        assert.equal(4, undo.redo().val);
+      });
+    });
+  });
 
-  // describe('common usage', function() {
+  describe('common usage', function() {
 
-  //   describe('pattern 1', function() {
-  //       it('should pass these tests of standard usage', function() {
+    describe('pattern 1', function() {
+        it('should pass these tests of standard usage', function() {
           
-  //       // store two items
-  //       var item1 = undo.getItemToStoreTo();
-  //       item1.val = 37;
-  //       var item2 = undo.getItemToStoreTo();
-  //       item2.val = 24;
+        // store two items
+        var item1 = undo.getItemToStoreTo();
+        item1.val = 37;
+        var item2 = undo.getItemToStoreTo();
+        item2.val = 24;
 
-  //       // snapshot current item
-  //       var item3 = undo.storeCurrentItem();
-  //       item3.val = 7;
+        // snapshot current item
+        var item3 = undo.getCurrentItemToStore();
+        item3.val = 7;
 
-  //       // undo
-  //       undo.undo();
+        // undo
+        undo.undo();
 
-  //       // second undo
-  //       assert.equal(37, undo.undo().val);
-  //       // spam the redo
-  //       assert.equal(24, undo.redo().val);
-  //       assert.equal(7, undo.redo().val);
-  //       assert.equal(7, undo.redo().val);
-  //     });
-  //   });
+        // second undo
+        assert.equal(37, undo.undo().val);
+        // spam the redo
+        assert.equal(24, undo.redo().val);
+        assert.equal(7, undo.redo().val);
+        assert.equal(7, undo.redo().val);
+      });
+    });
 
-  //   describe('pattern 2', function() {
-  //       it('should pass these tests of standard usage', function() {
+    describe('pattern 2', function() {
+        it('should pass these tests of standard usage', function() {
           
-  //       // store two items
-  //       var item1 = undo.getItemToStoreTo();
-  //       item1.val = 37;
-  //       var item2 = undo.getItemToStoreTo();
-  //       item2.val = 24;
-  //       var item3 = undo.getItemToStoreTo();
-  //       item3.val = 50;
-  //       var item4 = undo.getItemToStoreTo();
-  //       item4.val = 96;
-  //       var item5 = undo.getItemToStoreTo();
-  //       item5.val = 34;
-  //       var item6 = undo.getItemToStoreTo();
-  //       item6.val = 93;
-  //       var item7 = undo.getItemToStoreTo();
-  //       item7.val = 1;
+        // store two items
+        var item1 = undo.getItemToStoreTo();
+        item1.val = 37;
+        var item2 = undo.getItemToStoreTo();
+        item2.val = 24;
+        var item3 = undo.getItemToStoreTo();
+        item3.val = 50;
+        var item4 = undo.getItemToStoreTo();
+        item4.val = 96;
+        var item5 = undo.getItemToStoreTo();
+        item5.val = 34;
+        var item6 = undo.getItemToStoreTo();
+        item6.val = 93;
+        var item7 = undo.getItemToStoreTo();
+        item7.val = 1;
 
-  //       // redo shouldnt work
-  //       assert.equal(null, undo.redo());
+        // redo shouldnt work
+        assert.equal(null, undo.redo());
         
-  //       // snapshot current item
-  //       var item8 = undo.storeCurrentItem();
-  //       item8.val = 12;
+        // snapshot current item
+        var item8 = undo.getCurrentItemToStore();
+        item8.val = 12;
 
-  //       // spam undo
-  //       assert.equal(1, undo.undo().val);
-  //       assert.equal(93, undo.undo().val);
-  //       assert.equal(34, undo.undo().val);
-  //       assert.equal(93, undo.redo().val);
-  //       assert.equal(34, undo.undo().val);
-  //       assert.equal(96, undo.undo().val);
-  //       assert.equal(96, undo.undo().val);
-  //     });
-  //   });
-  //   // todo could add more tests
-  // });
+        // spam undo
+        assert.equal(1, undo.undo().val);
+        assert.equal(93, undo.undo().val);
+        assert.equal(34, undo.undo().val);
+        assert.equal(93, undo.redo().val);
+        assert.equal(34, undo.undo().val);
+        assert.equal(96, undo.undo().val);
+        assert.equal(96, undo.undo().val);
+      });
+    });
+    // todo could add more tests
+  });
 });
