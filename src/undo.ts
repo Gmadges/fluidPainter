@@ -6,43 +6,44 @@
 // this will only work nicely on object arrays due to javascript passing anything that isnt and object by value not ref.
 class Undo {
     
-    private undoQueue : any[] = [];
-    private currentIndex : number = 0;
-    private maxSize : number = 0;
-    private undoDepth : number = 0;
+    private activeArray : any[] = [];
+    private reserveArray : any[] = [];
 
     private undoEnabled : boolean = false;
-    private redoEnabled : boolean = false;
+    // private redoEnabled : boolean = false;
 
     constructor(data : [Object]) {
-        this.undoQueue = data;
-        this.maxSize = data.length;
+        this.reserveArray = data;
     };
 
-    public getCurrentIndex() : number {
-        return this.currentIndex;
+    public getActiveSize() : number {
+        return this.activeArray.length;
     };
 
-    public getMaxQueueSize() : number {
-        return this.maxSize;
+    public getReserveSize() : number {
+        return this.reserveArray.length;
+    };
+
+    public getMaxSize() : number {
+        return this.activeArray.length + this.reserveArray.length;
     }
 
-    // this can be used for finding out if we're on our first undo or not.
-    public isRedoEnabled() : boolean {
-        return this.redoEnabled;
-    }
+    // // this can be used for finding out if we're on our first undo or not.
+    // public isRedoEnabled() : boolean {
+    //     return this.redoEnabled;
+    // }
 
-    // this gives the current item. to be used before first undo.
-    // must set this if you want to use redo!!!!!!
-    public getCurrentItem() : any {
-        let index : number = this.currentIndex + 1;
-        if(index > this.maxSize) {
-            this.undoDepth = index;
-            return this.doShift();
-        };
-        this.undoDepth = this.currentIndex;
-        return this.undoQueue[this.currentIndex];
-    };
+    // public storeCurrentItem() : any {
+
+    //     if(this.reserveArray.length !== 0) {
+    //         return this.reserveArray[this.reserveArray.length - 1];
+    //     }
+
+    //     this.doShift();
+    //     let item = this.activeArray.pop();
+    //     this.reserveArray.push(item);
+    //     return item;
+    // };
 
     // returns item that can be overwritten
     public getItemToStoreTo() : any {
@@ -50,28 +51,26 @@ class Undo {
         // unod can now happen because we have values to revert to
         this.undoEnabled = true;
         // we now cannot redo because we are at the head.
-        this.redoEnabled = false;
+        // this.redoEnabled = false;
 
-        // increase the index
-        this.currentIndex++;
-
-        if(this.currentIndex > this.maxSize) {
-            return this.doShift();
+        if(this.reserveArray.length !== 0) {
+            let item = this.reserveArray.pop();
+            this.activeArray.push(item);
+            return item;
         }
-        
-        return this.undoQueue[this.currentIndex - 1];
+
+        return this.doShift();
     };
 
     private doShift() : any {
         // perform a shift
-        let tmp = this.deepCopy(this.undoQueue[0]);
+        let tmp = this.deepCopy(this.activeArray[0]);
 
-        for(let i = 0; i < (this.maxSize - 1); i++) {
-            this.undoQueue[i] = this.deepCopy(this.undoQueue[i+1]);
+        for(let i = 0; i < this.activeArray.length - 1; i++) {
+            this.activeArray[i] = this.deepCopy(this.activeArray[i+1]);
         };
 
-        this.currentIndex = this.maxSize;
-        this.undoQueue[this.currentIndex] = tmp;
+        this.activeArray[this.activeArray.length - 1] = tmp;
         return tmp;
     };
 
@@ -79,25 +78,31 @@ class Undo {
     public undo() : any {
         if(this.undoEnabled === false) return null;
         // we have undone so we can redo now.
-        this.redoEnabled = true;
+        // this.redoEnabled = true;
 
-        if(this.currentIndex > 0) {
-            this.currentIndex--;
+        if(this.activeArray.length === 0) {
+            return this.reserveArray[this.reserveArray.length - 1];
         };
-        return this.undoQueue[this.currentIndex];
+
+        let item = this.activeArray.pop();
+        this.reserveArray.push(item);
+        return item;
     };
 
-    // returns item;
-    public redo() : any {
-        if(this.redoEnabled === false) return null;
+    // // returns item;
+    // public redo() : any {
+    //     if(this.redoEnabled === false) return null;
 
-        if(this.currentIndex < this.undoDepth) {
-            this.currentIndex++;
-        };
-        return this.undoQueue[this.currentIndex];
-    };
+    //     if(this.reserveArray.length === 0) {
+    //         return this.activeArray[this.activeArray.length - 1];
+    //     };
+
+    //     let item = this.reserveArray.pop();
+    //     this.activeArray.push(item);
+    //     return item;
+    // };
 
     private deepCopy(obj : Object) : any {
         return JSON.parse(JSON.stringify(obj));
-    }
+    };
 }
