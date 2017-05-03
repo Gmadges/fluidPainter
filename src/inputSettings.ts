@@ -56,6 +56,8 @@ class InputSettings {
         $('#timeoutNumber').on('change', this.timeoutChange.bind(this));
         $('#dissipationNumber').on('change', this.dissipationChange.bind(this));
 
+        $('#imageUpload').on('change', this.loadImage.bind(this));
+
         this.initBrushDropDown();
         this.initScaleDropDown();
         this.initKeypress();
@@ -158,6 +160,25 @@ class InputSettings {
             $('#scaleDropdownMenuButton').html($('#scale025').html());
             e.preventDefault();
         }.bind(this));
+    }
+
+    private loadImage() : void {
+        let files = $('#imageUpload').prop('files'); 
+
+        if(files.length === 0) return;
+
+        if(files.length > 1) {
+            alert("Too Many files!");
+            return;
+        }
+
+        let img : HTMLImageElement = new Image();
+        
+        img.onload = function() {
+            this.paintCanvas.loadUserImage(img);
+        }.bind(this);
+
+        img.src = window.URL.createObjectURL(files[0]);
     }
 
     private enableSaveImage() : void {

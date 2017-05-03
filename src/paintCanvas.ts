@@ -8,6 +8,9 @@ var Module : emModule;
 
 class PaintCanvas {
 
+    // gl context. we keep this incase we want to do any webgl javascript side.
+    private glContext : WebGLRenderingContext;
+
     // helper classes
     private inputControl : InputController;
     private inputSettings : InputSettings;
@@ -40,14 +43,14 @@ class PaintCanvas {
     constructor(public canvas: HTMLCanvasElement) {
 
         // VERY important line. must be called before anything related to webGL is done. 
-        let gl = Module.createContext(canvas, true, true, {});
+        this.glContext = Module.createContext(canvas, true, true, {});
 
-        if(gl.getExtension('OES_texture_float') === null) {
+        if(this.glContext.getExtension('OES_texture_float') === null) {
             console.error('no texture float support'); 
             return;
         } 
 
-        if(gl.getExtension('OES_texture_float_linear') === null) {
+        if(this.glContext.getExtension('OES_texture_float_linear') === null) {
             console.error('no float linear support'); 
             return;
         }
@@ -193,6 +196,25 @@ class PaintCanvas {
 
     public updateBrush(b : number) : void {
         this.fluidSolver.setBrush(b);
+    }
+
+    public loadUserImage(img : HTMLImageElement) : void {
+
+        let texture : WebGLTexture = this.glContext.createTexture();
+        this.glContext.bindTexture(this.glContext.TEXTURE_2D, texture);
+        this.glContext.texImage2D(this.glContext.TEXTURE_2D, 0, this.glContext.RGBA, this.glContext.RGBA, this.glContext.UNSIGNED_BYTE, img);
+        this.glContext.texParameteri(this.glContext.TEXTURE_2D, this.glContext.TEXTURE_WRAP_S, this.glContext.CLAMP_TO_EDGE);
+        this.glContext.texParameteri(this.glContext.TEXTURE_2D, this.glContext.TEXTURE_WRAP_T, this.glContext.CLAMP_TO_EDGE);
+        this.glContext.texParameteri(this.glContext.TEXTURE_2D, this.glContext.TEXTURE_MAG_FILTER, this.glContext.LINEAR);
+        this.glContext.texParameteri(this.glContext.TEXTURE_2D, this.glContext.TEXTURE_MIN_FILTER, this.glContext.LINEAR);
+        this.glContext.bindTexture(this.glContext.TEXTURE_2D, null);
+
+        this.resetBuffers();
+
+        // copy to vis buffer
+        console.log(this.glContext);
+        console.log(texture);
+        //this.fluidSolver.copyBuffer(buffer, this.visBuffer.readBuffer);
     }
 
     public applyPaint() : void {
