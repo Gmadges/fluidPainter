@@ -18,7 +18,7 @@ Supported Platforms
 | ---- | --------- |
 | Windows	| Tested (Windows 10) |
 | Linux     | Working (RedHat 7.2)  |
-| OSX		| Coming soon |
+| OSX		| Firefox only |
 
 #### Browser
 
